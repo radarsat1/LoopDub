@@ -1,6 +1,8 @@
 
 ** Installing LoopDub **
 
+** REQUIRED LIBRAIRIES:  PortAudio v.18, libSDL
+
 I used a perfectly normal Makefile for this project.  You will noticed that
 PortMidi is included in a zip file in the source folder.  I did this because
 I use the Debian distro, and it seems that although PortAudio and SDL are

@@ -21,6 +21,11 @@ keyboard.
 <p><i>Important:</i> please read this WHOLE document before you give up!  It's
 not difficult to use, I promise.
 
+<h3>Getting LoopDub</h3>
+<p>The current version of LoopDub can be downloaded <a href="https://sourceforge.net/project/showfiles.php?group_id=132786">here</a>.  It is currently only
+working on Linux, but the next version will support Windows.  See the INSTALL
+and README documents in the release for instructions on how to get it working.
+
 <h3>Running LoopDub</h3>
 <p>If it has been installed correctly (See INSTALL), you can run loopdub by
 typing "loopdub" into a command-line, with the directory of your loops as the
@@ -102,26 +107,28 @@ TODO list.
 <p>There are many things that need to be changed and improved and added to
 LoopDub, however I will list a couple here that are imperative that users know
 about:
-<li>
-<ul>All loops must be the same size.  This is not strictly true, but there is
+<ul>
+<li>All loops must be the same size.  This is not strictly true, but there is
 not currently any kind of realtime resampling or timestretching, so the first
 loop loaded sets the <i>length</i> for the loops, and every subsequent sample
 will be looped at the same tempo.  In other words, when the position counter
 gets to the end of the first loop, it wraps back to the beginning for ALL
-loops.
-<ul>All loops must be in the base loop folder specified on the command-line.
+loops.  This is not really a problem for me since I use the same program to
+generate all my loops, and I simply make them all the same size anyways (I find
+that about 32 to 64 bars is good), but it an issue that needs to be addressed.
+<li>All loops must be in the base loop folder specified on the command-line.
 This is actually more of a feature than a bug.  I was doing a show where I
 accidentally browsed out of my loop folder, and I got lost in my harddrive and
 it ended up causing big problems, so I made it so that it is impossible to
 browse outside the folder specified as your loop folder.  This will hopefully
 avoid any of these kinds of problems.  The trick to using LoopDub is having a
 well-organized loop folder.
-<ul>It does not currently remember your MIDI settings, nor does it let you
+<li>It does not currently remember your MIDI settings, nor does it let you
 specify your MIDI channel for using the keyboard.  This may cause difficulties,
 and I'm going to fix it as soon as possible.  Still, you may try MIDI anyways.
 It works fine for me, but other keyboards may vary.  For your referency, my
 MIDI keyboard is the Editor PCR-30.
-</li>
+</ul>
 
 <h3>Contact</h3>
 <p>Get in touch with me at

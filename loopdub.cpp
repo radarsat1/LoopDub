@@ -13,6 +13,7 @@ LoopDub app;
 ** LoopDub
 */
 
+#define APP_VERSION "0.1"
 #define LOOPTOP    50
 #define LOOPHEIGHT 60
 
@@ -351,8 +352,12 @@ int LoopDub::Run()
 
 int main(int argc, char* argv[])
 {
-	 if ((argc > 1) && argv[1])
+	 if ((argc > 1) && argv[1]) {
+		  if (strcmp(argv[1], "-v")==0) {
+			   printf("LoopDub " APP_VERSION "\n");
+		  }
 		  app.m_strChangeToFolder = argv[1];
+	 }
 
 	return app.Run();
 }

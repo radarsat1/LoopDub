@@ -98,6 +98,31 @@ TODO list.
 <p><b>Alt-Enter: </b> Toggles fullscreen mode. (Very nice for live sets, try it!)
 <p><b>Escape: </b> Exits LoopDub.
 
+<h3>Known issues</h3>
+<p>There are many things that need to be changed and improved and added to
+LoopDub, however I will list a couple here that are imperative that users know
+about:
+<li>
+<ul>All loops must be the same size.  This is not strictly true, but there is
+not currently any kind of realtime resampling or timestretching, so the first
+loop loaded sets the <i>length</i> for the loops, and every subsequent sample
+will be looped at the same tempo.  In other words, when the position counter
+gets to the end of the first loop, it wraps back to the beginning for ALL
+loops.
+<ul>All loops must be in the base loop folder specified on the command-line.
+This is actually more of a feature than a bug.  I was doing a show where I
+accidentally browsed out of my loop folder, and I got lost in my harddrive and
+it ended up causing big problems, so I made it so that it is impossible to
+browse outside the folder specified as your loop folder.  This will hopefully
+avoid any of these kinds of problems.  The trick to using LoopDub is having a
+well-organized loop folder.
+<ul>It does not currently remember your MIDI settings, nor does it let you
+specify your MIDI channel for using the keyboard.  This may cause difficulties,
+and I'm going to fix it as soon as possible.  Still, you may try MIDI anyways.
+It works fine for me, but other keyboards may vary.  For your referency, my
+MIDI keyboard is the Editor PCR-30.
+</li>
+
 <h3>Contact</h3>
 <p>Get in touch with me at
 <script language='javascript'>document.write("<a href=\"mail");document.write("to:");document.write("radarsat1");document.write("@");document.write("gmail.com");document.write("\">");document.write("radarsat1");document.write("@");document.write("gmail.com");</script></a>

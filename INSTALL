@@ -1,0 +1,54 @@
+
+** Installing LoopDub **
+
+I used a perfectly normal Makefile for this project.  You will noticed that
+PortMidi is included in a zip file in the source folder.  I did this because
+I use the Debian distro, and it seems that although PortAudio and SDL are
+available through apt-get, PortMidi is not.  However, the Makefile will
+conveniently unzip and compile PortMidi for you.
+
+So, to compile LoopDub:
+
+# make
+
+And to install:
+
+# make install
+
+It executes install.sh using "sudo".  If you don't have sudo installed, you may
+execute install.sh yourself as the root user.  On the otherhand, if you are
+using a system where you don't have access, you can run the program directly
+from the source directory:
+
+# ./loopdub
+
+You may also use "make install" but change the installation location.  Edit
+the Makefile and change the variables "PREFIX" and "LAUNCHER_PREFIX".
+
+Currently PREFIX is /usr/share, and is the folder where loopdub gets installed.
+LAUNCHER_PREFIX is the folder where a small launch script is created that you
+can execute from anywhere.  (For some silly reasons, loopdub must be executed
+from the folder containing its font file, so the launcher script cd's to the
+install directory and runs it.)  It defaults to /usr/bin.
+
+The only compile-time option is to change the look-and-feel of the GUI.  I got
+bored of a standard 3D button-style interface and changed the look of them,
+but you can use it by specifying FLAT_GUI=0 on the command line of the gui
+folder's make:
+
+# cd gui; make FLAT_GUI=0
+# cd ..; make
+
+Note: I am not using autoconf because I don't know how.  I'll get into it
+one day, but if anyone feels like telling me how to set that up, it would
+be cool.
+
+
+** Running LoopDub **
+
+The program takes one optional argument, which is the folder where your loops
+are stored.  For quick access, I keep mine right in the root folder, at /loops/
+This is probably bad practise.. ;-)   But I execute it like this:
+
+# loopdub /loops
+

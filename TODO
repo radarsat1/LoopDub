@@ -1,0 +1,39 @@
+
+-- TODO --
+Why are there still audio underruns when a file is loading?? (Threading should have fixed it... maybe set priority of file loading thread lower.)
+Support for different soundcard configurations, using stereo, etc.
+Fix ghosting on position indicators
+Fix noise generated when changing echo delay length
+Ensure mutex isn't locked during normalize operation
+Filenames in alphabetical order
+Rename Wait to.. Hold?
+Save & load MIDI control & channel settings
+Output MIDI clock
+Effect selection via keyboard (check, select channel instead TODO: fix midi code to reflect this)
+Port to windows
+Envelopes for volume and other effects
+Resampling / how to deal with differing loop sizes
+More effects / DSP
+ - delay/cross delay (check, but there are some artifacts)
+ - distortion
+Implement better effect class architecture
+Ability to render to another sample
+Move file-related code to background thread (done for files, needed for folders?)
+Ability to play sample from keyboard overtop of loops (check)
+ - or retrigger loops on demand, keep it on beat (quantized)
+Improve time wasted during screen refresh -> more accurate UpdateRectangle()?
+Small-ish user manual?
+Apply for sourceforge project
+Name for GUI library?
+
+
+-- DONE --
+Implement cue button (check)
+Program cutoff filter (check)
+Directories in file selector (check)
+Half/quarter looping (check)
+Deal with longer directory listings (check)
+Threading synchronization between GUI sliders and use of values in audio rendering --> potential future problems (check)
+
+fixed so argument provides base directory, which file browser cannot browser out of.  (problem during set!)
+fixed file offset for browsing large directories

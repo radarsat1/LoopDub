@@ -355,6 +355,11 @@ int main(int argc, char* argv[])
 	 if ((argc > 1) && argv[1]) {
 		  if (strcmp(argv[1], "-v")==0) {
 			   printf("LoopDub " APP_VERSION "\n");
+			   exit(0);
+		  }
+		  else if (strcmp(argv[1], "--help")==0) {
+			   printf("Usage: loopdub <folder>\n");
+			   exit(0);
 		  }
 		  app.m_strChangeToFolder = argv[1];
 	 }

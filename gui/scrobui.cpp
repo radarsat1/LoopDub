@@ -511,9 +511,11 @@ void DrawingTools::FillRect(Rect r, int color)
 		SDL_FillRect(m_pSurface, &sr, color);
 }
 
+#include <assert.h>
 bool DrawingTools::LoadCharacterData(char *filename)
 {
 	ifstream charfile(filename, ios::in | ios::binary);
+
 	if (!charfile.is_open())
 	{
 		fprintf(stderr, "Couldn't open %s.\n", filename);
@@ -533,7 +535,9 @@ bool DrawingTools::LoadCharacterData(char *filename)
 
 	m_pCharacterData = new char[sx*sy];
 
-	charfile.read(m_pCharacterData, sx*sy);
+	if (!charfile.fail() && !charfile.bad())
+		charfile.read(m_pCharacterData, sx*sy);
+
 	if (charfile.fail() || charfile.bad())
 	{
 		fprintf(stderr, "Error reading character data.\n");

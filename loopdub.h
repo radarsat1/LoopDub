@@ -1,11 +1,12 @@
 #ifndef _LOOPDUB_H_
 #define _LOOPDUB_H_
 
-#include <pthread.h>
-#include <SDL/SDL.h>
-#include "scrobui.h"
+#include "platform.h"
+#include <SDL.h>
+#include "gui/scrobui.h"
 #include "portmidi/pm_common/portmidi.h"
 //using namespace ScrobUI;
+
 
 // Global definitions
 #define N_LOOPS   8
@@ -82,7 +83,7 @@ public:
 	Slider *m_pVolumeSlider;
 	Button *m_pAutoCueButton;
 
-	pthread_mutex_t mutex;
+	HMUTEX mutex;
 
 	// loading
 	int m_nLoadingSampleFor;

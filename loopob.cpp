@@ -190,7 +190,8 @@ bool LoopOb::Create(Scrob *pParent, const Rect& r, int number, Sample *pSample)
 
 	m_pWaveOb->SetColor(2);
 
-	for (int i=0; i<2; i++) {
+	int i;
+	for (i=0; i<2; i++) {
 		 m_pIndicator[i] = new IndicatorOb;
 		 if (!m_pIndicator[i]->Create(this, Rect(LOOP_X, 2, 61, r.Height()-3)))
 			  return false;
@@ -303,7 +304,7 @@ bool LoopOb::Create(Scrob *pParent, const Rect& r, int number, Sample *pSample)
 
 	m_filterbank[0] = &lowpass;
 	m_filterbank[1] = &delay;
-	for (int i=0; i<N_FILTERS; i++)
+	for (i=0; i<N_FILTERS; i++)
 		 m_filterbank[i]->Initialize();
 
 	return true;

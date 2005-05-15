@@ -3,3 +3,7 @@
 
 Initial import into CVS.  Marked as version 0.1
 
+* May 15, 2005
+
+Windows version sort of works.  Still needs some thread priority bugs
+to be worked out.

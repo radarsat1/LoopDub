@@ -5,7 +5,7 @@
 #ifndef _LOOPOB_H_
 #define _LOOPOB_H_
 
-#include "scrobui.h"
+#include "gui/scrobui.h"
 //using namespace ScrobUI;
 #include "sample.h"
 #include "filter.h"

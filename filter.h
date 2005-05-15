@@ -5,8 +5,8 @@
 class Filter
 {
   public:
-	virtual void Initialize() {}
-	virtual short Work(short sample) {}
+	  virtual void Initialize() {}
+	  virtual short Work(short sample) { return 0; }
 };
 
 class Lowpass : public Filter

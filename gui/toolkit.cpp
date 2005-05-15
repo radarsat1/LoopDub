@@ -7,11 +7,16 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <dirent.h>
-#include <sys/stat.h>
 
 #ifdef WIN32
-#define snprintf _snprintf
+  #include <io.h>
+  #define snprintf _snprintf
+  #define realpath(srcpath, destpath) _fullpath(destpath, srcpath, MAX_PATH)
+  #define DIR_SEPARATOR "\\"
+#else
+  #include <dirent.h>
+  #include <sys/stat.h>
+  #define DIR_SEPARATOR "/"
 #endif
 
 #ifndef min
@@ -345,6 +350,7 @@ bool Image::Create(Scrob *pParent, const Rect& r, int width, int height, char* d
 	 m_nHeight = height;
 	 if (m_nHeight < 0) m_nHeight = 0;
 	 m_pData = data;
+	 return true;
 }
 
 void Image::Draw()
@@ -401,6 +407,7 @@ bool Button::Create(Scrob *pParent, const Rect& r, char *strText, int color, int
   m_nCommand = command;
   m_nCommandValue = command_value;
   m_bToggle = bToggle;
+
   return true;
 }
 
@@ -641,11 +648,13 @@ FileBrowser::FileBrowser() : Scrob()
 	m_nColumns = 0;
 	m_bShowDir = true;
 	m_pBox = NULL;
+	m_pFolder = NULL;
 	m_nItemWidth = 0;
 	m_nCommand = 0;
 	m_bExt = false;
 	m_bBase = false;
 	m_nNames = 0;
+	m_nDrawFileOffset = 0;
 }
 
 FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, char *strDir, int command, bool showDir)
@@ -654,10 +663,12 @@ FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, char *strDir, int comman
 	m_nRows = 0;
 	m_nColumns = 0;
 	m_pBox = NULL;
+	m_pFolder = NULL;
 	m_nItemWidth = 0;
 	m_bExt = false;
 	m_bBase = false;
 	m_nNames = 0;
+	m_nDrawFileOffset = 0;
 	Create(pParent, r, strDir, command, showDir);
 }
 
@@ -711,7 +722,7 @@ void FileBrowser::Draw()
 								  c*m_nItemWidth+m_nItemWidth+x-2, r*h+1+h));
 			  dt.TextOut(Point(c*m_nItemWidth+x,r*h+1),
 						 m_names[i],
-						 (m_types[i] & DT_DIR) ? 2 : 3);
+						 m_isdir[i] ? 2 : 3);
 		 }
 	dt.SetClipRect();
 
@@ -750,8 +761,57 @@ void FileBrowser::Draw()
 }
 
 void FileBrowser::SetDirectory(char *strDir)
-{	
-	 char realdir[1024];
+{
+#ifdef WIN32
+
+	char realdir[MAX_PATH];
+	if (!_fullpath(realdir, strDir, MAX_PATH))
+		return;
+	strncpy(m_strDir, realdir, MAX_PATH);
+	if (m_pFolder)
+		m_pFolder->SetText(m_strDir);
+
+	// Are we in base directory?
+	bool bBaseDir = m_bBase ? strcmp(m_strDir, m_strBase)==0 : false;
+
+	// Append search item
+	strcat(realdir, DIR_SEPARATOR);
+	strcat(realdir, "*");
+
+	// Read directory
+	_finddata_t fd;
+	long lSearch = _findfirst(realdir, &fd);
+	if (lSearch==-1)
+		return;
+
+	m_nNames=0;
+	char pathstr[MAX_PATH];
+
+	int extlen=0;
+	if (m_bExt)
+		extlen = strlen(m_strExt);
+
+	do {
+		if (m_bExt
+			&& stricmp(fd.name+strlen(fd.name)-extlen, m_strExt)!=0
+			&& !(fd.attrib & _A_SUBDIR))
+			continue;
+
+		if (strcmp(fd.name, ".")==0) continue;
+		if (bBaseDir && strcmp(fd.name, "..")==0) continue;
+
+		strcpy(pathstr, m_strDir);
+		strcat(pathstr, DIR_SEPARATOR);
+		strcat(pathstr, fd.name);
+		m_isdir[m_nNames] = (fd.attrib & _A_SUBDIR)!=0;
+		strcpy(m_names[m_nNames++], fd.name);
+	} while ((_findnext(lSearch, &fd)==0) && (m_nNames < MAX_FB_NAMES));
+
+	_findclose(lSearch);
+
+#else
+
+	 char realdir[MAX_PATH];
 	 if (!realpath(strDir, realdir))
 		  return;
 	 strncpy(m_strDir, realdir, MAX_PATH);
@@ -765,7 +825,7 @@ void FileBrowser::SetDirectory(char *strDir)
 	DIR *dir;
 	dir = opendir(m_strDir);
 	m_nNames=0;
-	char pathstr[1024];
+	char pathstr[MAX_PATH];
 	struct stat st;
 	if (dir) {
 		 struct dirent *de;
@@ -776,7 +836,7 @@ void FileBrowser::SetDirectory(char *strDir)
 		 while ((de = readdir(dir)) && m_nNames<MAX_FB_NAMES)
 		 {
 			  strcpy(pathstr, m_strDir);
-			  strcat(pathstr, "/");
+			  strcat(pathstr, DIR_SEPARATOR);
 			  strcat(pathstr, de->d_name);
 
 			  if ((stat(pathstr, &st)==0) && S_ISDIR(st.st_mode))
@@ -786,12 +846,14 @@ void FileBrowser::SetDirectory(char *strDir)
 			  {
 				   if (strcmp(de->d_name, ".")==0) continue;
 				   if (bBaseDir && strcmp(de->d_name, "..")==0) continue;
-				   m_types[m_nNames] = de->d_type;
+				   m_isdir[m_nNames] = (de->d_type & DT_DIR)!=0;
 				   strcpy(m_names[m_nNames++], de->d_name);
 			  }
 		 }
 		 closedir(dir);
 	}
+
+#endif
 
 	m_nDrawFileOffset = 0;
 
@@ -846,18 +908,18 @@ void FileBrowser::OnMouseUp(Point mouse)
 	 int n = c*m_nRows + r + m_nDrawFileOffset;
 	 if (n < m_nNames)
 	 {
-		  if (m_types[n] & DT_DIR) {
-			   char path[MAX_PATH], real[MAX_PATH];
+		  if (m_isdir[n]) {
+			   char path[MAX_PATH];
 			   strcpy(path, m_strDir);
 			   if (path[strlen(path)-1]!='/')
-					strcat(path, "/");
+					strcat(path, DIR_SEPARATOR);
 			   strcat(path, m_names[n]);
 			   SetDirectory(path);
 		  }
 		  else {
 			   strcpy(m_strFile, m_strDir);
-			   if (m_strFile[strlen(m_strFile)-1]!='/')
-					strcat(m_strFile, "/");
+			   if (m_strFile[strlen(m_strFile)-1]!=DIR_SEPARATOR[0])
+					strcat(m_strFile, DIR_SEPARATOR);
 
 			   strcat(m_strFile, m_names[n]);
 			   gui.SetCommand(m_nCommand, (void*)m_strFile);

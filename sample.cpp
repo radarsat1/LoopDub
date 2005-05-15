@@ -2,11 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#include "platform.h"
 #include "sample.h"
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
 
 Sample::Sample()
 {
@@ -177,7 +177,7 @@ bool Sample::LoadFromFile(char *filename)
 					fread(&dw, 1, 1, f);
 			}
 
-			usleep(10);
+			USLEEP(10);
 
 			fread(&dw, 4, 1, f);
 		}

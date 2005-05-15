@@ -2,9 +2,13 @@
 #define _LOOPDUB_CPP_
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include "loopdub.h"
 #include "ld_logo.h"
+
+#ifdef WIN32
+#else
+  #include <unistd.h>
+#endif
 
 /* One global LoopDub object */
 LoopDub app;
@@ -28,22 +32,19 @@ LoopDub::LoopDub()
 	 for (int i=0; i<MAX_KEYS; i++)
 		  m_Keys[i].on = false;
 
-	 if (pthread_mutex_init(&mutex, NULL)!=0) {
-		  printf("Couldn't init mutex?!\n");
-		  exit(0);
-	 }
+	 CREATEMUTEX(mutex);
 }
 
 LoopDub::~LoopDub()
 {
-	 pthread_mutex_destroy(&mutex);
+	DESTROYMUTEX(mutex);
 }
 
 void LoopDub::FillBuffers(void *param)
 {
 	LoopDub& app = *(LoopDub*)param;
 
-	pthread_mutex_lock(&app.mutex);
+	LOCKMUTEX(app.mutex);
 
 	short* pBufferL = app.m_Player.LeftBuffer();
 	short* pBufferR = app.m_Player.RightBuffer();
@@ -102,22 +103,24 @@ void LoopDub::FillBuffers(void *param)
 		 app.updated = false;
 	}
 
-	pthread_mutex_unlock(&app.mutex);
+	UNLOCKMUTEX(app.mutex);
 }
 
-void* loadSampleThread(void* pApp)
+THREADFUNC loadSampleThread(void* pApp)
 {
+	if (!pApp) return NULL;
+
 	 LoopDub &app = *(LoopDub*)pApp;
 
 	 Sample *pSample = new Sample();
 	 if (pSample && pSample->LoadFromFile(app.m_strLoadingSample))
 	 {
-		  pthread_mutex_lock(&app.mutex);
+		  LOCKMUTEX(app.mutex);
 		  if (app.m_nLength==0) app.m_nLength = pSample->m_nSamples;
 		  Sample *pOldSample = app.m_pLoopOb[app.m_nLoadingSampleFor]->SetSample(pSample);
 		  if (pOldSample)
 			   delete pOldSample;
-		  pthread_mutex_unlock(&app.mutex);
+		  UNLOCKMUTEX(app.mutex);
 	 }
 
 	 return NULL;
@@ -214,6 +217,8 @@ int LoopDub::Run()
 		return 1;
 	}
 
+	m_Player.Play();
+
 	SDL_TimerID timerID=0;
 	SDL_Event *pEvent;
 	bool bQuit=false;
@@ -221,7 +226,7 @@ int LoopDub::Run()
 	{
 		gui.WaitEvent();
 
-		pthread_mutex_lock(&mutex);
+		LOCKMUTEX(mutex);
 
 		if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 			&& pEvent->key.keysym.sym == SDLK_RETURN
@@ -295,8 +300,8 @@ int LoopDub::Run()
 					   m_nLoadingSampleFor = s;
 					   strcpy(m_strLoadingSample, (char*)value);
 
-					   pthread_t thread;
-					   pthread_create(&thread, NULL, loadSampleThread, (void*)this);
+					   HTHREAD thread;
+					   CREATETHREAD(thread, loadSampleThread, &app);
 				  }
 				  else if (cmd>=CMD_CLOSE && cmd<(CMD_CLOSE+N_LOOPS))
 				  {
@@ -338,13 +343,13 @@ int LoopDub::Run()
 
 			 app.updated = true;
 
-			 pthread_mutex_unlock(&mutex);
+			 UNLOCKMUTEX(mutex);
 			 m_Midi.CheckMsg();
 		}
 	}
 
 	app.updated = true;
-	pthread_mutex_unlock(&mutex);
+	UNLOCKMUTEX(mutex);
 	m_Player.Stop();
 
 	return 0;

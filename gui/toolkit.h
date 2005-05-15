@@ -11,10 +11,12 @@
 
 #define MAX_FB_NAMES 50
 
+#ifndef MAX_PATH
 #ifdef WIN32
 #define MAX_PATH _MAX_PATH
 #else
 #define MAX_PATH PATH_MAX
+#endif
 #endif
 
 
@@ -199,7 +201,7 @@ protected:
 	bool m_bExt;
 	char m_strBase[MAX_PATH];
 	bool m_bBase;
-	char m_types[MAX_FB_NAMES];
+	bool m_isdir[MAX_FB_NAMES];
 	char m_names[MAX_FB_NAMES][256];
 	int m_nNames;
 

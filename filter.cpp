@@ -34,7 +34,6 @@ short Lowpass::Work(short sample)
 
 	// filter
 	float temp_y;
-	int   i;
 	float alpha, omega, sn, cs;
 	float a0, a1, a2, b0, b1, b2;
 	float coef[5];

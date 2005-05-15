@@ -1,7 +1,7 @@
 #ifndef _SCROBUI_H_
 #define _SCROBUI_H_
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 //namespace ScrobUI {
 

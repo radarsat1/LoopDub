@@ -107,6 +107,9 @@ public:
 	
 	bool m_bWaiting;
 
+	// exposed so dir can be set from other browsers
+	FileBrowser *m_pFileBrowser;
+
 protected:
 	// objects
 	Sample *m_pSample;
@@ -126,7 +129,6 @@ protected:
 	Label *m_pFilenameLabel;
 	Label *m_pFilenameLabelShadow;
 	IndicatorOb *m_pIndicator[2];
-	FileBrowser *m_pFileBrowser;
 
 	// bank of filters
 	enum { N_FILTERS=2 };

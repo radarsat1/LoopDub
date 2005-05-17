@@ -303,6 +303,12 @@ int LoopDub::Run()
 					   HTHREAD thread;
 					   CREATETHREAD(thread, loadSampleThread, &app);
 				  }
+				  else if (cmd==CMD_DIRCLICK)
+				  {
+					   // Set all filebrowsers to same folder
+					   for (int ch=0; ch<N_LOOPS; ch++)
+							m_pLoopOb[ch]->m_pFileBrowser->SetDirectory((char*)value);
+				  }
 				  else if (cmd>=CMD_CLOSE && cmd<(CMD_CLOSE+N_LOOPS))
 				  {
 					   int s = cmd-CMD_CLOSE;

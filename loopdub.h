@@ -26,6 +26,7 @@ enum
 	 CMD_SPLIT,
 	 CMD_WAIT,
 	 CMD_BREAK,
+	 CMD_DIRCLICK, // all file browsers call this
 	 CMD_FILECLICK,
 	 CMD_CLOSE=CMD_FILECLICK+N_LOOPS,
 	 N_CMD=CMD_CLOSE+N_LOOPS

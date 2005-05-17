@@ -650,14 +650,15 @@ FileBrowser::FileBrowser() : Scrob()
 	m_pBox = NULL;
 	m_pFolder = NULL;
 	m_nItemWidth = 0;
-	m_nCommand = 0;
+	m_nDirCommand = -1;
+	m_nFileCommand = -1;
 	m_bExt = false;
 	m_bBase = false;
 	m_nNames = 0;
 	m_nDrawFileOffset = 0;
 }
 
-FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, char *strDir, int command, bool showDir)
+FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, char *strDir, int filecommand, int dircommand, bool showDir)
 	: Scrob(pParent, r)
 {
 	m_nRows = 0;
@@ -669,18 +670,19 @@ FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, char *strDir, int comman
 	m_bBase = false;
 	m_nNames = 0;
 	m_nDrawFileOffset = 0;
-	Create(pParent, r, strDir, command, showDir);
+	Create(pParent, r, strDir, filecommand, dircommand, showDir);
 }
 
 FileBrowser::~FileBrowser()
 {
 }
 
-bool FileBrowser::Create(Scrob *pParent, const Rect& r, char *strDir, int command, bool showDir)
+bool FileBrowser::Create(Scrob *pParent, const Rect& r, char *strDir, int filecommand, int dircommand, bool showDir)
 {
 	Scrob::Create(pParent, r);
 
-	m_nCommand = command;
+	m_nFileCommand = filecommand;
+	m_nDirCommand = dircommand;
 	m_bShowDir = showDir;
 
 	int fh=0;
@@ -762,6 +764,9 @@ void FileBrowser::Draw()
 
 void FileBrowser::SetDirectory(char *strDir)
 {
+	 if (!strDir)
+		  strDir=".";
+
 #ifdef WIN32
 
 	char realdir[MAX_PATH];
@@ -915,6 +920,8 @@ void FileBrowser::OnMouseUp(Point mouse)
 					strcat(path, DIR_SEPARATOR);
 			   strcat(path, m_names[n]);
 			   SetDirectory(path);
+			   if (m_nDirCommand!=-1)
+					gui.SetCommand(m_nDirCommand, (void*)m_strDir);
 		  }
 		  else {
 			   strcpy(m_strFile, m_strDir);
@@ -922,7 +929,8 @@ void FileBrowser::OnMouseUp(Point mouse)
 					strcat(m_strFile, DIR_SEPARATOR);
 
 			   strcat(m_strFile, m_names[n]);
-			   gui.SetCommand(m_nCommand, (void*)m_strFile);
+			   if (m_nFileCommand!=-1)
+					gui.SetCommand(m_nFileCommand, (void*)m_strFile);
 		  }
 	 }
 }

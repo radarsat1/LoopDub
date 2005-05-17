@@ -169,9 +169,9 @@ class FileBrowser : public Scrob
 {
 public:
 	FileBrowser();
-	FileBrowser(Scrob *pParent, const Rect& r, char *strDir, int command, bool showDir=true);
+	FileBrowser(Scrob *pParent, const Rect& r, char *strDir=NULL, int filecommand=-1, int dircommand=-1, bool showDir=true);
 	~FileBrowser();
-	bool Create(Scrob *pParent, const Rect& r, char *strDir, int command, bool showDir=true);
+	bool Create(Scrob *pParent, const Rect& r, char *strDir=NULL, int filecommand=-1, int dircommand=-1, bool showDir=true);
 
 	void Draw();
 	void OnMouseUp(Point mouse);
@@ -190,7 +190,8 @@ protected:
 	int m_nColumns;
 	int m_nRows;
 	int m_nItemWidth;
-	int m_nCommand;
+	int m_nFileCommand;
+	int m_nDirCommand;
 	bool m_bShowDir;
 	bool m_bMore, m_bLess;
 	int m_nDrawFileOffset;

@@ -211,7 +211,7 @@ bool LoopOb::Create(Scrob *pParent, const Rect& r, int number, Sample *pSample)
 	m_pFileBrowser = new FileBrowser;
 	m_pFileBrowser->SetExtension(".wav");
 	m_pFileBrowser->SetBase(".");
-	if (!m_pFileBrowser->Create(this, m_pWaveOb->GetRect(), ".", CMD_FILECLICK+number, false))
+	if (!m_pFileBrowser->Create(this, m_pWaveOb->GetRect(), ".", CMD_FILECLICK+number, CMD_DIRCLICK, false))
 		 return false;
 	m_pFileBrowser->SetVisible(false);
 	AddChild(m_pFileBrowser);

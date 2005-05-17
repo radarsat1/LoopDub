@@ -1,9 +1,11 @@
 
 * Mar 12, 2005
-
 Initial import into CVS.  Marked as version 0.1
 
 * May 15, 2005
-
 Windows version sort of works.  Still needs some thread priority bugs
 to be worked out.
+
+* May 16, 2005
+Logarithmic sliders!  So much better.  Why didn't I do this earlier?
+(Applies to Cutoff & Resonance)

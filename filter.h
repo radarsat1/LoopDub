@@ -18,6 +18,7 @@ class Lowpass : public Filter
 	float targetResonance;
 	float minCutoff, maxCutoff;
 	float minResonance, maxResonance;
+	float cutoffPow, resonancePow;
 	float inertia; // ratio of approach to target
 
   public:

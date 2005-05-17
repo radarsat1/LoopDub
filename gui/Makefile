@@ -1,7 +1,7 @@
 
 CC = g++
-LIBS = -lSDL
-CPPFLAGS = -fPIC -g -ggdb
+LIBS = -L /usr/include/SDL -lSDL
+CPPFLAGS = -I /usr/include/SDL -fPIC -g -ggdb
 # note: need to fix the deprecated dependancy on <fstream.h>
 CPPFLAGS += -Wno-deprecated
 LDFLAGS = $(LIBS)

@@ -18,12 +18,15 @@ void Lowpass::Initialize()
 	 minCutoff = 550.0f;
 	 minResonance = 0.1f;
 	 inertia = 0.2f;
+
+	 cutoffPow = log10(maxCutoff-minCutoff);
+	 resonancePow = log10(maxResonance-minResonance);
 }
 
 void Lowpass::SetParams(float targetC100, float targetR100)
 {
-	 targetCutoff = targetC100*(maxCutoff-minCutoff)/100.0f + minCutoff;
-	 targetResonance = targetR100*(maxResonance-minResonance)/100.0f + minResonance;
+	 targetCutoff = pow(targetC100 / 10.0, cutoffPow) + minCutoff;
+	 targetResonance = pow(targetR100 / 10.0, resonancePow) + minResonance;
 }
 
 short Lowpass::Work(short sample)

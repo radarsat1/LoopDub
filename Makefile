@@ -11,8 +11,8 @@ PMLIB = -Lportmidi/pm_linux/ -lportmidi -Lportmidi/porttime -lporttime
 PALIB =  -L/usr/lib/ -lportaudio
 SDLLIB = -lSDL
 ALSALIB = -lasound
-LIBS = $(SDLLIB) $(GUILIB) $(PMLIB) $(PALIB) $(ALSALIB)
-CPPFLAGS = -g -ggdb -I $(GUIDIR)
+LIBS = $(SDLLIB) $(GUILIB) $(PMLIB) $(PALIB) $(ALSALIB) 
+CPPFLAGS = -g -ggdb -I $(GUIDIR) -I /usr/include/SDL
 LDFLAGS = $(LIBS)
 SRC = loopdub.cpp loopob.cpp sample.cpp player.cpp ld_midi.cpp filter.cpp
 OBJ = $(SRC:.cpp=.o)

@@ -714,6 +714,9 @@ void FileBrowser::Draw()
 
 	dt.FillRect(Rect(0,0,m_Rect.Width(), m_Rect.Height()), 0);
 
+	if (m_bLoading)
+		 return;
+
 	int r,c;
 	int h = dt.GetFontHeight()+2;
 	int i=m_nDrawFileOffset;
@@ -762,22 +765,28 @@ void FileBrowser::Draw()
 	}
 }
 
-void FileBrowser::SetDirectory(char *strDir)
+THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 {
-	 if (!strDir)
-		  strDir=".";
+#ifndef WIN32
+	 pthread_detach(pthread_self());
+#endif
+
+	 if (!fileBrowser)
+		  return NULL;
+
+	 FileBrowser* fb = (FileBrowser*)fileBrowser;
 
 #ifdef WIN32
 
 	char realdir[MAX_PATH];
-	if (!_fullpath(realdir, strDir, MAX_PATH))
+	if (!_fullpath(realdir, fb->m_strDir, MAX_PATH))
 		return;
-	strncpy(m_strDir, realdir, MAX_PATH);
-	if (m_pFolder)
-		m_pFolder->SetText(m_strDir);
+	strncpy(fb->m_strDir, realdir, MAX_PATH);
+	if (fb->m_pFolder)
+		fb->m_pFolder->SetText(fb->m_strDir);
 
 	// Are we in base directory?
-	bool bBaseDir = m_bBase ? strcmp(m_strDir, m_strBase)==0 : false;
+	bool bBaseDir = fb->m_bBase ? strcmp(fb->m_strDir, fb->m_strBase)==0 : false;
 
 	// Append search item
 	strcat(realdir, DIR_SEPARATOR);
@@ -794,65 +803,65 @@ void FileBrowser::SetDirectory(char *strDir)
 
 	int extlen=0;
 	if (m_bExt)
-		extlen = strlen(m_strExt);
+		extlen = strlen(fb->m_strExt);
 
 	do {
-		if (m_bExt
-			&& stricmp(fd.name+strlen(fd.name)-extlen, m_strExt)!=0
+		if (fb->m_bExt
+			&& stricmp(fd.name+strlen(fd.name)-extlen, fb->m_strExt)!=0
 			&& !(fd.attrib & _A_SUBDIR))
 			continue;
 
 		if (strcmp(fd.name, ".")==0) continue;
 		if (bBaseDir && strcmp(fd.name, "..")==0) continue;
 
-		strcpy(pathstr, m_strDir);
+		strcpy(pathstr, fb->m_strDir);
 		strcat(pathstr, DIR_SEPARATOR);
 		strcat(pathstr, fd.name);
-		m_isdir[m_nNames] = (fd.attrib & _A_SUBDIR)!=0;
-		strcpy(m_names[m_nNames++], fd.name);
-	} while ((_findnext(lSearch, &fd)==0) && (m_nNames < MAX_FB_NAMES));
+		fb->m_isdir[fb->m_nNames] = (fd.attrib & _A_SUBDIR)!=0;
+		strcpy(fb->m_names[fb->m_nNames++], fd.name);
+	} while ((_findnext(lSearch, &fd)==0) && (fb->m_nNames < MAX_FB_NAMES));
 
 	_findclose(lSearch);
 
 #else
 
 	 char realdir[MAX_PATH];
-	 if (!realpath(strDir, realdir))
-		  return;
-	 strncpy(m_strDir, realdir, MAX_PATH);
-	 if (m_pFolder)
-		  m_pFolder->SetText(m_strDir);
+	 if (!realpath(fb->m_strDir, realdir))
+		  return NULL;
+	 strncpy(fb->m_strDir, realdir, MAX_PATH);
+	 if (fb->m_pFolder)
+		  fb->m_pFolder->SetText(fb->m_strDir);
 
 	 // Are we in base directory?
-	 bool bBaseDir = m_bBase ? strcmp(m_strDir, m_strBase)==0 : false;
+	 bool bBaseDir = fb->m_bBase ? strcmp(fb->m_strDir, fb->m_strBase)==0 : false;
 
 	 // Read directory
 	DIR *dir;
-	dir = opendir(m_strDir);
-	m_nNames=0;
+	dir = opendir(fb->m_strDir);
+	fb->m_nNames=0;
 	char pathstr[MAX_PATH];
 	struct stat st;
 	if (dir) {
 		 struct dirent *de;
 		 int extlen=0;
-		 if (m_bExt)
-			  extlen = strlen(m_strExt);
+		 if (fb->m_bExt)
+			  extlen = strlen(fb->m_strExt);
 
-		 while ((de = readdir(dir)) && m_nNames<MAX_FB_NAMES)
+		 while ((de = readdir(dir)) && fb->m_nNames<MAX_FB_NAMES)
 		 {
-			  strcpy(pathstr, m_strDir);
+			  strcpy(pathstr, fb->m_strDir);
 			  strcat(pathstr, DIR_SEPARATOR);
 			  strcat(pathstr, de->d_name);
 
 			  if ((stat(pathstr, &st)==0) && S_ISDIR(st.st_mode))
 				   de->d_type |= DT_DIR; // sketchy? possibly :)
 
-			  if ((de->d_type & DT_DIR) || (m_bExt ? (strcasecmp(de->d_name+strlen(de->d_name)-extlen, m_strExt)==0) : true))
+			  if ((de->d_type & DT_DIR) || (fb->m_bExt ? (strcasecmp(de->d_name+strlen(de->d_name)-extlen, fb->m_strExt)==0) : true))
 			  {
 				   if (strcmp(de->d_name, ".")==0) continue;
 				   if (bBaseDir && strcmp(de->d_name, "..")==0) continue;
-				   m_isdir[m_nNames] = (de->d_type & DT_DIR)!=0;
-				   strcpy(m_names[m_nNames++], de->d_name);
+				   fb->m_isdir[fb->m_nNames] = (de->d_type & DT_DIR)!=0;
+				   strcpy(fb->m_names[fb->m_nNames++], de->d_name);
 			  }
 		 }
 		 closedir(dir);
@@ -860,9 +869,27 @@ void FileBrowser::SetDirectory(char *strDir)
 
 #endif
 
-	m_nDrawFileOffset = 0;
+	fb->m_nDrawFileOffset = 0;
 
-	SetDirty();
+	fb->SetDirty();
+	fb->m_bLoading = false;
+
+	return NULL;
+}
+
+void FileBrowser::SetDirectory(char *strDir)
+{
+	 if (m_bLoading) return;
+	 m_bLoading = true;
+
+	 if (strDir)
+		  strcpy(m_strDir, strDir);
+	 else
+		  strcpy(m_strDir, ".");
+
+	 HTHREAD thread;
+	 if (!(CREATETHREAD(thread, setDirectoryThread, this)))
+		  m_bLoading = false;
 }
 
 void FileBrowser::SetExtension(char *strExt)

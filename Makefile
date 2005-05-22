@@ -23,7 +23,7 @@ all: loopdub
 libscrobui.a: $(shell ls $(GUIDIR)/*{.h,.cpp})
 	$(MAKE) -C $(GUIDIR)
 
-portmidi: portmidi
+portmidi: portmidi/
 	unzip -q portmidi17nov04.zip
 
 libportmidi.a: portmidi

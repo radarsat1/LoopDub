@@ -108,6 +108,10 @@ void LoopDub::FillBuffers(void *param)
 
 THREADFUNC loadSampleThread(void* pApp)
 {
+#ifndef WIN32
+	 pthread_detach(pthread_self());
+#endif
+
 	if (!pApp) return NULL;
 
 	 LoopDub &app = *(LoopDub*)pApp;
@@ -148,7 +152,6 @@ int LoopDub::Run()
 		 printf("Warning: Couldn't change to %s\n", m_strChangeToFolder);
 
 	/* LoopOb instances */
-	
 	for (int i=0; i<N_LOOPS; i++)
 	{
 		m_pLoopOb[i] = new LoopOb(pMainScrob,

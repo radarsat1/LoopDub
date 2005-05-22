@@ -252,9 +252,6 @@ void GUI::Cleanup()
 
 void GUI::WaitEvent()
 {
-	// update GUI
-	UpdateScreen();
-
 	SDL_WaitEvent( &m_Event );
 }
 
@@ -309,6 +306,9 @@ bool GUI::ProcessEvent()
 			}
 		}
 	}
+
+	// update GUI
+	UpdateScreen();
 
 	return true;
 }

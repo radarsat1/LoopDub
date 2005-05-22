@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <limits.h>
+#include "../platform.h"
 
 /*
 ** Toolkit for SDL Screen Object User Interface
@@ -205,9 +206,12 @@ protected:
 	bool m_isdir[MAX_FB_NAMES];
 	char m_names[MAX_FB_NAMES][256];
 	int m_nNames;
+	bool m_bLoading;
 
 	Box *m_pBox;
 	Field *m_pFolder;
+
+	static THREADFUNC setDirectoryThread(void* fileBrowser);
 };
 
 #endif // _SCROBUI_TOOLKIT_H_

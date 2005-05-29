@@ -112,6 +112,8 @@ THREADFUNC loadSampleThread(void* pApp)
 	 pthread_detach(pthread_self());
 #endif
 
+	 LOWPRIORITY();
+
 	if (!pApp) return NULL;
 
 	 LoopDub &app = *(LoopDub*)pApp;
@@ -214,6 +216,11 @@ int LoopDub::Run()
 		 }
 	}
 
+	/* Load program changer */
+	m_ProgramChanger.LoadPrograms();
+
+	/* Initialize player */
+
 	if (!m_Player.Initialize(FillBuffers, this))
 	{
 		printf("Couldn't initialize player.\n");
@@ -225,6 +232,7 @@ int LoopDub::Run()
 	SDL_TimerID timerID=0;
 	SDL_Event *pEvent;
 	bool bQuit=false;
+	int i;
 	while (!bQuit)
 	{
 		gui.WaitEvent();
@@ -245,7 +253,6 @@ int LoopDub::Run()
 			&& pEvent->key.keysym.mod == KMOD_NONE)
 		{
 			 // find unused key
-			 int i;
 			 for (i=0; i<MAX_KEYS && m_Keys[i].on; i++);
 			 if (i<MAX_KEYS) {
 				  m_Keys[i].position = 0;
@@ -253,6 +260,10 @@ int LoopDub::Run()
 				  m_Keys[i].note = 48; // default key C4
 				  m_Keys[i].on = true;
 			 }
+		}
+		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
+				 && pEvent->key.keysym.sym >= '1') {
+			 m_ProgramChanger.ProgramChange(1, m_pLoopOb);
 		}
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 			&& pEvent->key.keysym.sym >= '1'
@@ -348,12 +359,19 @@ int LoopDub::Run()
 						int ch = (int)value;
 						m_pLoopOb[ch]->m_bWaiting = true;
 				  }
+				  else if (cmd==CMD_PROGRAMCHANGE) {
+					   m_ProgramChanger.ProgramChange((int)value, m_pLoopOb);
+				  }
 			 }
 
 			 app.updated = true;
 
 			 UNLOCKMUTEX(mutex);
 			 m_Midi.CheckMsg();
+
+			 // Check if its time to switch to background sample.
+			 for (i=0; i<N_LOOPS; i++)
+				  m_pLoopOb[i]->CheckBackgroundSample();
 		}
 	}
 
@@ -382,54 +400,5 @@ int main(int argc, char* argv[])
 }
 
 
-
-
-
-
-
-VUMeter::VUMeter(Scrob* pParent, const Rect& r)
-	 : Scrob(pParent, r)
-{
-	 Create(pParent, r);
-}
-
-bool VUMeter::Create(Scrob *pParent, const Rect& r)
-{
-	if (!Scrob::Create(pParent, r))
-		return false;
-
-	m_nPercentage = 60;
-	memset(m_History, 0, sizeof(char)*15);
-	m_nHistoryPos = 0;
-
-	return true;
-}
-
-void VUMeter::Draw()
-{
-	 dt.SetCurrentObject(this);
-	 dt.DrawRect(Rect(0, 0, m_Rect.Width(), m_Rect.Height()), 3);
-	 int x = m_nPercentage * (m_Rect.Width()-2) / 100;
-	 dt.FillRect(Rect(1, 1, x+1, m_Rect.Height()-1), 2);
-	 dt.FillRect(Rect(x+1, 1, m_Rect.Width()-1, m_Rect.Height()-1), 1);
-
-	 int percent_max=0;
-	 for (int i=0; i<30; i++)
-		  if (m_History[i] > percent_max)
-			   percent_max = m_History[i];
-
-	 x = percent_max * (m_Rect.Width()-2) / 100;
-	 dt.FillRect(Rect(x+1, 1, x+2, m_Rect.Height()-1), 3);
-}
-
-void VUMeter::SetPercentage(int percent)
-{
-	 if (percent > 100) percent = 100;
-	 if (percent < 0) percent = 0;
-	 m_nPercentage=percent;
-	 m_History[m_nHistoryPos] = percent;
-	 m_nHistoryPos = (m_nHistoryPos+1)%30;
-	 SetDirty();
-}
 
 

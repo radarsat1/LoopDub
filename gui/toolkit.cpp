@@ -770,6 +770,7 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 #ifndef WIN32
 	 pthread_detach(pthread_self());
 #endif
+	 LOWPRIORITY();
 
 	 if (!fileBrowser)
 		  return NULL;

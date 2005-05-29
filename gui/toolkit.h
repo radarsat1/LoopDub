@@ -12,15 +12,6 @@
 
 #define MAX_FB_NAMES 50
 
-#ifndef MAX_PATH
-#ifdef WIN32
-#define MAX_PATH _MAX_PATH
-#else
-#define MAX_PATH PATH_MAX
-#endif
-#endif
-
-
 class Box : public Scrob
 {
 public:

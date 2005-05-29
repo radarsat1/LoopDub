@@ -3,6 +3,10 @@
 #include <windows.h>
 #include <direct.h>
 
+#ifndef MAX_PATH
+#define MAX_PATH _MAX_PATH
+#endif
+
 #define HTHREAD DWORD
 #define HMUTEX HANDLE
 
@@ -25,6 +29,10 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#ifndef MAX_PATH
+#define MAX_PATH PATH_MAX
+#endif
+
 #define HTHREAD pthread_t
 #define HMUTEX pthread_mutex_t
 
@@ -42,3 +50,5 @@
 #define USLEEP(n) usleep(n);
 
 #endif				/*  */
+
+void LOWPRIORITY();

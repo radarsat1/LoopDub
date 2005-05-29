@@ -101,6 +101,16 @@ public:
 
 	void ResetFxParams();
 
+	// For program change
+	// Sample will be switched to "background sample" when volume hits zero.
+	// This way the user can cut the volume to trigger the switch.
+	Sample* SetBackgroundSample(Sample *pSample);
+	Sample* GetBackgroundSample() { return m_pBackgroundSample; }
+
+	// This must be called on each cycle so that background sample can be switched in when
+	// the time is right.
+	void CheckBackgroundSample();
+
 public:
 	virtual void Draw();
 	virtual bool Create(Scrob *pParent, const Rect& r, int number, Sample *pSample=NULL);
@@ -113,6 +123,8 @@ public:
 protected:
 	// objects
 	Sample *m_pSample;
+  public:
+	Sample *m_pBackgroundSample;
 	WaveOb *m_pWaveOb;
 	Slider *m_pVolumeSlider;
 	Slider *m_pCutoffSlider;

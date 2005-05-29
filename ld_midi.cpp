@@ -120,6 +120,7 @@ void MidiControl::CheckMsg()
 		  int val = Pm_MessageData2(event.message);
 		  int status = Pm_MessageStatus(event.message);
 		  int channel = status & 0x0F;
+		  status &= 0xF0;
 //		  status = status & Pm_MessageStatus(event.message);
 //		  if (channel != /*this channel*/0)
 //			   continue;
@@ -215,6 +216,14 @@ void MidiControl::CheckMsg()
 								   app.m_pLoopOb[i]->SetSelected(i==code);
 						 }
 					}
+			   }
+			   else if (status==0xC0) // Program change
+			   {
+					// note: PCR-30 sends 0 when it says "1" in the display??
+					int program = (code & 0x7F) + 1;
+					printf("MIDI Program Change: %d\n", program);
+//					gui.SetCommand(CMD_PROGRAMCHANGE, (void*)code);
+					app.m_ProgramChanger.ProgramChange(program, app.m_pLoopOb);
 			   }
 		  }
 	 }

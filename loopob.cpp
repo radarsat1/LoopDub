@@ -165,17 +165,23 @@ LoopOb::LoopOb() : Scrob()
 {
 	m_pSample = 0;
 	m_bMuted = false;
+	m_pBackgroundSample = 0;
 }
 
 LoopOb::LoopOb(Scrob* pParent, const Rect& r, int number, Sample* pSample) : Scrob(pParent, r)
 {
 	m_pSample = 0;
 	m_bMuted = false;
+	m_pBackgroundSample = 0;
 	Create(pParent, r, number, pSample);
 }
 
 LoopOb::~LoopOb()
 {
+	 if (m_pSample)
+		  delete m_pSample;
+	 if (m_pBackgroundSample)
+		  delete m_pBackgroundSample;
 }
 
 bool LoopOb::Create(Scrob *pParent, const Rect& r, int number, Sample *pSample)
@@ -516,5 +522,29 @@ void LoopOb::ResetFxParams()
 	m_pResonanceSlider->SetValue(0);
 	m_pDelayLengthSlider->SetValue(0);
 	m_pFeedbackSlider->SetValue(0);
+}
+
+Sample* LoopOb::SetBackgroundSample(Sample *pSample)
+{
+	 Sample *pOldSample = m_pBackgroundSample;
+	 m_pBackgroundSample = pSample;
+	 printf("Background sample is now: %#x    loopob: %#x\n", m_pBackgroundSample, this);
+
+	 return pOldSample;
+}
+
+/*!
+ * Check if it's time to switch to background sample.
+ * (ie., no foreground sample loaded, or volume is zero)
+ */
+void LoopOb::CheckBackgroundSample()
+{
+	 if (m_pBackgroundSample && (!m_pSample || GetVolume()==0)) {
+		  Sample *pOldSample = SetSample(m_pBackgroundSample);
+		  if (pOldSample)
+			   delete pOldSample;
+		  SetVolume(0);
+		  m_pBackgroundSample = NULL;
+	 }
 }
 

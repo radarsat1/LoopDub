@@ -1,3 +1,4 @@
+
 #ifndef _LOOPDUB_H_
 #define _LOOPDUB_H_
 
@@ -8,36 +9,13 @@
 //using namespace ScrobUI;
 
 
-// Global definitions
-#define N_LOOPS   8
-#define MAX_TEMPO 260
-#define MIN_TEMPO 20
-#define MAX_KEYS  10
-#define MAX_PARTS 16
-
-// Commands
-enum
-{
-	 CMD_LEARN=1,
-	 CMD_SELECT,
-	 CMD_BEATS,
-	 CMD_NORMALIZE,
-	 CMD_KEYS,
-	 CMD_SPLIT,
-	 CMD_WAIT,
-	 CMD_BREAK,
-	 CMD_DIRCLICK, // all file browsers call this
-	 CMD_FILECLICK,
-	 CMD_CLOSE=CMD_FILECLICK+N_LOOPS,
-	 N_CMD=CMD_CLOSE+N_LOOPS
-};
-
+#include "def.h"
 #include "loopob.h"
 #include "sample.h"
 #include "player.h"
 #include "ld_midi.h"
-
-class VUMeter;
+#include "vumeter.h"
+#include "program.h"
 
 /*
 ** LoopDub class contains main program variables and functions
@@ -64,6 +42,9 @@ public:
 
     // one channel can have the keyboard at a time
 	int m_nKeysChannel;
+
+	// program list
+	ProgramChanger m_ProgramChanger;
 
 	// keep position & velocity for each key pressed (circular buffer)
 	struct {
@@ -97,29 +78,6 @@ public:
 
 /* One global LoopDub object */
 extern LoopDub app;
-
-
-////////////////////////////////////////////////////////
-// VUMeter -> display level of sound
-
-class VUMeter : public Scrob
-{
-public:
-	VUMeter() : Scrob() {}
-	VUMeter(Scrob* pParent, const Rect& r);
-	virtual ~VUMeter() {}
-
-public:
-	virtual void Draw();
-	virtual bool Create(Scrob *pParent, const Rect& r);
-
-	void SetPercentage(int percent);
-
-protected:
-	char m_nPercentage;
-	char m_History[30];
-	int m_nHistoryPos;
-};
 
 
 

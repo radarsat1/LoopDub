@@ -87,6 +87,8 @@ public:
 	// For midi control
 	Slider* GetEffectSlider(int effect);
 	Slider* GetVolumeSlider() { return m_pVolumeSlider; }
+	bool IsHolding() { return m_bHolding; }
+	void SetHolding(bool holding);
 
 	bool HasKeys();  // report status of key button
 	void LoseKeys(); // keys are given to another channel
@@ -115,7 +117,7 @@ public:
 	virtual void Draw();
 	virtual bool Create(Scrob *pParent, const Rect& r, int number, Sample *pSample=NULL);
 	
-	bool m_bWaiting;
+	bool m_bHolding;
 
 	// exposed so dir can be set from other browsers
 	FileBrowser *m_pFileBrowser;
@@ -136,7 +138,7 @@ protected:
 	Button *m_pNormalizeButton;
 	Button *m_pKeysButton;
 	Button *m_pSplitButton;
-	Button *m_pWaitButton;
+	Button *m_pHoldButton;
 	Button *m_pBreakButton;
 	Label *m_pFilenameLabel;
 	Label *m_pFilenameLabelShadow;

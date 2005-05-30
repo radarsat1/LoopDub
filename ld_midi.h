@@ -16,7 +16,26 @@ enum CtrlType
 {
 	 CT_LEVEL,
 	 CT_EFFECT,
+	 CT_BUTTON,
+	 CT_SELECT,
 	 N_CT
+};
+
+// MIDI CC messages can be sent by the controller
+// in response to assignable button pushes.
+// Since most MIDI controllers have fewer buttons
+// than the LoopDub display, it is instead possible
+// to assign certain CCs to Select which button is
+// to be pushed, and other CCs to individual loops.
+enum Buttons
+{
+	BT_CUE,
+	BT_SPLIT,
+	BT_HOLD,
+	BT_KEYS,
+	BT_NORM,
+	BT_BREAK,
+	N_BT
 };
 
 class MidiControl
@@ -55,6 +74,9 @@ class MidiControl
 	 int m_nLearnCh;
 	 int m_nLearnType;
 	 int m_nLastCode;
+
+	 // Select which button is affected by MIDI buttons
+	 int m_nButtonMode;
 
 	 // Midi input stream
 	 PmStream *m_pmListen;

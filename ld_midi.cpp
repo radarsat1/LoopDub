@@ -1,25 +1,89 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "loopdub.h"
 #include "ld_midi.h"
+
+static char *Types[N_CT] = { "Level", "Effect", "Button", "Select" };
+static char *configfile = ".loopdub.midi.conf";
 
 MidiControl::MidiControl()
 {
 	 m_bInitialized = false;
 	 m_pmListen = NULL;
 
-	 for (int ch=0; ch<N_LOOPS; ch++)
-		  for (int t=0; t<N_CT; t++)
+	 int ch, t;
+	 for (ch=0; ch<N_LOOPS; ch++)
+		  for (t=0; t<N_CT; t++)
 			   m_ctrlcode[ch][t]=0;
 
 	 m_bLearning = false;
+
+	 FILE *file = fopen(configfile, "r");
+	 if (!file) {
+		  printf("Couldn't open %s\n", configfile);
+		  return;
+	 }
+
+	 // Read MIDI configuration
+	 char line[1024], *str;
+	 char delim[] = "\r\n\t =.";
+	 int i, linenumber=0;
+	 bool error=false;
+	 while (fgets(line, 1024, file)) {
+		  i=0;
+		  t = -1;
+		  ch = -1;
+		  str = strtok(line, delim);
+		  while (str) {
+			   switch (i) {
+			   case 0:
+					for (t=0; t<N_CT; t++)
+						 if (strcmp(str, Types[t])==0)
+							  break;
+					if (t >= N_CT) t = -1;
+					i++;
+					break;
+			   case 1:
+					ch = atoi(str);
+					if (ch < 0) ch = -1;
+					if (ch >= N_LOOPS) ch = -1;
+					i++;
+					break;
+			   case 2:
+					if ((ch!=-1) && (t!=-1)) {
+						 m_ctrlcode[ch][t] = atoi(str);
+					} else {
+						 printf("Error on line %d of %s\n", linenumber, configfile);
+					}
+					i++;
+					break;
+			   }			   
+			   str = strtok(NULL, delim);
+		  }
+		  linenumber++;
+	 }
+	 fclose(file);
+
+	 printf(error ? "There were errors reading the MIDI configuration.\n"
+			: "MIDI configuration read successfully.\n");
 }
 
 MidiControl::~MidiControl()
 {
 	 if (m_bInitialized)
 		  Pm_Terminate();
+
+	 FILE *file = fopen(configfile, "w");
+	 if (!file) return;
+
+	 int ch, t;
+	 for (t=0; t<N_CT; t++)
+		  for (ch=0; ch<N_LOOPS; ch++)
+			   fprintf(file, "%s.%d = %d\n", Types[t], ch, m_ctrlcode[ch][t]);
+
+	 fclose(file);
 }
 
 bool MidiControl::Initialize()
@@ -66,7 +130,6 @@ void MidiControl::SelectDevice(int n)
 	 if (m_pmListen)
 		  Pm_Close(m_pmListen);
 
-	 printf("Calling Pm_OpenInput..\n");
 	 PmError err = Pm_OpenInput( &m_pmListen,
 								 n,
 								 NULL,
@@ -125,6 +188,8 @@ void MidiControl::CheckMsg()
 //		  if (channel != /*this channel*/0)
 //			   continue;
 
+//		  printf("MIDI Message: status=%d, code=%d, val=%d\n", status, code, val);
+
 		  if (m_bLearning) {
 			   if (code==m_nLastCode) continue;
 			   m_nLastCode = code;
@@ -176,6 +241,24 @@ void MidiControl::CheckMsg()
 										slider->SetValue(val*slider->GetMaxValue()/0x7F);
 							  }
 						 }
+						 else if (m_ctrlcode[ch][CT_BUTTON]==code) {
+							  switch (m_nButtonMode) {
+							  case BT_CUE:
+								   app.m_pLoopOb[ch]->m_pCueButton->SetPressed(true);
+								   break;
+							  case BT_HOLD:
+								   app.m_pLoopOb[ch]->SetHolding(
+										!app.m_pLoopOb[ch]->IsHolding());
+								   break;
+							  case BT_SPLIT:
+								   app.m_pLoopOb[ch]->m_pSplitButton->SetPressed(true);
+								   break;
+							  }
+						 }
+						 else if (m_ctrlcode[ch][CT_SELECT]==code) {
+							  m_nButtonMode = ch;
+							  if (ch >= N_BT) ch = 0;
+						 }
 					}
 			   }
 			   else if (status==0x90) // Key On
@@ -219,10 +302,9 @@ void MidiControl::CheckMsg()
 			   }
 			   else if (status==0xC0) // Program change
 			   {
-					// note: PCR-30 sends 0 when it says "1" in the display??
-					int program = (code & 0x7F) + 1;
+					int program = (code & 0x7F);
+					// program+= 1; // note: PCR-30 sends 0 when it says "1" in the display??
 					printf("MIDI Program Change: %d\n", program);
-//					gui.SetCommand(CMD_PROGRAMCHANGE, (void*)code);
 					app.m_ProgramChanger.ProgramChange(program, app.m_pLoopOb);
 			   }
 		  }

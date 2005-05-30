@@ -18,7 +18,7 @@ enum
 	 CMD_NORMALIZE,
 	 CMD_KEYS,
 	 CMD_SPLIT,
-	 CMD_WAIT,
+	 CMD_HOLD,
 	 CMD_BREAK,
 	 CMD_DIRCLICK, // all file browsers call this
 	 CMD_FILECLICK,

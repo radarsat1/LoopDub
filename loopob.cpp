@@ -286,10 +286,10 @@ bool LoopOb::Create(Scrob *pParent, const Rect& r, int number, Sample *pSample)
 	AddChild(m_pSplitButton);
 
 	y += 17;
-	m_pWaitButton = new Button;
-	if (!m_pWaitButton->Create(this, Rect(57, y, 112, y+15), "Wait", 0, 2, CMD_WAIT, (void*)number, false))
+	m_pHoldButton = new Button;
+	if (!m_pHoldButton->Create(this, Rect(57, y, 112, y+15), "Hold", 0, 2, CMD_HOLD, (void*)number, true))
 		return false;
-	AddChild(m_pWaitButton);
+	AddChild(m_pHoldButton);
 
 	y += 17;
 	m_pBreakButton = new Button;
@@ -347,7 +347,7 @@ Sample* LoopOb::SetSample(Sample *pSample)
 		  m_nLoopStart = 0;
 		  m_nLoopEnd = m_pSample->m_nSamples;
 		  m_nPosOffset = 0;
-		  m_bWaiting = false;
+		  SetHolding(false);
 		  if (app.m_pAutoCueButton->IsPressed())
 			   m_pCueButton->SetPressed(true);
 		  ResetFxParams();
@@ -408,7 +408,7 @@ short LoopOb::GetSampleValue(int pos)
 
 //		  if (m_nPos==m_nLoopStart)
 		  if (m_nPos % (m_pSample->m_nSamples/m_pWaveOb->m_nParts)==0)
-			   m_bWaiting = false;
+			   SetHolding(false);
 
 		  // set position indicator
 		  IndicatorOb *pIndicator = m_pIndicator[0];
@@ -425,7 +425,7 @@ short LoopOb::GetSampleValue(int pos)
 		  // get the sample
 		  short sample = m_pSample->m_pData[m_nPos];
 		  sample = sample * !m_bMuted * m_pVolumeSlider->GetValue() / m_pVolumeSlider->GetMaxValue();
-		  if (m_bWaiting)
+		  if (m_bHolding)
 			   sample = 0;
 
 		  // set filter parameters according to sliders
@@ -504,6 +504,12 @@ Slider* LoopOb::GetEffectSlider(int effect)
 	 case 3:  return m_pFeedbackSlider;
 	 default: return NULL;
 	 }
+}
+
+void LoopOb::SetHolding(bool holding)
+{
+	 m_bHolding = holding;
+	 m_pHoldButton->SetPressed(m_bHolding);
 }
 
 bool LoopOb::HasKeys()

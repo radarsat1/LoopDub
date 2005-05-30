@@ -425,11 +425,19 @@ void Button::Draw()
 
   Point p((m_Rect.Width()-dt.GetTextWidth(m_strText,strlen(m_strText)))/2,
 		  (m_Rect.Height()-dt.GetFontHeight())/2);
+  p.x = max(p.x, 2);
   if (m_bPressed) {
 	p.x++;
 	p.y++;
   }
+  dt.SetClipRect(Rect(3,2,m_Rect.Width()-2,m_Rect.Height()-3));
   dt.TextOut(p, m_strText, m_nColor);
+  dt.SetClipRect();
+
+  // If SetPresed() was called previously for a non-Toggle button,
+  // send OnMouseUp() to handle unpressing the button.
+  if (m_bPressed && !m_bToggle)
+	   OnMouseUp(Point(0,0));
 }
 
 void Button::OnMouseUp(Point mouse)

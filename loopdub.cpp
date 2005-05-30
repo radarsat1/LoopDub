@@ -1,4 +1,6 @@
 
+
+
 #define _LOOPDUB_CPP_
 #include <stdio.h>
 #include <string.h>
@@ -40,9 +42,15 @@ LoopDub::~LoopDub()
 	DESTROYMUTEX(mutex);
 }
 
+bool priority = false;
 void LoopDub::FillBuffers(void *param)
 {
 	LoopDub& app = *(LoopDub*)param;
+
+	if (!priority) {
+		 HIGHPRIORITY();
+		 priority = true;
+	}
 
 	LOCKMUTEX(app.mutex);
 
@@ -261,10 +269,10 @@ int LoopDub::Run()
 				  m_Keys[i].on = true;
 			 }
 		}
-		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
-				 && pEvent->key.keysym.sym >= '1') {
-			 m_ProgramChanger.ProgramChange(1, m_pLoopOb);
-		}
+//		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
+//				 && pEvent->key.keysym.sym >= '1') {
+//			 m_ProgramChanger.ProgramChange(1, m_pLoopOb);
+//		}
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 			&& pEvent->key.keysym.sym >= '1'
 			&& pEvent->key.keysym.sym <= '8'
@@ -355,9 +363,9 @@ int LoopDub::Run()
 						int ch = (int)value;
 						m_pLoopOb[ch]->Split();
 				  }
-				  else if (cmd==CMD_WAIT) {
+				  else if (cmd==CMD_HOLD) {
 						int ch = (int)value;
-						m_pLoopOb[ch]->m_bWaiting = true;
+						m_pLoopOb[ch]->SetHolding(m_pLoopOb[ch]->m_pHoldButton->IsPressed());
 				  }
 				  else if (cmd==CMD_PROGRAMCHANGE) {
 					   m_ProgramChanger.ProgramChange((int)value, m_pLoopOb);

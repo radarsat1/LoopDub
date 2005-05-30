@@ -52,3 +52,4 @@
 #endif				/*  */
 
 void LOWPRIORITY();
+void HIGHPRIORITY();

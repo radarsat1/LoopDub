@@ -183,6 +183,7 @@ public:
 	bool SetFullScreen(bool bFullScreen);
 	bool GetFullScreen() { return m_bFullScreen; }
 	SDL_Event *GetEvent() { return &m_Event; }
+	void SetPalette();
 
 	// Return true when there is a command waiting to be processed
 	bool GetCommand(int* command, void** value=NULL);

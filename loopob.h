@@ -87,8 +87,12 @@ public:
 	// For midi control
 	Slider* GetEffectSlider(int effect);
 	Slider* GetVolumeSlider() { return m_pVolumeSlider; }
+
 	bool IsHolding() { return m_bHolding; }
 	void SetHolding(bool holding);
+
+	bool IsSwitching() { return m_bSwitching; }
+	void SetSwitching(bool switching);
 
 	bool HasKeys();  // report status of key button
 	void LoseKeys(); // keys are given to another channel
@@ -96,7 +100,6 @@ public:
 	void Split();	 // split parts to next power of two
 
 	bool IsCue() { return m_pCueButton->IsPressed(); }
-	bool IsBreak() { return m_pBreakButton->IsPressed(); }
 
 	bool IsSelected() { return m_bSelected; }
 	void SetSelected(bool select) { if (m_bSelected!=select){m_bSelected=select; SetDirty();} }
@@ -117,7 +120,11 @@ public:
 	virtual void Draw();
 	virtual bool Create(Scrob *pParent, const Rect& r, int number, Sample *pSample=NULL);
 	
+	// Hold volume (mute for now) until the next split, or beginning of loop.
 	bool m_bHolding;
+
+	// Switch to background sample at the next split, or beginning of loop.
+	bool m_bSwitching;
 
 	// exposed so dir can be set from other browsers
 	FileBrowser *m_pFileBrowser;
@@ -139,9 +146,10 @@ protected:
 	Button *m_pKeysButton;
 	Button *m_pSplitButton;
 	Button *m_pHoldButton;
-	Button *m_pBreakButton;
+	Button *m_pSwitchButton;
 	Label *m_pFilenameLabel;
 	Label *m_pFilenameLabelShadow;
+	Label *m_pFilenameLabelShadow2;
 	IndicatorOb *m_pIndicator[2];
 
 	// bank of filters

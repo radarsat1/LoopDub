@@ -34,7 +34,7 @@ enum Buttons
 	BT_HOLD,
 	BT_KEYS,
 	BT_NORM,
-	BT_BREAK,
+	BT_SWITCH,
 	N_BT
 };
 

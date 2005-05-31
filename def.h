@@ -19,7 +19,7 @@ enum
 	 CMD_KEYS,
 	 CMD_SPLIT,
 	 CMD_HOLD,
-	 CMD_BREAK,
+	 CMD_SWITCH,
 	 CMD_DIRCLICK, // all file browsers call this
 	 CMD_FILECLICK,
 	 CMD_PROGRAMCHANGE,

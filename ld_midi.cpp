@@ -253,6 +253,13 @@ void MidiControl::CheckMsg()
 							  case BT_SPLIT:
 								   app.m_pLoopOb[ch]->m_pSplitButton->SetPressed(true);
 								   break;
+							  case BT_NORM:
+								   app.m_pLoopOb[ch]->m_pNormalizeButton->SetPressed(true);
+								   break;
+							  case BT_SWITCH:
+								   app.m_pLoopOb[ch]->SetSwitching(
+										!app.m_pLoopOb[ch]->IsSwitching());
+								   break;
 							  }
 						 }
 						 else if (m_ctrlcode[ch][CT_SELECT]==code) {

@@ -1,3 +1,4 @@
+
 // LoopOb.cpp: implementation of the LoopOb class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -166,6 +167,8 @@ LoopOb::LoopOb() : Scrob()
 	m_pSample = 0;
 	m_bMuted = false;
 	m_pBackgroundSample = 0;
+	m_bSwitching = false;
+	m_bHolding = false;
 }
 
 LoopOb::LoopOb(Scrob* pParent, const Rect& r, int number, Sample* pSample) : Scrob(pParent, r)
@@ -173,6 +176,8 @@ LoopOb::LoopOb(Scrob* pParent, const Rect& r, int number, Sample* pSample) : Scr
 	m_pSample = 0;
 	m_bMuted = false;
 	m_pBackgroundSample = 0;
+	m_bSwitching = false;
+	m_bHolding = false;
 	Create(pParent, r, number, pSample);
 }
 
@@ -209,8 +214,13 @@ bool LoopOb::Create(Scrob *pParent, const Rect& r, int number, Sample *pSample)
 		 return false;
 	AddChild(m_pFilenameLabelShadow);
 
+	m_pFilenameLabelShadow2 = new Label;
+	if (!m_pFilenameLabelShadow2->Create(this, Rect(LOOP_X+4, 4, 399, 19), "", 0, -1))
+		 return false;
+	AddChild(m_pFilenameLabelShadow2);
+
 	m_pFilenameLabel = new Label;
-	if (!m_pFilenameLabel->Create(this, Rect(LOOP_X+5, 5, 400, 20), "", 3, -1))
+	if (!m_pFilenameLabel->Create(this, Rect(LOOP_X+5, 5, 400, 20), "", 7, -1))
 		 return false;
 	AddChild(m_pFilenameLabel);
 
@@ -292,10 +302,10 @@ bool LoopOb::Create(Scrob *pParent, const Rect& r, int number, Sample *pSample)
 	AddChild(m_pHoldButton);
 
 	y += 17;
-	m_pBreakButton = new Button;
-	if (!m_pBreakButton->Create(this, Rect(57, y, 112, y+15), "Break", 0, 2, CMD_BREAK, (void*)number, true))
+	m_pSwitchButton = new Button;
+	if (!m_pSwitchButton->Create(this, Rect(57, y, 112, y+15), "Switch", 0, 2, CMD_SWITCH, (void*)number, true))
 		return false;
-	AddChild(m_pBreakButton);
+	AddChild(m_pSwitchButton);
 
 	m_pCloseButton = new Button;
 	if (!m_pCloseButton->Create(this, Rect(r.Width()-LOOP_W-20, 5, r.Width()-LOOP_W-10, 16), " ", 0, 2, CMD_CLOSE+number, 0))
@@ -334,10 +344,12 @@ Sample* LoopOb::SetSample(Sample *pSample)
 			   o = l+1; // include trailing '/'
 		  m_pFilenameLabel->SetText(m_pSample->GetFilename() + o);
 		  m_pFilenameLabelShadow->SetText(m_pSample->GetFilename() + o);
+		  m_pFilenameLabelShadow2->SetText(m_pSample->GetFilename() + o);
 		  m_pFileBrowser->SetVisible(false);
 		  m_pCloseButton->SetVisible(true);
 		  m_pFilenameLabel->SetVisible(true);
 		  m_pFilenameLabelShadow->SetVisible(true);
+		  m_pFilenameLabelShadow2->SetVisible(true);
 		  m_pIndicator[0]->SetVisible(true);
 		  m_pIndicator[1]->SetVisible(true);
 		  m_pIndicator[0]->m_bDrawn = false;
@@ -348,6 +360,7 @@ Sample* LoopOb::SetSample(Sample *pSample)
 		  m_nLoopEnd = m_pSample->m_nSamples;
 		  m_nPosOffset = 0;
 		  SetHolding(false);
+		  SetSwitching(false);
 		  if (app.m_pAutoCueButton->IsPressed())
 			   m_pCueButton->SetPressed(true);
 		  ResetFxParams();
@@ -358,6 +371,7 @@ Sample* LoopOb::SetSample(Sample *pSample)
 		  m_pCloseButton->SetVisible(false);
 		  m_pFilenameLabel->SetVisible(false);
 		  m_pFilenameLabelShadow->SetVisible(false);
+		  m_pFilenameLabelShadow2->SetVisible(false);
 		  m_pIndicator[0]->SetVisible(false);
 		  m_pIndicator[1]->SetVisible(false);
 	 }
@@ -406,9 +420,20 @@ short LoopOb::GetSampleValue(int pos)
 		  // set the new position
 		  m_nPos = (pos % (m_nLoopEnd-m_nLoopStart)) + m_nLoopStart;
 
-//		  if (m_nPos==m_nLoopStart)
-		  if (m_nPos % (m_pSample->m_nSamples/m_pWaveOb->m_nParts)==0)
+		  // on split start or loop start
+		  if (m_nPos % (m_pSample->m_nSamples/m_pWaveOb->m_nParts)==0) {
+
+			   // unhold
 			   SetHolding(false);
+			   
+			   if (m_bSwitching && m_pBackgroundSample) {
+					// switch to background sample
+					Sample *pOldSample = SetSample(m_pBackgroundSample);
+					if (pOldSample)
+						 delete pOldSample;
+					m_pBackgroundSample = NULL;
+			   }
+		  }
 
 		  // set position indicator
 		  IndicatorOb *pIndicator = m_pIndicator[0];
@@ -468,7 +493,7 @@ short LoopOb::GetNextSample()
 		  // set filter parameters according to sliders
 		  lowpass.SetParams(m_pCutoffSlider->GetValue() * 100.0f / m_pCutoffSlider->GetMaxValue(),
 							m_pResonanceSlider->GetValue() * 100.0f / m_pResonanceSlider->GetMaxValue());
-		  
+
 		  // pass it through the filter bank
 		  for (int i=0; i<N_FILTERS; i++)
 			   sample = m_filterbank[i]->Work(sample);
@@ -512,6 +537,12 @@ void LoopOb::SetHolding(bool holding)
 	 m_pHoldButton->SetPressed(m_bHolding);
 }
 
+void LoopOb::SetSwitching(bool switching)
+{
+	 m_bSwitching = switching;
+	 m_pSwitchButton->SetPressed(m_bSwitching);
+}
+
 bool LoopOb::HasKeys()
 {
 	 return m_pKeysButton->IsPressed();
@@ -534,7 +565,10 @@ Sample* LoopOb::SetBackgroundSample(Sample *pSample)
 {
 	 Sample *pOldSample = m_pBackgroundSample;
 	 m_pBackgroundSample = pSample;
-	 printf("Background sample is now: %#x    loopob: %#x\n", m_pBackgroundSample, this);
+	 if (!m_pSample) {
+		  SetSample(m_pBackgroundSample);
+		  m_pBackgroundSample = NULL;
+	 }
 
 	 return pOldSample;
 }

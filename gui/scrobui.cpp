@@ -205,17 +205,11 @@ bool GUI::Initialize(char *strTitle, bool bFullScreen, int nWidth, int nHeight, 
 		return false;
 	}
 
-	dt.SetSurface(m_pSurface);
-
 	const SDL_VideoInfo *vidinfo = SDL_GetVideoInfo();
 
-	// set the palette
-	SDL_Color palette[4];
-	palette[0].r = 0x00;	palette[0].g = 0x00;	palette[0].b = 0x00;
-	palette[1].r = 0x55;	palette[1].g = 0x55;	palette[1].b = 0x55;
-	palette[2].r = 0xAA;	palette[2].g = 0xAA;	palette[2].b = 0xAA;
-	palette[3].r = 0xFF;	palette[3].g = 0xFF;	palette[3].b = 0xFF;
-	SDL_SetColors(m_pSurface, palette, 0, 4);
+	dt.SetSurface(m_pSurface);
+
+	SetPalette();
 
 	// set window title
 	if (strTitle)
@@ -227,6 +221,21 @@ bool GUI::Initialize(char *strTitle, bool bFullScreen, int nWidth, int nHeight, 
 	m_pScrobList->Create(NULL, r);
 
 	return true;
+}
+
+void GUI::SetPalette()
+{
+	// set the palette
+	SDL_Color palette[8];
+	palette[0].r = 0x00;	palette[0].g = 0x00;	palette[0].b = 0x00;
+	palette[1].r = 0x55;	palette[1].g = 0x55;	palette[1].b = 0x55;
+	palette[2].r = 0xAA;	palette[2].g = 0xAA;	palette[2].b = 0xAA;
+	palette[3].r = 0xFF;	palette[3].g = 0xFF;	palette[3].b = 0xFF;
+	palette[4].r = 0x00;	palette[4].g = 0x33;	palette[4].b = 0x00;
+	palette[5].r = 0x00;	palette[5].g = 0x00;	palette[5].b = 0x33;
+	palette[6].r = 0x00;	palette[6].g = 0xDD;	palette[6].b = 0x99;
+	palette[7].r = 0xFF;	palette[7].g = 0xFF;	palette[7].b = 0x22;
+	SDL_SetColors(m_pSurface, palette, 0, 8);
 }
 
 void GUI::Cleanup()
@@ -353,12 +362,7 @@ bool GUI::SetFullScreen(bool bFullScreen)
 	dt.SetSurface(m_pSurface);
 
 	// set the palette
-	SDL_Color palette[4];
-	palette[0].r = 0x00;	palette[0].g = 0x00;	palette[0].b = 0x00;
-	palette[1].r = 0x55;	palette[1].g = 0x55;	palette[1].b = 0x55;
-	palette[2].r = 0xAA;	palette[2].g = 0xAA;	palette[2].b = 0xAA;
-	palette[3].r = 0xFF;	palette[3].g = 0xFF;	palette[3].b = 0xFF;
-	SDL_SetColors(m_pSurface, palette, 0, 4);
+	SetPalette();
 
 	// mark whole screen dirty
 	if (m_pScrobList)

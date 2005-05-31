@@ -164,17 +164,14 @@ THREADFUNC ProgramChanger::loadBackgroundSamplesThread(void* param)
 			   continue;
 		  
 		  Sample *pSample = new Sample();
-		  printf("Loading %s as background sample... ", strFilename);
 		  if (pSample->LoadFromFile(strFilename)) {
 			   pLoopOb->SetBackgroundSample(pSample);
 		  }
 		  else
-			   printf("Couldn't load %s as background sample.", strFilename);
-		  printf("\n");
+			   printf("Error loading %s as background sample.\n", strFilename);
 	 }
 
 	 pc.m_hThread = 0;
-	 printf("Changed programs.\n");
 }
 
 /*!

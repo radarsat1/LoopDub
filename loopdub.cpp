@@ -206,6 +206,11 @@ int LoopDub::Run()
 	pMainScrob->AddChild(pLabel);
 	pLabel->SetInteger(100);
 */
+	/* For initial update */
+	SDL_Event evt;
+	evt.type = SDL_USEREVENT;
+	SDL_PushEvent(&evt);
+
 
 	/* Midi controls */
 
@@ -251,10 +256,12 @@ int LoopDub::Run()
 			&& pEvent->key.keysym.sym == SDLK_RETURN
 			&& pEvent->key.keysym.mod == KMOD_NONE)
 		{
+/*
 			if (m_Player.IsPlaying())
 				m_Player.Stop();
 			else
 				m_Player.Play();
+*/
 		}
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 			&& pEvent->key.keysym.sym == SDLK_SPACE
@@ -366,6 +373,10 @@ int LoopDub::Run()
 				  else if (cmd==CMD_HOLD) {
 						int ch = (int)value;
 						m_pLoopOb[ch]->SetHolding(m_pLoopOb[ch]->m_pHoldButton->IsPressed());
+				  }
+				  else if (cmd==CMD_SWITCH) {
+						int ch = (int)value;
+						m_pLoopOb[ch]->SetSwitching(m_pLoopOb[ch]->m_pSwitchButton->IsPressed());
 				  }
 				  else if (cmd==CMD_PROGRAMCHANGE) {
 					   m_ProgramChanger.ProgramChange((int)value, m_pLoopOb);

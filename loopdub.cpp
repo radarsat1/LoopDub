@@ -142,6 +142,7 @@ THREADFUNC loadSampleThread(void* pApp)
 
 int LoopDub::Run()
 {
+	 int i;
 	printf("LoopDub started...\n");
 
 	if (m_Midi.Initialize())
@@ -155,28 +156,66 @@ int LoopDub::Run()
 		return 1;
 	}
 
-	Scrob *pMainScrob = gui.GetScrobList();
-
 	/* Change to loop folder */
 	if (m_strChangeToFolder && chdir(m_strChangeToFolder))
 		 printf("Warning: Couldn't change to %s\n", m_strChangeToFolder);
 
+	/* Load program changer */
+	m_ProgramChanger.LoadPrograms();
+
+	Scrob *pMainScrob = gui.GetScrobList();
+
+	/* Blank area */
+    /* Note: Blank area is used to force blanking and re-draw of entire loop area when switching between contexts */
+	m_pBlankArea = new Box(pMainScrob, Rect(0, LOOPTOP,
+											 pMainScrob->GetRect().Width(),
+											 pMainScrob->GetRect().Height()), -1, 0);
+	pMainScrob->AddChild(m_pBlankArea);
+
+	/* Loop area */
+	m_pLoopArea = new Scrob(pMainScrob, m_pBlankArea->GetRect());
+	pMainScrob->AddChild(m_pLoopArea);
+
 	/* LoopOb instances */
-	for (int i=0; i<N_LOOPS; i++)
+	for (i=0; i<N_LOOPS; i++)
 	{
-		m_pLoopOb[i] = new LoopOb(pMainScrob,
-								  Rect(5,
-									   LOOPTOP+(LOOPHEIGHT+5)*i,
-									   pMainScrob->GetRect().Width() - 5,
-									   LOOPHEIGHT+LOOPTOP+(LOOPHEIGHT+5)*i),
-								  i);
-		pMainScrob->AddChild(m_pLoopOb[i]);
+		 m_pLoopOb[i] = new LoopOb(m_pLoopArea,
+								   Rect(5,
+										(LOOPHEIGHT+5)*i,
+										pMainScrob->GetRect().Width() - 5,
+										LOOPHEIGHT+(LOOPHEIGHT+5)*i),
+								   i);
+		m_pLoopArea->AddChild(m_pLoopOb[i]);
 	}
-	m_pLoopOb[3]->SetSelected(true);
+
+	/* Program area */
+	m_pProgramArea = new Scrob(pMainScrob, m_pBlankArea->GetRect());
+	pMainScrob->AddChild(m_pProgramArea);
+	m_pProgramArea->SetVisible(false);
+	m_pProgramArea->AddChild(new Label(m_pProgramArea, Rect(10, 10, 70, 30), "Programs", 3, -1));
+	m_pProgramArea->AddChild(new Label(m_pProgramArea, Rect(11, 10, 71, 30), "Programs", 3, -1));
+
+	/* List all programs */
+	char str[256];
+	int x=10, y=20, w, mx=0;
+	for (i=0; i<m_ProgramChanger.NumPrograms(); i++)
+	{
+		 sprintf(str, "%d. %s", i+1, m_ProgramChanger.GetProgramName(i));
+		 w = dt.GetTextWidth(str, strlen(str));
+		 mx = max(mx, w);
+		 y += dt.GetFontHeight()+2;
+		 m_pProgramArea->AddChild(new Label(m_pProgramArea,
+											Rect(x, y, x+w, y+dt.GetFontHeight()),
+											str, 3, -1));
+		 if (y > (m_pProgramArea->GetRect().Height()-50))
+		 {
+			  y = 20;
+			  x += mx+20;
+		 }
+	}
 
 	/* Controls along the top */
-
-	Button *pBeats = new Button(pMainScrob, Rect(5, 5, 55, 20), "beats", 0, 2, CMD_BEATS);
+	Button *pBeats = new Button(pMainScrob, Rect(5, 5, 55, 20), "Beats", 0, 2, CMD_BEATS);
 	pMainScrob->AddChild(pBeats);
 
 	m_pAutoCueButton = new Button(pMainScrob, Rect(5, 22, 55, 37), "AutoCue", 0, 2, -1, 0, true);
@@ -206,6 +245,7 @@ int LoopDub::Run()
 	pMainScrob->AddChild(pLabel);
 	pLabel->SetInteger(100);
 */
+
 	/* For initial update */
 	SDL_Event evt;
 	evt.type = SDL_USEREVENT;
@@ -213,7 +253,6 @@ int LoopDub::Run()
 
 
 	/* Midi controls */
-
 	if (m_Midi.IsInitialized())
 	{
 		 pMainScrob->AddChild(new Label(pMainScrob, Rect(240, 5, 290, 20), "Midi:", 3, 0));
@@ -229,9 +268,6 @@ int LoopDub::Run()
 		 }
 	}
 
-	/* Load program changer */
-	m_ProgramChanger.LoadPrograms();
-
 	/* Initialize player */
 
 	if (!m_Player.Initialize(FillBuffers, this))
@@ -245,7 +281,10 @@ int LoopDub::Run()
 	SDL_TimerID timerID=0;
 	SDL_Event *pEvent;
 	bool bQuit=false;
-	int i;
+
+    // Initial update
+	gui.ProcessEvent();
+
 	while (!bQuit)
 	{
 		gui.WaitEvent();
@@ -276,10 +315,18 @@ int LoopDub::Run()
 				  m_Keys[i].on = true;
 			 }
 		}
-//		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
-//				 && pEvent->key.keysym.sym >= '1') {
-//			 m_ProgramChanger.ProgramChange(1, m_pLoopOb);
-//		}
+///*
+		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
+				 && pEvent->key.keysym.sym == '1') {
+			 m_ProgramChanger.ProgramChange(1, m_pLoopOb);
+		}
+//*/
+		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
+				 && pEvent->key.keysym.sym == 'p') {
+			 m_pLoopArea->SetVisible(!m_pLoopArea->IsVisible());
+			 m_pProgramArea->SetVisible(!m_pProgramArea->IsVisible());
+			 m_pBlankArea->SetDirty();
+		}
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 			&& pEvent->key.keysym.sym >= '1'
 			&& pEvent->key.keysym.sym <= '8'

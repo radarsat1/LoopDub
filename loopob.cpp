@@ -160,6 +160,26 @@ void IndicatorOb::Draw()
 }
 
 /////////////////////////////////
+// VisibleLabel
+
+void VisibleLabel::Draw()
+{
+	dt.SetCurrentObject(this);
+	Point p(0, (m_Rect.Height()-dt.GetFontHeight())/2);
+	
+	if (m_nBkColor < 0)
+		 m_nBkColor = 0;
+
+	if (m_strText) {
+		 dt.TextOut(Point(p.x-1, p.y-0), m_strText, m_nBkColor);
+		 dt.TextOut(Point(p.x+1, p.y+0), m_strText, m_nBkColor);
+		 dt.TextOut(Point(p.x-0, p.y-1), m_strText, m_nBkColor);
+		 dt.TextOut(Point(p.x+0, p.y+1), m_strText, m_nBkColor);
+		 dt.TextOut(p, m_strText, m_nColor);
+	}
+}
+
+/////////////////////////////////
 // LoopOb
 
 LoopOb::LoopOb() : Scrob()
@@ -209,20 +229,15 @@ bool LoopOb::Create(Scrob *pParent, const Rect& r, int number, Sample *pSample)
 		 AddChild(m_pIndicator[i]);
 	}
 
-	m_pFilenameLabelShadow = new Label;
-	if (!m_pFilenameLabelShadow->Create(this, Rect(LOOP_X+6, 6, 401, 21), "", 0, -1))
-		 return false;
-	AddChild(m_pFilenameLabelShadow);
-
-	m_pFilenameLabelShadow2 = new Label;
-	if (!m_pFilenameLabelShadow2->Create(this, Rect(LOOP_X+4, 4, 399, 19), "", 0, -1))
-		 return false;
-	AddChild(m_pFilenameLabelShadow2);
-
-	m_pFilenameLabel = new Label;
-	if (!m_pFilenameLabel->Create(this, Rect(LOOP_X+5, 5, 400, 20), "", 7, -1))
+	m_pFilenameLabel = new VisibleLabel;
+	if (!m_pFilenameLabel->Create(this, Rect(LOOP_X+5, 5, r.Width()-LOOP_W-4, 20), "", 7, 0))
 		 return false;
 	AddChild(m_pFilenameLabel);
+
+	m_pBgFilenameLabel = new VisibleLabel;
+	if (!m_pBgFilenameLabel->Create(this, Rect(LOOP_X+5, r.Height()-20, r.Width()-LOOP_W-4, r.Height()-2), "", 7, 0))
+		return false;
+	AddChild(m_pBgFilenameLabel);
 
 	m_pFileBrowser = new FileBrowser;
 	m_pFileBrowser->SetExtension(".wav");
@@ -343,13 +358,9 @@ Sample* LoopOb::SetSample(Sample *pSample)
 		  if (strncmp(m_pSample->GetFilename(), m_pFileBrowser->GetBase(), l)==0)
 			   o = l+1; // include trailing '/'
 		  m_pFilenameLabel->SetText(m_pSample->GetFilename() + o);
-		  m_pFilenameLabelShadow->SetText(m_pSample->GetFilename() + o);
-		  m_pFilenameLabelShadow2->SetText(m_pSample->GetFilename() + o);
 		  m_pFileBrowser->SetVisible(false);
 		  m_pCloseButton->SetVisible(true);
 		  m_pFilenameLabel->SetVisible(true);
-		  m_pFilenameLabelShadow->SetVisible(true);
-		  m_pFilenameLabelShadow2->SetVisible(true);
 		  m_pIndicator[0]->SetVisible(true);
 		  m_pIndicator[1]->SetVisible(true);
 		  m_pIndicator[0]->m_bDrawn = false;
@@ -370,8 +381,6 @@ Sample* LoopOb::SetSample(Sample *pSample)
 		  m_pFileBrowser->SetVisible(true);
 		  m_pCloseButton->SetVisible(false);
 		  m_pFilenameLabel->SetVisible(false);
-		  m_pFilenameLabelShadow->SetVisible(false);
-		  m_pFilenameLabelShadow2->SetVisible(false);
 		  m_pIndicator[0]->SetVisible(false);
 		  m_pIndicator[1]->SetVisible(false);
 	 }
@@ -569,6 +578,21 @@ Sample* LoopOb::SetBackgroundSample(Sample *pSample)
 		  SetSample(m_pBackgroundSample);
 		  m_pBackgroundSample = NULL;
 	 }
+	 else
+	 {
+		  int o = 0, l = strlen(m_pFileBrowser->GetBase());
+		  if (strncmp(pSample->GetFilename(), m_pFileBrowser->GetBase(), l)==0)
+			   o = l+1; // include trailing '/'
+
+		  char *s = pSample->GetFilename() + o;
+		  m_pBgFilenameLabel->SetText(s);
+		  m_pBgFilenameLabel->SetVisible(true);
+
+		  int w = dt.GetTextWidth(s, strlen(s));
+		  Rect r = m_pBgFilenameLabel->GetRect();
+		  r.x1 = r.x2 - w;
+		  m_pBgFilenameLabel->SetRect(r);
+	 }
 
 	 return pOldSample;
 }
@@ -585,6 +609,7 @@ void LoopOb::CheckBackgroundSample()
 			   delete pOldSample;
 		  SetVolume(0);
 		  m_pBackgroundSample = NULL;
+		  m_pBgFilenameLabel->SetVisible(false);
 	 }
 }
 

@@ -25,6 +25,9 @@ class ProgramChanger
 	void ProgramChange(int program, LoopOb* m_pLoopOb[N_LOOPS]);
 	static THREADFUNC loadBackgroundSamplesThread(void*);
 
+	int NumPrograms() { return m_nPrograms; }
+	char* GetProgramName(int n) { if (n >=0 && n < m_nPrograms) return m_Program[n].m_strName; else return NULL; }
+
   protected:
 	Program *m_Program;      // Array of Program objects
 	int m_nPrograms;         // Number of programs in m_Program

@@ -32,11 +32,27 @@
 
 /******* Box ********/
 
+Box::Box(Scrob* pParent, const Rect& r, int color, int bkcolor)
+	 : Scrob()
+{
+	 m_nColor = color;
+	 m_nBkColor = bkcolor;
+	 Create(pParent, r, color, bkcolor);
+}
+
+bool Box::Create(Scrob *pParent, const Rect& r, int color, int bkcolor)
+{
+	 m_nColor = color;
+	 m_nBkColor = bkcolor;
+	 return Scrob::Create(pParent, r);
+}
+
 void Box::Draw()
 {
 	dt.SetCurrentObject(this);
 	Rect r(0,0,m_Rect.Width(),m_Rect.Height());
-	dt.DrawRect(r, 3);
+	if (m_nBkColor != -1)  dt.FillRect(r, m_nBkColor);
+	if (m_nColor != -1)    dt.DrawRect(r, m_nColor);
 }
 
 /******* Handle ********/

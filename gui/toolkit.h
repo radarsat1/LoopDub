@@ -16,8 +16,13 @@ class Box : public Scrob
 {
 public:
 	Box() : Scrob() {}
-	Box(Scrob* pParent, const Rect& r) : Scrob(pParent, r) {}
+	Box(Scrob* pParent, const Rect& r, int color=3, int bkcolor=-1);
+	bool Create(Scrob *pParent, const Rect& r, int color=3, int bkcolor=-1);
 	virtual void Draw();
+
+protected:
+	int m_nColor;
+	int m_nBkColor;
 };
 
 class Handle : public Scrob
@@ -69,9 +74,9 @@ class Label : public Scrob
 {
 public:
 	Label();
-	Label(Scrob *pParent, const Rect& r, char *strText, int color, int bkcolor=0);
+	Label(Scrob *pParent, const Rect& r, char *strText, int color=3, int bkcolor=0);
 	~Label();
-	bool Create(Scrob *pParent, const Rect& r, char *strText, int color, int bkcolor=0);
+	bool Create(Scrob *pParent, const Rect& r, char *strText, int color=3, int bkcolor=0);
 	void Draw();
 
 	void SetColor(int color);

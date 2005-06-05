@@ -61,6 +61,21 @@ public:
 protected:
 };
 
+////////////////////////////////////////////////////////
+// VisibleLabel -> extention of Label which draws
+//                 outlines in black around the text
+
+class VisibleLabel : public Label
+{
+  public:
+	VisibleLabel() : Label() {}
+	VisibleLabel(Scrob *pParent, const Rect& r, char *strText, int color, int bkcolor=0)
+		: Label(pParent, r, strText, color, bkcolor) {}
+	virtual ~VisibleLabel() {}
+
+  public:
+	virtual void Draw();
+};
 
 ////////////////////////////////////////////////////////
 // LoopOb -> a loop controller widget, contains a
@@ -147,9 +162,8 @@ protected:
 	Button *m_pSplitButton;
 	Button *m_pHoldButton;
 	Button *m_pSwitchButton;
-	Label *m_pFilenameLabel;
-	Label *m_pFilenameLabelShadow;
-	Label *m_pFilenameLabelShadow2;
+	VisibleLabel *m_pFilenameLabel;
+	VisibleLabel *m_pBgFilenameLabel;
 	IndicatorOb *m_pIndicator[2];
 
 	// bank of filters

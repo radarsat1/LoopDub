@@ -27,4 +27,8 @@ enum
 	 N_CMD=CMD_CLOSE+N_LOOPS
 };
 
+// Macros
+#define max(a, b) (((a) > (b)) ? a : b)
+#define min(a, b) (((a) < (b)) ? a : b)
+
 #endif // _DEF_H_

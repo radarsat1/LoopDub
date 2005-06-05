@@ -64,6 +64,9 @@ public:
 	VUMeter *m_pVUMeter;
 	Slider *m_pVolumeSlider;
 	Button *m_pAutoCueButton;
+	Scrob *m_pLoopArea;
+	Scrob *m_pProgramArea;
+	Box *m_pBlankArea;
 
 	HMUTEX mutex;
 

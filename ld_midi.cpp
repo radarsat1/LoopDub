@@ -5,7 +5,7 @@
 #include "loopdub.h"
 #include "ld_midi.h"
 
-static char *Types[N_CT] = { "Level", "Effect", "Button", "Select" };
+static char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3", "Button", "Select" };
 static char *configfile = ".loopdub.midi.conf";
 
 MidiControl::MidiControl()
@@ -75,15 +75,18 @@ MidiControl::~MidiControl()
 	 if (m_bInitialized)
 		  Pm_Terminate();
 
-	 FILE *file = fopen(configfile, "w");
-	 if (!file) return;
+	 if (m_bMidiCodesHaveChanged) {
+		  FILE *file = fopen(configfile, "w");
+		  if (!file) return;
 
-	 int ch, t;
-	 for (t=0; t<N_CT; t++)
-		  for (ch=0; ch<N_LOOPS; ch++)
-			   fprintf(file, "%s.%d = %d\n", Types[t], ch, m_ctrlcode[ch][t]);
+		  int ch, t;
+		  for (t=0; t<N_CT; t++)
+			   for (ch=0; ch<N_LOOPS; ch++)
+					fprintf(file, "%s.%d = %d\n", Types[t], ch, m_ctrlcode[ch][t]);
 
-	 fclose(file);
+		  fclose(file);
+		  printf("Wrote MIDI configuration to %s\n", configfile);
+	 }
 }
 
 bool MidiControl::Initialize()
@@ -164,8 +167,14 @@ void MidiControl::SetLearningMode(bool bLearnMode)
 	 case CT_LEVEL:
 		  app.m_pLoopOb[m_nLearnCh]->GetVolumeSlider()->SetColor(c);
 		  break;
-	 case CT_EFFECT:
+	 case CT_EFFECT1:
 		  app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(0)->SetColor(c);
+		  break;
+	 case CT_EFFECT2:
+		  app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(1)->SetColor(c);
+		  break;
+	 case CT_EFFECT3:
+		  app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(3)->SetColor(c);
 		  break;
 	 }
 }
@@ -195,13 +204,20 @@ void MidiControl::CheckMsg()
 			   m_nLastCode = code;
 			   if (code!=m_ctrlcode[m_nLearnCh][m_nLearnType]) {
 					m_ctrlcode[m_nLearnCh][m_nLearnType] = code;
+					m_bMidiCodesHaveChanged = true;
 					
 					switch (m_nLearnType) {
 					case CT_LEVEL:
 						 app.m_pLoopOb[m_nLearnCh]->GetVolumeSlider()->SetColor(1);
 						 break;
-					case CT_EFFECT:
+					case CT_EFFECT1:
 						 app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(0)->SetColor(1);
+						 break;
+					case CT_EFFECT2:
+						 app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(1)->SetColor(1);
+						 break;
+					case CT_EFFECT3:
+						 app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(3)->SetColor(1);
 						 break;
 					}
 
@@ -217,8 +233,14 @@ void MidiControl::CheckMsg()
 						 case CT_LEVEL:
 							  app.m_pLoopOb[m_nLearnCh]->GetVolumeSlider()->SetColor(3);
 							  break;
-						 case CT_EFFECT:
+						 case CT_EFFECT1:
 							  app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(0)->SetColor(3);
+							  break;
+						 case CT_EFFECT2:
+							  app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(1)->SetColor(3);
+							  break;
+						 case CT_EFFECT3:
+							  app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(3)->SetColor(3);
 							  break;
 						 }
 					}
@@ -233,13 +255,24 @@ void MidiControl::CheckMsg()
 					{
 						 if (m_ctrlcode[ch][CT_LEVEL]==code)
 							  app.m_pLoopOb[ch]->SetVolume(val*100/0x7F);
-						 else if (m_ctrlcode[ch][CT_EFFECT]==code) {
-							  // TODO: this is fucked, make it better
+						 else if (m_ctrlcode[ch][CT_EFFECT1]==code) {
+							  /*
 							  for (int i=0; i<N_LOOPS; i++) {
 								   Slider *slider = app.m_pLoopOb[i]->GetEffectSlider(ch);
 								   if (slider && app.m_pLoopOb[i]->IsSelected())
 										slider->SetValue(val*slider->GetMaxValue()/0x7F);
 							  }
+							  */
+							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(0);
+							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+						 }
+						 else if (m_ctrlcode[ch][CT_EFFECT2]==code) {
+							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(1);
+							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+						 }
+						 else if (m_ctrlcode[ch][CT_EFFECT3]==code) {
+							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(3);
+							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_BUTTON]==code) {
 							  switch (m_nButtonMode) {

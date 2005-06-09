@@ -45,6 +45,7 @@ void ProgramChanger::LoadPrograms()
 
 	 char line[1024], param[256], value[MAX_PATH];
 	 int len, pos, mark, n;
+	 int number=1, loop=0;
 
 	 // count number of programs
 	 m_nPrograms = 0;
@@ -88,8 +89,14 @@ void ProgramChanger::LoadPrograms()
 			   n++;
 			   if (n >= m_nPrograms) break;
 			   pos = 1;
-			   while (line[pos] && line[pos]!=']')
+			   while (line[pos] && line[pos]!=']' && pos<=64)
 					m_Program[n].m_strName[pos-1] = line[pos++];
+
+			   // Is it better to auto-increment program number
+			   // or load it explictly from the file?
+			   m_Program[n].m_nProgramNumber = number++;
+
+			   loop = 1;
 		  }
 		  // check for parameter
 		  else if (strchr(line, '=')!=NULL) {
@@ -112,11 +119,17 @@ void ProgramChanger::LoadPrograms()
 			   value[pos-mark] = 0;
 
 			   // recognize parameter
-			   if (strcmp(param, "Program")==0) {
+			   if (strcmp(param, "Dir")==0) {
+					strcpy(m_Program[n].m_strDir, value);
+			   }
+			   /*
+			   else if (strcmp(param, "Program")==0) {
 					m_Program[n].m_nProgramNumber = atoi(value);
 			   }
+			   */
 			   else if (strncmp(param, "Loop", 4)==0) {
-					pos = atoi(param+4);
+					//pos = atoi(param+4);
+					pos = loop++;
 					if (pos >= 1 && pos <= 8)
 						 strcpy(m_Program[n].m_strFile[pos-1], value);
 			   }
@@ -193,11 +206,16 @@ void ProgramChanger::ProgramChange(int program, LoopOb* m_pLoopOb[N_LOOPS])
 	 // associated LoopOb object.
 	 int loop;
 	 for (loop=0; loop<N_LOOPS; loop++)
+	 {
 		  if (m_Program[i].m_strFile[loop][0]) {
 			   m_pLoadingQueue[m_nLoadingQueueW] = m_Program[i].m_strFile[loop];
 			   m_pLoadingQueue[m_nLoadingQueueW+1] = m_pLoopOb[loop];
 			   m_nLoadingQueueW = (m_nLoadingQueueW+2) % 20;
 		  }
+		  if (m_Program[i].m_strDir[0]) {
+			   m_pLoopOb[loop]->m_pFileBrowser->SetDirectoryFromBase(m_Program[i].m_strDir);
+		  }
+	 }
 
 	 printf("Changing to program %d.\n", program);
 	 if (!m_hThread)

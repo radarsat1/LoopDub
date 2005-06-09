@@ -174,6 +174,7 @@ public:
 	void OnMouseUp(Point mouse);
 
 	void SetDirectory(char *strDir);
+	void SetDirectoryFromBase(char *strDir);
 
 	// extension for filtering listed entries
 	void SetExtension(char *strExt);

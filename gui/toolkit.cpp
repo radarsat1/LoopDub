@@ -917,6 +917,14 @@ void FileBrowser::SetDirectory(char *strDir)
 		  m_bLoading = false;
 }
 
+void FileBrowser::SetDirectoryFromBase(char *strDir)
+{
+	 char path[MAX_PATH];
+	 strcpy(path, m_strBase);
+	 strcat(path, strDir);
+	 SetDirectory(path);
+}
+
 void FileBrowser::SetExtension(char *strExt)
 {
 	 if (strExt) {

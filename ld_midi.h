@@ -15,7 +15,9 @@
 enum CtrlType
 {
 	 CT_LEVEL,
-	 CT_EFFECT,
+	 CT_EFFECT1,
+	 CT_EFFECT2,
+	 CT_EFFECT3,
 	 CT_BUTTON,
 	 CT_SELECT,
 	 N_CT
@@ -64,7 +66,7 @@ class MidiControl
 	 // Mode
 	 void SetLearningMode(bool bLearnMode);
 
- private:
+ protected:
 	 // MIDI control codes, one for each control type
 	 char m_ctrlcode[CONTROLS][N_CT];
 
@@ -74,6 +76,7 @@ class MidiControl
 	 int m_nLearnCh;
 	 int m_nLearnType;
 	 int m_nLastCode;
+	 bool m_bMidiCodesHaveChanged;
 
 	 // Select which button is affected by MIDI buttons
 	 int m_nButtonMode;

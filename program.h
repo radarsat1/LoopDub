@@ -11,6 +11,7 @@ class Program
   public:
 	Program();
 	char m_strName[64];
+	char m_strDir[128];
 	int m_nProgramNumber;
 	char m_strFile[N_LOOPS][MAX_PATH];
 };

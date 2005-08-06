@@ -71,7 +71,7 @@ void LoopDub::FillBuffers(void *param)
 		*pBufferR = *pBufferL = 0;
 		for (i=0; i<N_LOOPS; i++)
 		{
-			 side = app.m_pLoopOb[i]->IsCue() ? 1 : 0;
+			 side = 0;//app.m_pLoopOb[i]->IsCue() ? 1 : 0;
 			 if (i!=app.m_nKeysChannel) {
 				  value[side] += app.m_pLoopOb[i]->GetSampleValue(app.m_nPos);
 			 }
@@ -95,8 +95,10 @@ void LoopDub::FillBuffers(void *param)
 			 if (value[i] > max) max = value[i];
 		}
 
-		*(pBufferR++) = value[0];
-		*(pBufferL++) = value[1];
+//		*(pBufferR++) = value[0];
+//		*(pBufferL++) = value[1];
+
+		*(pBufferR++) = *(pBufferL++) = value[0];
 
 		if (++app.m_nPos > app.m_nLength)
 			 app.m_nPos = 0;

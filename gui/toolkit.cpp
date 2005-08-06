@@ -921,6 +921,7 @@ void FileBrowser::SetDirectoryFromBase(char *strDir)
 {
 	 char path[MAX_PATH];
 	 strcpy(path, m_strBase);
+	 strcat(path, DIR_SEPARATOR);
 	 strcat(path, strDir);
 	 SetDirectory(path);
 }

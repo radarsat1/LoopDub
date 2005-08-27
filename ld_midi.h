@@ -8,6 +8,13 @@
 // but let's think about that some other time.
 #define CONTROLS 8
 
+enum MidiType
+{
+	MidiInput,
+	MidiOutput,
+	MidiUnknown
+};
+
 // There are 2 control types:
 // A slider which gives the volume level
 // and an "effect" which modifies the currently
@@ -60,11 +67,20 @@ class MidiControl
 	 // Return name of MIDI device n
 	 char *GetMidiName(int n);
 
+	 // Return type of MIDI device
+	 MidiType GetMidiType(int n);
+
 	 // Select a MIDI device
 	 void SelectDevice(int n);
 
 	 // Mode
 	 void SetLearningMode(bool bLearnMode);
+
+	 // Send a midi clock tick (24 per beat)
+	 // in ms milliseconds from now.
+	 void SendClockTick(long ms);
+
+	 void UpdateClockTicks();
 
  protected:
 	 // MIDI control codes, one for each control type
@@ -77,12 +93,16 @@ class MidiControl
 	 int m_nLearnType;
 	 int m_nLastCode;
 	 bool m_bMidiCodesHaveChanged;
+	 bool m_bMidiClockActive;
 
 	 // Select which button is affected by MIDI buttons
 	 int m_nButtonMode;
 
-	 // Midi input stream
+	 // Midi streams
 	 PmStream *m_pmListen;
+	 PmStream *m_pmOutput;
+
+	 static PmTimestamp timeProc(void* time_info);
 
 	 bool m_bInitialized;
 };

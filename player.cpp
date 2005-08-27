@@ -109,11 +109,8 @@ void Player::Stop()
 
 int Player::GetPlayPositionSamples()
 {
-	/*
-	DWORD dwPlayPos, dwWritePos;
-	m_pBuffer->GetCurrentPosition(&dwPlayPos, &dwWritePos);
-	return (int)dwPlayPos/4;
-	*/
-	
-	return 0;
+	 if (paStream)
+		  return (int)Pa_StreamTime(paStream);
+	 else
+		  return 0;
 }

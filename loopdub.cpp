@@ -30,6 +30,7 @@ LoopDub::LoopDub()
 	 m_nPos = 0;
 	 m_nLength = 0;
 	 m_pMidiLearning = NULL;
+	 m_pMidiClock = NULL;
 	 m_nKeysChannel = -1;
 	 for (int i=0; i<MAX_KEYS; i++)
 		  m_Keys[i].on = false;
@@ -262,11 +263,16 @@ int LoopDub::Run()
 		 m_pMidiLearning = new Button(pMainScrob, Rect(290, 5, 340, 20), "Learn", 0, 2, CMD_LEARN, 0, true);
 		 pMainScrob->AddChild(m_pMidiLearning);
 
+		 m_pMidiClock = new Button(pMainScrob, Rect(290, 25, 340, 40), "Clock", 0, 2, CMD_CLOCK, 0, true);
+		 pMainScrob->AddChild(m_pMidiClock);
+
 		 int n = m_Midi.GetMidiNum();
 		 for (int i=0; i<n; i++)
 		 {
 			  pMainScrob->AddChild(new Button(pMainScrob, Rect(350 + 50*i, 5, 400 + 50*i, 20),
-											  m_Midi.GetMidiName(i), 0, 2, CMD_SELECT, (void*)i, true));
+											  m_Midi.GetMidiName(i),
+											  (m_Midi.GetMidiType(i) == MidiInput) ? 0 : 7,
+											  2, CMD_SELECT, (void*)i, true));
 		 }
 	}
 
@@ -436,6 +442,7 @@ int LoopDub::Run()
 
 			 UNLOCKMUTEX(mutex);
 			 m_Midi.CheckMsg();
+			 m_Midi.UpdateClockTicks();
 
 			 // Check if its time to switch to background sample.
 			 for (i=0; i<N_LOOPS; i++)

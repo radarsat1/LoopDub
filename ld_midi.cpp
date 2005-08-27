@@ -12,6 +12,7 @@ MidiControl::MidiControl()
 {
 	 m_bInitialized = false;
 	 m_pmListen = NULL;
+	 m_pmOutput = NULL;
 
 	 int ch, t;
 	 for (ch=0; ch<N_LOOPS; ch++)
@@ -19,6 +20,7 @@ MidiControl::MidiControl()
 			   m_ctrlcode[ch][t]=0;
 
 	 m_bLearning = false;
+	 m_bMidiClockActive = false;
 
 	 FILE *file = fopen(configfile, "r");
 	 if (!file) {
@@ -121,8 +123,26 @@ char* MidiControl::GetMidiName(int n)
 	 if (!pdi) return "";
 
 	 // Note: portmidi.h says that this is safe
-	 if (!pdi->input) return "!";
 	 return (char*)pdi->name;
+}
+
+MidiType MidiControl::GetMidiType(int n)
+{
+	 if (!m_bInitialized)
+		  return MidiUnknown;
+
+	 const PmDeviceInfo *pdi = Pm_GetDeviceInfo(n);
+	 if (!pdi) return MidiUnknown;
+
+	 if (pdi->input)
+		  return MidiInput;
+	 else
+		  return MidiOutput;
+}
+
+PmTimestamp MidiControl::timeProc(void* time_info)
+{
+	 return app.m_Player.GetPlayPositionSamples()*1000/44100;
 }
 
 void MidiControl::SelectDevice(int n)
@@ -130,23 +150,37 @@ void MidiControl::SelectDevice(int n)
 	 if (!m_bInitialized)
 		  return;
 
-	 if (m_pmListen)
-		  Pm_Close(m_pmListen);
+	 char *stype=NULL;
+	 PmError err;
 
-	 PmError err = Pm_OpenInput( &m_pmListen,
-								 n,
-								 NULL,
-								 256,
-								 0,
-								 NULL);
+	 switch (GetMidiType(n)) {
+	 case MidiInput:
+		  stype = "input";
+		  if (m_pmListen)
+			   Pm_Close(m_pmListen);
+
+		  err = Pm_OpenInput( &m_pmListen, n, NULL, 10, NULL, NULL);
+		  if (err != pmNoError)
+			   m_pmListen = NULL;
+		  break;
+	 case MidiOutput:
+		  stype = "output";
+		  if (m_pmOutput)
+			   Pm_Close(m_pmOutput);
+
+		  // Note: 1ms latency tells PortMidi to wait 1 ms + timestamp before sending MIDI message
+		  err = Pm_OpenOutput( &m_pmOutput, n, NULL, 10, timeProc, NULL, 1);
+		  if (err != pmNoError)
+			   m_pmOutput = NULL;
+		  break;
+	 default:
+		  return;
+	 }
 
 	 if (err != pmNoError)
-	 {
-		  printf("Error selecting device %d.\n", n);
-		  m_pmListen = NULL;
-	 }
+		  printf("Error selecting MIDI %s device %d.\n", stype, n);
 	 else
-		  printf("Selected device %d\n", n);
+		  printf("Selected MIDI %s device %d\n", stype, n);
 }
 
 void MidiControl::SetLearningMode(bool bLearnMode)
@@ -350,4 +384,31 @@ void MidiControl::CheckMsg()
 		  }
 	 }
 	 return;
+}
+
+void MidiControl::SendClockTick(long ms)
+{
+	 if (m_pmOutput)
+		  Pm_WriteShort(m_pmOutput, ms-1, 0xF8);
+}
+
+void MidiControl::UpdateClockTicks()
+{
+	 if (!app.m_pMidiClock)
+		  return;
+	 if (app.m_pMidiClock->IsPressed() && !m_bMidiClockActive) {
+		  // send start
+		  m_bMidiClockActive = true;
+	 }
+	 else if (!app.m_pMidiClock->IsPressed() && m_bMidiClockActive) {
+		  // send stop
+		  m_bMidiClockActive = false;
+	 }
+
+/*
+	int beat_sample_interval = (44100*60)/(135*24);
+	int now_sample = app.m_Player.GetPlayPositionSamples();
+	
+	SendClockTick(beat_sample_interval);
+*/
 }

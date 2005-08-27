@@ -13,6 +13,7 @@
 enum
 {
 	 CMD_LEARN=1,
+	 CMD_CLOCK,
 	 CMD_SELECT,
 	 CMD_BEATS,
 	 CMD_NORMALIZE,

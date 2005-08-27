@@ -61,6 +61,7 @@ public:
 
 	LoopOb *m_pLoopOb[N_LOOPS];
 	Button *m_pMidiLearning;
+	Button *m_pMidiClock;
 	VUMeter *m_pVUMeter;
 	Slider *m_pVolumeSlider;
 	Button *m_pAutoCueButton;

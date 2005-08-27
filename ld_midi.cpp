@@ -21,6 +21,7 @@ MidiControl::MidiControl()
 
 	 m_bLearning = false;
 	 m_bMidiClockActive = false;
+	 m_bMidiClockWaiting = false;
 
 	 FILE *file = fopen(configfile, "r");
 	 if (!file) {
@@ -61,7 +62,7 @@ MidiControl::MidiControl()
 					}
 					i++;
 					break;
-			   }			   
+			   }
 			   str = strtok(NULL, delim);
 		  }
 		  linenumber++;
@@ -386,28 +387,49 @@ void MidiControl::CheckMsg()
 	 return;
 }
 
-void MidiControl::SendClockTick(long ms)
+void MidiControl::SendClockTick(long ms, bool startnow)
 {
-	 if (m_pmOutput)
-		  Pm_WriteShort(m_pmOutput, ms-1, 0xF8);
+	 if (!m_pmOutput)
+		  return;
+
+	 if (m_bMidiClockWaiting && startnow) {
+		  printf("MIDI clock starting...\n");
+		  Pm_WriteShort(m_pmOutput, 0, 0xFA);
+		  m_bMidiClockWaiting = false;
+		  m_bMidiClockActive = true;
+	 }
+	 
+	 if (m_bMidiClockActive)
+		  Pm_WriteShort(m_pmOutput, ms, 0xF8);
 }
 
 void MidiControl::UpdateClockTicks()
 {
-	 if (!app.m_pMidiClock)
+	 if (!m_pmOutput)
 		  return;
-	 if (app.m_pMidiClock->IsPressed() && !m_bMidiClockActive) {
+
+	 if (app.m_pMidiClock->IsPressed() && !m_bMidiClockActive && !m_bMidiClockWaiting) {
+		  m_bMidiClockWaiting = true;
+		  printf("MIDI clock waiting...\n");
+	 }
+	 else if (app.m_pMidiClock->IsPressed() && !m_bMidiClockActive && m_bMidiClockWaiting) {
+		  // check if time to start
 		  // send start
-		  m_bMidiClockActive = true;
+//		  m_bMidiClockActive = true;
+//		  m_bMidiClockWaiting = false;
 	 }
 	 else if (!app.m_pMidiClock->IsPressed() && m_bMidiClockActive) {
 		  // send stop
 		  m_bMidiClockActive = false;
+		  m_bMidiClockWaiting = false;
+
+		  printf("MIDI clock stopping...\n");
+		  Pm_WriteShort(m_pmOutput, 0, 0xFC);
 	 }
 
+//		  int now_sample = app.m_Player.GetPlayPositionSamples();
 /*
 	int beat_sample_interval = (44100*60)/(135*24);
-	int now_sample = app.m_Player.GetPlayPositionSamples();
 	
 	SendClockTick(beat_sample_interval);
 */

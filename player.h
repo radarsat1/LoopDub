@@ -13,14 +13,14 @@ public:
 	Player();
 	~Player();
 
-	bool Initialize(void (FillBuffers)(void*), void* param);
+	bool Initialize(void (FillBuffers)(void*, int), void* param);
 
 	short* LeftBuffer() { return m_pLeftBuffer; }
 	short* RightBuffer() { return m_pRightBuffer; }
 	int BufferSizeBytes() { return m_nBufferLengthBytes>>1; }
 	int BufferSizeSamples() { return m_nBufferLengthBytes>>2; }
 	bool ReadyForData();
-	void Mix(short *outputBuffer, unsigned long framesPerBuffer);
+	void Mix(short *outputBuffer, unsigned long framesPerBuffer, int outTimeSample=0);
 	void Play();
 	void Stop();
 	int GetPlayPositionSamples();
@@ -35,7 +35,7 @@ protected:
 	bool m_bPlaying;
 	int m_nSide;	// side of buffer to write next (1 or 2)
 
-	void (*m_pFillBuffers)(void* param);
+	void (*m_pFillBuffers)(void* param, int outTimeSample);
 	void* m_Param;
 };
 

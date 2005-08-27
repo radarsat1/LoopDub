@@ -78,7 +78,7 @@ class MidiControl
 
 	 // Send a midi clock tick (24 per beat)
 	 // in ms milliseconds from now.
-	 void SendClockTick(long ms);
+	 void SendClockTick(long ms, bool startnow);
 
 	 void UpdateClockTicks();
 
@@ -94,6 +94,7 @@ class MidiControl
 	 int m_nLastCode;
 	 bool m_bMidiCodesHaveChanged;
 	 bool m_bMidiClockActive;
+	 bool m_bMidiClockWaiting;
 
 	 // Select which button is affected by MIDI buttons
 	 int m_nButtonMode;

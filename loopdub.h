@@ -33,7 +33,7 @@ public:
 	int Run();
 
 	// callback for play buffer mixing routine
-	static void FillBuffers(void *param);
+	static void FillBuffers(void *param, int outTimeSample=0);
 
 	// variables
 	int m_nBeats;

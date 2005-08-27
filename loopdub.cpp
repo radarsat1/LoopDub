@@ -44,7 +44,7 @@ LoopDub::~LoopDub()
 }
 
 bool priority = false;
-void LoopDub::FillBuffers(void *param)
+void LoopDub::FillBuffers(void *param, int outTimeSample)
 {
 	LoopDub& app = *(LoopDub*)param;
 
@@ -55,10 +55,21 @@ void LoopDub::FillBuffers(void *param)
 
 	LOCKMUTEX(app.mutex);
 
+	// MIDI clock
+	int ticksize = 816;
+	int first = app.m_nPos % ticksize;
+	bool startnow = (app.m_nPos == first);
+	int i, n=app.m_Player.BufferSizeSamples();
+//	if (startnow) printf("starting now?\n");
+	for (i=first; i<n; i += ticksize) {
+		 int ms = (outTimeSample + i) * 1000 / 44100;
+		 app.m_Midi.SendClockTick(ms, startnow);
+	}
+
+	// Audio
 	short* pBufferL = app.m_Player.LeftBuffer();
 	short* pBufferR = app.m_Player.RightBuffer();
-	int n=app.m_Player.BufferSizeSamples();
-	int i, max=0;
+	int max=0;
 	int volume, volmax;
 	
 	volume = app.m_pVolumeSlider->GetValue();
@@ -263,7 +274,7 @@ int LoopDub::Run()
 		 m_pMidiLearning = new Button(pMainScrob, Rect(290, 5, 340, 20), "Learn", 0, 2, CMD_LEARN, 0, true);
 		 pMainScrob->AddChild(m_pMidiLearning);
 
-		 m_pMidiClock = new Button(pMainScrob, Rect(290, 25, 340, 40), "Clock", 0, 2, CMD_CLOCK, 0, true);
+		 m_pMidiClock = new Button(pMainScrob, Rect(290, 25, 340, 40), "Clock", 0, 2, -1, 0, true);
 		 pMainScrob->AddChild(m_pMidiClock);
 
 		 int n = m_Midi.GetMidiNum();

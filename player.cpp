@@ -28,11 +28,11 @@ int callback(  void *inputBuffer, void *outputBuffer,
                    unsigned long framesPerBuffer,
                    double outTime, void *userData )
 {
-	((Player*)userData)->Mix((short*)outputBuffer, framesPerBuffer);
+	((Player*)userData)->Mix((short*)outputBuffer, framesPerBuffer, (int)outTime);
 	return 0;
 }
 
-bool Player::Initialize(void (FillBuffers)(void*), void* param)
+bool Player::Initialize(void (FillBuffers)(void*, int), void* param)
 {
 	/* Initialize sound player (PortAudio) & buffers */
 	m_pLeftBuffer=NULL;
@@ -78,11 +78,10 @@ bool Player::Initialize(void (FillBuffers)(void*), void* param)
 	return true;
 }
 
-#include <math.h>
-void Player::Mix(short *outputBuffer, unsigned long framesPerBuffer)
+void Player::Mix(short *outputBuffer, unsigned long framesPerBuffer, int outTimeSample)
 {
 	// call mix callback
-	m_pFillBuffers(m_Param);
+	m_pFillBuffers(m_Param, outTimeSample);
 	
 	// fill soundbuffer
 	static int c=0;

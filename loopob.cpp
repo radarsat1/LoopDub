@@ -566,7 +566,7 @@ void LoopOb::ResetFxParams()
 {
 	m_pCutoffSlider->SetValue(m_pCutoffSlider->GetMaxValue());
 	m_pResonanceSlider->SetValue(0);
-	m_pDelayLengthSlider->SetValue(0);
+	m_pDelayLengthSlider->SetValue(m_pDelayLengthSlider->GetMaxValue()/4);
 	m_pFeedbackSlider->SetValue(0);
 }
 
@@ -610,6 +610,7 @@ void LoopOb::CheckBackgroundSample()
 		  SetVolume(0);
 		  m_pBackgroundSample = NULL;
 		  m_pBgFilenameLabel->SetVisible(false);
+		  m_pWaveOb->SetDirty();
 	 }
 }
 

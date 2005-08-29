@@ -27,7 +27,7 @@ portmidi: portmidi/
 	unzip -q portmidi17nov04.zip
 
 libportmidi.a: portmidi
-	$(MAKE) -C $(PMDIR)
+	$(MAKE) -C $(PMDIR) PMFLAGS=
 
 loopdub: libscrobui.a libportmidi.a $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $@

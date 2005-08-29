@@ -357,6 +357,8 @@ int LoopDub::Run()
 		else
 			bQuit = !gui.ProcessEvent();
 
+		if (bQuit) printf( "Quitting..\n");
+
 		if (!bQuit)
 		{
 			 int cmd;
@@ -464,6 +466,8 @@ int LoopDub::Run()
 	app.updated = true;
 	UNLOCKMUTEX(mutex);
 	m_Player.Stop();
+
+	printf("bQuit: %d\n", bQuit);
 
 	return 0;
 }

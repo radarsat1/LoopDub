@@ -220,8 +220,9 @@ void MidiControl::CheckMsg()
 
 	 // Don't block
 	 PmEvent event;
+	 PmError rc;
   	 while (Pm_Poll(m_pmListen)==TRUE
-			&& Pm_Read(m_pmListen, &event, 1)>pmNoError)
+			&& (rc=Pm_Read(m_pmListen, &event, 1))>=pmNoError)
 	 {
 		  int code = Pm_MessageData1(event.message);
 		  int val = Pm_MessageData2(event.message);
@@ -384,6 +385,10 @@ void MidiControl::CheckMsg()
 			   }
 		  }
 	 }
+	 
+	 if (rc < 0)
+		  printf("rc: %d\n", rc);
+
 	 return;
 }
 

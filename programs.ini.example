@@ -1,0 +1,38 @@
+; This file defines programs which allow you to define groups
+; of loops to be loaded with a single command from a MIDI controller
+; Simply specify the track name and its relative directory, and
+; then each loop in order.
+
+; When a program is loaded, the filebrowser will automatically
+; change to the specified subdirectory, so that you may easily
+; load extra loops .
+
+; Program names and numbers are listed by pressing 'P' anytime in LoopDub.
+
+; Note that loop filenames are specified relative to the loop folder,
+; not the specified subdir.
+
+[Track Name (anything you want)]
+Dir=sometrack
+Loop1=sometrack/loop1.wav
+Loop2=sometrack/loop2.wav
+Loop3=sometrack/loop3.wav
+Loop4=sometrack/loop4.wav
+Loop5=sometrack/loop5.wav
+Loop6=sometrack/loop6.wav
+Loop7=sometrack/loop7.wav
+Loop8=sometrack/loop8.wav
+
+[Another Track]
+Dir=another
+Loop1=another/loop1.wav
+Loop2=another/loop2.wav
+Loop3=another/loop3.wav
+Loop4=another/loop4.wav
+Loop5=another/loop5.wav
+Loop6=another/loop6.wav
+Loop7=another/loop7.wav
+Loop8=another/loop8.wav
+
+
+

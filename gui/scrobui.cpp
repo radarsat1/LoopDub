@@ -191,7 +191,7 @@ bool GUI::Initialize(char *strTitle, bool bFullScreen, int nWidth, int nHeight, 
 	SDL_EnableUNICODE(1);
 
 	// Load character data
-	if (!dt.LoadCharacterData("Dotum10.raw"))
+	if (!dt.LoadCharacterData(DATADIR "Dotum10.raw"))
 		return false;
 
 	// create a window

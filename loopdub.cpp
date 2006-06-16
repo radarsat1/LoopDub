@@ -7,10 +7,35 @@
 #include "loopdub.h"
 #include "ld_logo.h"
 
+#include <sys/time.h>
+
 #ifdef WIN32
 #else
   #include <unistd.h>
 #endif
+
+
+class Timer
+{
+public:
+	 void init()
+		  {
+			   gettimeofday(&time,NULL);			   
+		  }
+	 double elapsed()
+		  {
+			   struct timeval t;
+			   gettimeofday(&t,NULL);
+			   double result = (t.tv_sec + t.tv_usec/1000000.0) - (time.tv_sec + t.tv_usec/1000000.0);
+			   time.tv_sec  = t.tv_sec;
+			   time.tv_usec = t.tv_usec;
+			   return result;
+		  }
+
+protected:
+	 struct timeval time;
+};
+
 
 /* One global LoopDub object */
 LoopDub app;

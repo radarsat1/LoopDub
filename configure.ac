@@ -3,9 +3,9 @@
 
 AC_PREREQ(2.59)
 AC_INIT([loopdub], [0.2], [radarsat1@gmail.com])
-AM_INIT_AUTOMAKE([-Wall foreign dist-bzip2])
+AM_INIT_AUTOMAKE(1.9 check-news [-Wall foreign dist-bzip2])
 AC_CONFIG_SRCDIR([def.h])
-AC_CONFIG_HEADER([config.h])
+AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -56,6 +56,6 @@ echo '	\$(MAKE) -C portmidi' >>Makefile.tmp
 echo "" >>Makefile.tmp
 echo "portmidi:" >>Makefile.tmp
 echo '	unzip portmidi17nov04.zip' >>Makefile.tmp
-mv --reply=yes Makefile.tmp Makefile
+mv -v Makefile.tmp Makefile
 echo "done."
 

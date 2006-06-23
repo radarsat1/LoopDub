@@ -469,7 +469,7 @@ short LoopOb::GetSampleValue(int pos)
 		  delay.SetParams(m_pDelayLengthSlider->GetValue() * 100 / m_pDelayLengthSlider->GetMaxValue(),
 							m_pFeedbackSlider->GetValue() * 100 / m_pFeedbackSlider->GetMaxValue());
 		  
-		  // pass it through the filter bank
+		  // pass it through the filter bank		
 		  for (int i=0; i<N_FILTERS; i++)
 			   sample = m_filterbank[i]->Work(sample);
 

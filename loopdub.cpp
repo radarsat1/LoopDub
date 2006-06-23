@@ -1,13 +1,11 @@
 
-
-
 #define _LOOPDUB_CPP_
 #include <stdio.h>
 #include <string.h>
 #include "loopdub.h"
 #include "ld_logo.h"
 
-#include <sys/time.h>
+#include <time.h>
 
 #ifdef WIN32
 #else
@@ -20,22 +18,47 @@ class Timer
 public:
 	 void init()
 		  {
-			   gettimeofday(&time,NULL);			   
+			   time = clock();
+			   avgtime=0;
+			   count=0;
 		  }
+
+	 void reinit()
+		  {
+			   return;
+			   //gettimeofday(&time,NULL);
+		  }
+
 	 double elapsed()
 		  {
+			   clock_t t;
+			   //if (count<100000)
+					t = clock();
+
+			   /*
 			   struct timeval t;
-			   gettimeofday(&t,NULL);
 			   double result = (t.tv_sec + t.tv_usec/1000000.0) - (time.tv_sec + t.tv_usec/1000000.0);
 			   time.tv_sec  = t.tv_sec;
 			   time.tv_usec = t.tv_usec;
+			   */
+
+			   double result = t - time;
+			   time = t;
+
+			   avgtime = (avgtime*count + result) / (count+1);
+			   count++;
 			   return result;
 		  }
 
 protected:
-	 struct timeval time;
+	 clock_t time;
+
+public:
+	 int count;
+	 double avgtime;
 };
 
+Timer timer[10];
 
 /* One global LoopDub object */
 LoopDub app;
@@ -59,6 +82,9 @@ LoopDub::LoopDub()
 	 m_nKeysChannel = -1;
 	 for (int i=0; i<MAX_KEYS; i++)
 		  m_Keys[i].on = false;
+
+timer[0].init();
+timer[1].init();
 
 	 CREATEMUTEX(mutex);
 }
@@ -102,12 +128,14 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 
 	while (n-- > 0)
 	{
+timer[0].reinit();
 		 int value[2];
 		 int side=0;
 		 value[0] = value[1] = 0;
 		*pBufferR = *pBufferL = 0;
 		for (i=0; i<N_LOOPS; i++)
 		{
+timer[1].reinit();
 			 side = 0;//app.m_pLoopOb[i]->IsCue() ? 1 : 0;
 			 if (i!=app.m_nKeysChannel) {
 				  value[side] += app.m_pLoopOb[i]->GetSampleValue(app.m_nPos);
@@ -122,6 +150,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 					   }
 				  }
 			 }
+timer[1].elapsed();
 		}
 
 		for (int i=0; i<2; i++) {
@@ -139,6 +168,8 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 
 		if (++app.m_nPos > app.m_nLength)
 			 app.m_nPos = 0;
+
+timer[0].elapsed();
 	}
 
 	app.m_pVUMeter->SetPercentage(max * 100 / 32767);
@@ -493,6 +524,8 @@ int LoopDub::Run()
 	m_Player.Stop();
 
 	printf("bQuit: %d\n", bQuit);
+
+	printf("timer[0].avgtime = %f\n", timer[0].avgtime);
 
 	return 0;
 }

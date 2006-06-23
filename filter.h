@@ -7,6 +7,9 @@ class Filter
   public:
 	  virtual void Initialize() {}
 	  virtual short Work(short sample) { return 0; }
+
+  protected:
+	bool m_bParamsChanged;
 };
 
 class Lowpass : public Filter
@@ -20,6 +23,8 @@ class Lowpass : public Filter
 	float minResonance, maxResonance;
 	float cutoffPow, resonancePow;
 	float inertia; // ratio of approach to target
+	float lastTargetC100, lastTargetR100;
+	float coef[5];
 
   public:
 	void Initialize();

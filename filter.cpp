@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define PI 3.141592654
+#define FLTEQUAL(a, b)  fabs(a-b)<=0.01
 
 void Lowpass::Initialize()
 {
@@ -18,6 +19,14 @@ void Lowpass::Initialize()
 	 minCutoff = 550.0f;
 	 minResonance = 0.1f;
 	 inertia = 0.2f;
+	 lastTargetC100 = 0;
+	 lastTargetR100 = 0;
+
+	 int i;
+	 for (i=0; i<5; i++)
+		  coef[i] = 0;
+
+	 m_bParamsChanged = false;
 
 	 cutoffPow = log10(maxCutoff-minCutoff);
 	 resonancePow = log10(maxResonance-minResonance);
@@ -25,8 +34,14 @@ void Lowpass::Initialize()
 
 void Lowpass::SetParams(float targetC100, float targetR100)
 {
-	 targetCutoff = pow(targetC100 / 10.0, cutoffPow) + minCutoff;
-	 targetResonance = pow(targetR100 / 10.0, resonancePow) + minResonance;
+	 if (!FLTEQUAL(lastTargetC100, targetC100) || !(FLTEQUAL(lastTargetR100, targetR100))) {
+		  targetCutoff = pow(targetC100 / 10.0, cutoffPow) + minCutoff;
+		  targetResonance = pow(targetR100 / 10.0, resonancePow) + minResonance;
+		  m_bParamsChanged = true;
+
+		  lastTargetC100 = targetC100;
+		  lastTargetR100 = targetR100;
+	 }
 }
 
 short Lowpass::Work(short sample)
@@ -39,8 +54,9 @@ short Lowpass::Work(short sample)
 	float temp_y;
 	float alpha, omega, sn, cs;
 	float a0, a1, a2, b0, b1, b2;
-	float coef[5];
 
+	 if (m_bParamsChanged)
+	 {
 	// Calculate filter coefficients (with interpolation)
 	omega = 2.0f * (float)PI * C / SAMPLE_RATE;
 	sn = (float)sin (omega);
@@ -57,6 +73,7 @@ short Lowpass::Work(short sample)
 	coef[2] = b2/a0;
 	coef[3] = -a1/a0;
 	coef[4] = -a2/a0;
+	 }
 
 	// perform filter function
 	temp_y = coef[0] * sample +
@@ -74,6 +91,9 @@ short Lowpass::Work(short sample)
 	cutoff = C;
 	resonance = R;
 
+	if (FLTEQUAL(cutoff,targetCutoff) && FLTEQUAL(resonance,targetResonance))
+		 m_bParamsChanged = false;
+	
 	if (temp_y > 32767) sample = 32767;
 	else if (temp_y < -32768) sample = -32768;
 	else sample = (short)temp_y;

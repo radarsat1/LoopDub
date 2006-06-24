@@ -53,3 +53,17 @@
 
 void LOWPRIORITY();
 void HIGHPRIORITY();
+
+
+#ifdef _OSX_
+#define ENDIANFLIP16(x) x = ((x&0xff)<<8) | ((x&0xff00)>>8)
+#define ENDIANFLIP32(x) x = ((x&0xff)<<24) | ((x&0xff00)<<8) | ((x&0xff0000)>>8) | ((x&0xff000000)>>24)
+#define LITTLEENDIAN32(x) x
+#define BIGENDIAN32(x) ((x>>24)&0xFF) | ((x>>8)&0xFF00) | ((x<<8)&0xFF0000) | ((x<<24)&0xFF000000)
+#else
+#define ENDIANFLIP16(x) x
+#define ENDIANFLIP32(x) x
+#define LITTLEENDIAN32(x) ((x>>24)&0xFF) | ((x>>8)&0xFF00) | ((x<<8)&0xFF0000) | ((x<<24)&0xFF000000)
+#define BIGENDIAN32(x) x
+#endif
+

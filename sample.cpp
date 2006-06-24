@@ -91,8 +91,6 @@ void Sample::Normalize()
 //////////////////////////
 // .wav file loading
 
-#define LITTLEENDIAN32(x) ((x>>24)&0xFF) | ((x>>8)&0xFF00) | ((x<<8)&0xFF0000) | ((x<<24)&0xFF000000)
-
 bool Sample::LoadFromFile(char *filename)
 {
 	unsigned long dw, size;
@@ -111,6 +109,7 @@ bool Sample::LoadFromFile(char *filename)
 	FILE *f = fopen(filename, "rb");
 	if (f)
 	{
+	printf("Loading %s\n", filename);
 		fread(&dw, 4, 1, f);
 		char *s = (char*)&dw;
 		dw = LITTLEENDIAN32(dw);
@@ -136,14 +135,22 @@ bool Sample::LoadFromFile(char *filename)
 			if (dw=='fmt ')
 			{
 				fread(&size, 4, 1, f);
+				ENDIANFLIP32(size);
 				fread(&fmt, (size < sizeof(fmt)) ? size : sizeof(fmt), 1, f);
 				size -= sizeof(fmt);
 				while (size-- > 0)
 					fread(&dw, 1, 1, f);
+				ENDIANFLIP16(fmt.wFormatTag);
+				ENDIANFLIP16(fmt.wChannels);
+				ENDIANFLIP32(fmt.dwSamplesPerSec);
+				ENDIANFLIP32(fmt.dwAvgBytesPerSec);
+				ENDIANFLIP16(fmt.wBlockAlign);
+				ENDIANFLIP16(fmt.wBitsPerSample);
 			}
 			else if (dw=='data' && !m_pData)
 			{
 				fread(&size, 4, 1, f);
+				ENDIANFLIP32(size);
 				size /= sizeof(short)*fmt.wChannels;
 				m_nSamples = size;
 				m_pData = new short[m_nSamples];
@@ -157,6 +164,7 @@ bool Sample::LoadFromFile(char *filename)
 						for (i=0; i<fmt.wChannels; i++)
 						{
 							fread(&s, sizeof(short), 1, f);
+							ENDIANFLIP16(s);
 							*p += s/fmt.wChannels;
 						}
 						p++;

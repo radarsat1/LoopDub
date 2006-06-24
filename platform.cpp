@@ -20,7 +20,6 @@ void LOWPRIORITY()
  */
 void HIGHPRIORITY()
 {
-	 return;
 	 sched_param param;
 	 int policy, rc;
 	 pthread_getschedparam(pthread_self(), &policy, &param);

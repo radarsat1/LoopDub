@@ -3,6 +3,7 @@
 
 #define _SCROBUI_CPP_
 #include "scrobui.h"
+#include "dotum10.h"
 #include <iostream.h>
 #include <fstream.h>
 
@@ -518,7 +519,19 @@ void DrawingTools::FillRect(Rect r, int color)
 #include <assert.h>
 bool DrawingTools::LoadCharacterData(char *filename)
 {
+	short sx, sy;
+
+	 #if 1
+	 m_nFontHeight = sy = Font_Height;
+	 sx = Font_BitmapWidth;
+	 m_pCharacterData = Font_CharacterData;
+	 m_nCharOffsets = Font_CharOffsets;
+	 m_nCharWidths = Font_CharWidths;
+
+	 #else
+
 	ifstream charfile(filename, ios::in | ios::binary);
+	int i, j;
 
 	if (!charfile.is_open())
 	{
@@ -526,21 +539,20 @@ bool DrawingTools::LoadCharacterData(char *filename)
 		return false;
 	}
 
-	for (int i=0; i<95; i++)
+	for (i=0; i<95; i++)
 	{
 		charfile.read((char*)&m_nCharOffsets[i], 2);
 		charfile.read((char*)&m_nCharWidths[i], 1);
 	}
 
-	short sx, sy;
 	charfile.read((char*)&sx, 2);
 	charfile.read((char*)&sy, 2);
 	m_nFontHeight = sy;
 
-	m_pCharacterData = new char[sx*sy];
+	m_pCharacterData = new unsigned char[sx*sy];
 
 	if (!charfile.fail() && !charfile.bad())
-		charfile.read(m_pCharacterData, sx*sy);
+		 charfile.read((char*)m_pCharacterData, sx*sy);
 
 	if (charfile.fail() || charfile.bad())
 	{
@@ -549,6 +561,7 @@ bool DrawingTools::LoadCharacterData(char *filename)
 		m_pCharacterData = NULL;
 		return false;
 	}
+	#endif
 
 	m_pCharacterSurface = SDL_CreateRGBSurfaceFrom(m_pCharacterData, sx, sy, 8, sx, 0, 0, 0, 0);
 	if (!m_pCharacterSurface)

@@ -247,11 +247,11 @@ protected:
 	Rect m_rClip;
 	bool m_bClip;
 	SDL_Surface *m_pSurface;
-	char* m_pCharacterData;
+	unsigned char* m_pCharacterData;
 	SDL_Surface *m_pCharacterSurface;
-	char m_nCharWidths[95];
-	short m_nCharOffsets[95];
-	int m_nFontHeight;
+	unsigned char* m_nCharWidths;
+	unsigned short* m_nCharOffsets;
+	unsigned int m_nFontHeight;
 };
 
 // There is one and only one master DrawingTools object.

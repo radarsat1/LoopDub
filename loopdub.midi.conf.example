@@ -1,0 +1,82 @@
+; This file defines MIDI configuration
+; Each parameter can be assigned to a Control Change message number
+; It should be modified to your liking and copied to ~/.loopdub.midi.conf
+
+; "Level" is the volume level
+Level.0 = 1
+Level.1 = 2
+Level.2 = 3
+Level.3 = 4
+Level.4 = 5
+Level.5 = 6
+Level.6 = 7
+Level.7 = 8
+
+; "Effect1" is filter cutoff
+Effect1.0 = 26
+Effect1.1 = 27
+Effect1.2 = 28
+Effect1.3 = 29
+Effect1.4 = 30
+Effect1.5 = 31
+Effect1.6 = 32
+Effect1.7 = 33
+
+; "Effect2" is filter resonance
+Effect2.0 = 18
+Effect2.1 = 19
+Effect2.2 = 20
+Effect2.3 = 21
+Effect2.4 = 22
+Effect2.5 = 23
+Effect2.6 = 24
+Effect2.7 = 25
+
+; "Effect3" is delay length
+; which I don't currently use via MIDI
+
+; "Effect4" is delay feedback
+Effect4.0 = 10
+Effect4.1 = 11
+Effect4.2 = 12
+Effect4.3 = 13
+Effect4.4 = 14
+Effect4.5 = 15
+Effect4.6 = 16
+Effect4.7 = 17
+
+; "Button" applies the currently selected 
+; operation to a particular loop number
+Button.0 = 35
+Button.1 = 36
+Button.2 = 37
+Button.3 = 38
+Button.4 = 39
+Button.5 = 40
+Button.6 = 41
+Button.7 = 42
+
+; "Select" determines what happens to the
+; loop determined by Button, above.
+
+; Select.0 is "Cue"
+Select.0 = 44
+
+; Select.1 is "Split"
+Select.1 = 45
+
+; Select.2 is "Hold"
+Select.2 = 46
+
+; Select.3 is "Keys"
+Select.3 = 0
+
+; Select.4 is "Norm" (normalize)
+Select.4 = 0
+
+; Select.5 is "Switch"
+Select.5 = 47
+
+; These do nothing for now
+Select.6 = 0
+Select.7 = 0

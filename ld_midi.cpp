@@ -5,7 +5,7 @@
 #include "loopdub.h"
 #include "ld_midi.h"
 
-static char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3", "Button", "Select" };
+static char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3", "Effect4", "Button", "Select" };
 static char *configfile = ".loopdub.midi.conf";
 
 MidiControl::MidiControl()
@@ -23,7 +23,15 @@ MidiControl::MidiControl()
 	 m_bMidiClockActive = false;
 	 m_bMidiClockWaiting = false;
 
-	 FILE *file = fopen(configfile, "r");
+	 char configfilename[MAX_PATH];
+#ifndef WIN32
+	 sprintf(configfilename, "%s/%s", getenv("HOME"), configfile);
+#else
+	 // TODO fix this to User folder
+	 strcpy(configfilename, configfile);
+#endif
+
+	 FILE *file = fopen(configfilename, "r");
 	 if (!file) {
 		  printf("Couldn't open %s\n", configfile);
 		  return;
@@ -38,6 +46,7 @@ MidiControl::MidiControl()
 		  i=0;
 		  t = -1;
 		  ch = -1;
+		  if (line[0]==';') continue;
 		  str = strtok(line, delim);
 		  while (str) {
 			   switch (i) {
@@ -253,6 +262,9 @@ void MidiControl::CheckMsg()
 						 app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(1)->SetColor(1);
 						 break;
 					case CT_EFFECT3:
+						 app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(2)->SetColor(1);
+						 break;
+					case CT_EFFECT4:
 						 app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(3)->SetColor(1);
 						 break;
 					}
@@ -276,6 +288,9 @@ void MidiControl::CheckMsg()
 							  app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(1)->SetColor(3);
 							  break;
 						 case CT_EFFECT3:
+							  app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(2)->SetColor(3);
+							  break;
+						 case CT_EFFECT4:
 							  app.m_pLoopOb[m_nLearnCh]->GetEffectSlider(3)->SetColor(3);
 							  break;
 						 }
@@ -307,6 +322,10 @@ void MidiControl::CheckMsg()
 							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_EFFECT3]==code) {
+							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(2);
+							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+						 }
+						 else if (m_ctrlcode[ch][CT_EFFECT4]==code) {
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(3);
 							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
 						 }

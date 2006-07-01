@@ -1,39 +1,44 @@
 
--- TODO --
-Why are there still audio underruns when a file is loading?? (Threading should have fixed it... maybe set priority of file loading thread lower.)
+-- Roadmap --
+
+Planned for v0.3:
+  Output MIDI clock
+  Windows & OSX binaries -- need GUI launcher or something to choose directory
+  Filenames in alphabetical order
+  Resampling / how to deal with differing loop sizes (Likely just retrig on beat)
+  MIDI "pick-up" - don't change slider value under MIDI knob passes current value
+  Optional stereo support
+
+Planned for v0.4:
+  Ability to render or mixdown to another sample
+  Retrigger loops on demand, keep it on beat (quantized)  
+  Output MIDI loops loaded from disk
+  Clean up loopdub.cpp: Too large and complex!
+
+Planned for v0.5:
+  Record loops from a microphone or external equipment
+  Record MIDI loops
+
+Future:
+  Implement better effect class architecture? Support external DSP?
+  Envelopes for volume and other effects
+
+-- Small bugs & issues --
 Support for different soundcard configurations, using stereo, etc.
 Fix ghosting on position indicators
 Fix noise generated when changing echo delay length
-Ensure mutex isn't locked during normalize operation
-Filenames in alphabetical order
-Rename Wait to.. Hold?
-Save & load MIDI control & channel settings
-Output MIDI clock
-Effect selection via keyboard (check, select channel instead TODO: fix midi code to reflect this)
-Port to windows
-Envelopes for volume and other effects
-Resampling / how to deal with differing loop sizes
-More effects / DSP
- - delay/cross delay (check, but there are some artifacts)
- - distortion
-Implement better effect class architecture
-Ability to render to another sample
-Move file-related code to background thread (done for files, needed for folders?)
-Ability to play sample from keyboard overtop of loops (check)
- - or retrigger loops on demand, keep it on beat (quantized)
-Improve time wasted during screen refresh -> more accurate UpdateRectangle()?
-Small-ish user manual?
-Apply for sourceforge project
-Name for GUI library?
-
+Is mutex necessary? Disabled for now, seems to have no ill effects
 
 -- DONE --
-Implement cue button (check)
+Implement cue button (check) (disabled for now, is it useful?)
 Program cutoff filter (check)
 Directories in file selector (check)
 Half/quarter looping (check)
 Deal with longer directory listings (check)
 Threading synchronization between GUI sliders and use of values in audio rendering --> potential future problems (check)
+Move file-related code to background thread (done for files, needed for folders?)
+Improve time wasted during screen refresh -> more accurate UpdateRectangle()?
+Ability to play sample from keyboard overtop of loops (check)
 
 fixed so argument provides base directory, which file browser cannot browser out of.  (problem during set!)
 fixed file offset for browsing large directories

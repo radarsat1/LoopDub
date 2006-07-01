@@ -531,9 +531,9 @@ int LoopDub::Run()
 	UNLOCKMUTEX(mutex);
 	m_Player.Stop();
 
-	printf("bQuit: %d\n", bQuit);
-
+	#ifdef TIMING
 	printf("timer[0].avgtime = %f\n", timer[0].avgtime);
+	#endif
 
 	return 0;
 }

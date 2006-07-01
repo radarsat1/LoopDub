@@ -18,7 +18,6 @@ AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([limits.h stdlib.h string.h unistd.h])
 
-
 # Check the operating system
 
 AC_CANONICAL_HOST([])
@@ -102,7 +101,6 @@ AC_CHECK_FUNCS([memset pow realpath strcasecmp strchr])
 #LIBS="$LIBS -lobjc"
 AC_CHECK_LIB(SDL, SDL_Init, [],
 	[echo "Error! You need to install SDL."; exit -1])
-#AC_SUBST([SDL_LOCATION],[SDL])
 AC_CHECK_HEADERS([/usr/include/SDL/SDL.h],
 	[AC_SUBST([SDL_LOCATION],[/usr/include/SDL])],
 	[AC_CHECK_HEADERS([SDL.h],

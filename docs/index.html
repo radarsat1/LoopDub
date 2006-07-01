@@ -7,26 +7,46 @@
 <h1>LoopDub</h1>
 
 <p>Welcome to LoopDub, an audio application for live loop manipulation.
-<p><h3>Features</h3>
+
+<h3>Contents</h3>
+
+<ul>
+<li><a href="#features">Features</a></li>
+<li><a href="#getting">Getting LoopDub</a></li>
+<li><a href="#running">Running LoopDub</a></li>
+<li><a href="#audiosetup">Audio set-up</a></li>
+<li><a href="#screenshot">Screenshot</a></li>
+<li><a href="#instructions">Instructions</a>
+<ul>
+<li><a href="#topcontrols">Top controls</a></li>
+<li><a href="#loopcontrols">Loop controls</a></li>
+<li><a href="#keyboardcommands">Keyboard commands</a></li>
+</ul></li>
+<li><a href="#knownissues">Known issues</a></li>
+<li><a href="#contact">Contact</a></li>
+</ul>
+
+<p><a name="features"/><h3>Features</h3>
 <ul>
 <li>Can be used with a MIDI controller.  Typically designed for something
 like the Edirol PCR-30, which has 8 sliders and 8 knobs as well as a 30-key
-keyboard.
+keyboard.  I also use it with my M-Audio UC-33 controller, which has 8
+sliders and 3 rows of 8 knobs.
 <li>Play and manipulate up to 8 loops.
-<li>"Wait" button for dropping a channel into the mix on beat.
+<li>"Hold" button for dropping a channel into the mix on beat.
 <li>Live low-pass and delay filters.
 <li>Live jamming with the keyboard.
 <li>Looping smaller parts of each loop on beat.
+<li>MIDI control of effects
+<li>Program change from MIDI
 </ul>
-<p><i>Important:</i> please read this WHOLE document before you give up!  It's
-not difficult to use, I promise.
 
-<h3>Getting LoopDub</h3>
+<p><a name="getting"/><h3>Getting LoopDub</h3>
 <p>The current version of LoopDub can be downloaded <a href="https://sourceforge.net/project/showfiles.php?group_id=132786">here</a>.  It is currently only
-working on Linux, but the next version will support Windows.  See the INSTALL
+working on Linux, but the next version will support Windows and OS X.  See the INSTALL
 and README documents in the release for instructions on how to get it working.
 
-<h3>Running LoopDub</h3>
+<p><a name="running"/><h3>Running LoopDub</h3>
 <p>If it has been installed correctly (See INSTALL), you can run loopdub by
 typing "loopdub" into a command-line, with the directory of your loops as the
 argument:
@@ -34,26 +54,24 @@ argument:
 <p>Personally I have created a launcher on my GNOME desktop to do this for me,
 but the installer does not do this.
 
-<h3>Audio set-up</h3>
-<p>The output of your soundcard is split in two, for two-channel mono sound.  One side is used as the master out, and the other side is used for Cue.  I use
-RCA splitter cables to get sound into both channels on the mixer.  Like so:
-<p align="center"><img src="diagram.png">
-<p>In the future LoopDub will likely support more configurations, like using
-a second soundcard for the queue, or an extra channel on a multichannel
-soundcard.  An option for having stereo sound and not using a cue channel
-is also in the works.
+<p><a name="audiosetup"/><h3>Audio set-up</h3>
+<p>Previously I was using a split-stereo setup, where the left channel was used for cueing audio. However,
+I have dropped this feature for the moment, and will probably make it optional in a future version.
+<p>The reason is that I found myself rarely ever using the cue feature in a real performance, and it served
+only to complicate things. For now the output is simply two-channel mono sound. Stereo will be supported
+in the future, and potentially multi-channel. However I have found it's not very important for the kinds of
+performances I've been doing. If there a need for it, let me know and I'll do it sooner.
 
-<h3>Screenshot</h3>
+<p><a name="screenshot"/><h3>Screenshot</h3>
 <p><img src="screenshot.png">
 
-<h3>Instructions</h3>
-<p>Just a quick breakdown until I have time to write more extensive
-documentation:
-<h4>Top controls</h4>
+<p><a name="instructions"/><h3>Instructions</h3>
+<p>Here is a quick breakdown of how to use LoopDub:
+<a name="topcontrols"/><h4>Top controls</h4>
 <p><b>Beats:</b> click on this until it reads the correct number of beats
 in your loop.  Then corresponding BPM will be displayed next to the button.
 <p><b>Autocue:</b> when checked, the "cue" button will automatically be
-selected when a new file is loaded.
+selected when a new file is loaded. (Cue is currently a disabled feature.)
 <p><b>VU Meter:</b>Shows the current amplitude of final output signal.
 <p><b>Master Volume:</b>Adjust this slider when VU Meter is very close to the
 top, otherwise clipping may occur, which doesn't sound very nice.
@@ -63,13 +81,14 @@ and you move the corresponding control on your MIDI keyboard to teach LoopDub
 which function it corresponds to.  At the moment I usually use my sliders
 for volume and my knobs for effects.  This means I am currently not using
 4 of the knobs.
-<h3>Loop controls</h3>
-<p><b>Cue:</b> Puts the loop on the cue channel.
+<a name="loopcontrols"/><h4>Loop controls</h4>
+<p><b>Cue:</b> Puts the loop on the cue channel. This feature is currently
+disabled, because I never found myself needing to use it.
 <p><b>Split:</b> Divides the loop into smaller pieces.  These splits are used
 for a couple of different things.  You can click and drag on the loop with
 your mouse to select a sequence of "parts" to be looped instead of the whole
 thing.  This can be useful for changing how a beat sounds or looping a strange
-voice clip.  Also, the "Wait" function will drop the sound back in on the next
+voice clip.  Also, the "Hold" function will drop the sound back in on the next
 split boundary, which is useful if you don't want to wait until the end of the
 loop.
 <p><b>Keys:</b> Chooses this loop as the "key" loop.  Only one loop can be
@@ -77,7 +96,7 @@ chosen at a time.  When any loop is chosen as the key-control loop, it will
 no longer be played along with the other loops.  Instead, it will be triggered
 when you press keys on your keyboard, at the correct pitch.  This allows you
 to play melodies in realtime along with the other loops.
-<p><b>Wait:</b> Cuts the volume on the loop until the next split boundary.
+<p><b>Hold:</b> Cuts the volume on the loop until the next split boundary.
 This is useful when you are cueing a track and want to have it come in on a
 particular bar instead of manually having to throw the volume slider.  Once
 you click "wait", you can move the volume slider into position without
@@ -91,7 +110,7 @@ keyboard to trigger the loop from within different parts, based on the current
 split configuration.  In other words, you will be able to re-sequence a
 breakbeat or whatever you want, in realtime.
 
-<h3>Keyboard commands</h3>
+<a name="keyboardcommands"/><h4>Keyboard commands</h4>
 <p><b>Numbers 1 - 8:</b> Pressing numbers 1 through 8 on your keyboard, you
 will notice that the corresponding loop number turns to a blue background. This
 means that this loop sample is selected for being modified by MIDI controls.
@@ -100,22 +119,25 @@ long as no loops are selected as the "key control" or "break" loop.  It is
 known that there is not yet a configuration for MIDI channels, this is on the
 TODO list.
 <p><b>Enter: </b> Starts and stops audio output.
-<p><b>Alt-Enter: </b> Toggles fullscreen mode. (Very nice for live sets, try it!)
+<p><b>Alt-Enter</b> or <b>F: </b> Toggles fullscreen mode. (Very nice for live sets, try it!)
 <p><b>Escape: </b> Exits LoopDub.
 
-<h3>Known issues</h3>
+<p><a name="knownissues"/><h3>Known issues</h3>
 <p>There are many things that need to be changed and improved and added to
 LoopDub, however I will list a couple here that are imperative that users know
 about:
 <ul>
-<li>All loops must be the same size.  This is not strictly true, but there is
-not currently any kind of realtime resampling or timestretching, so the first
-loop loaded sets the <i>length</i> for the loops, and every subsequent sample
-will be looped at the same tempo.  In other words, when the position counter
-gets to the end of the first loop, it wraps back to the beginning for ALL
-loops.  This is not really a problem for me since I use the same program to
-generate all my loops, and I simply make them all the same size anyways (I find
-that about 32 to 64 bars is good), but it an issue that needs to be addressed.
+<li>There is currently no resampling or timestretching applied to samples
+if there are not the same length. As it is, the FIRST loaded sample determines
+the "loop length". It is recommended that you use .wav files that are of the
+same length throughout your performance. You may also use samples that are,
+say, exactly a half or a quarter of your loop length, but be sure to load
+the <i>longest</i> sample FIRST to "initialize" the environment. In the
+future I'll have to find a nicer way of dealing with this problem, but I
+am not convinced that I will want to actually do any resampling during a
+performance, as this changes the pitch, and timestretching does not always
+sound nice and takes extra CPU.
+
 <li>All loops must be in the base loop folder specified on the command-line.
 This is actually more of a feature than a bug.  I was doing a show where I
 accidentally browsed out of my loop folder, and I got lost in my harddrive and
@@ -123,18 +145,20 @@ it ended up causing big problems, so I made it so that it is impossible to
 browse outside the folder specified as your loop folder.  This will hopefully
 avoid any of these kinds of problems.  The trick to using LoopDub is having a
 well-organized loop folder.
-<li>It does not currently remember your MIDI settings, nor does it let you
-specify your MIDI channel for using the keyboard.  This may cause difficulties,
-and I'm going to fix it as soon as possible.  Still, you may try MIDI anyways.
-It works fine for me, but other keyboards may vary.  For your reference, my
-MIDI keyboard is the Edirol PCR-30.
+
+<li>MIDI settings for effects can be configured through the "Learn" button,
+however there is currently no way to specify the MIDI "Buttons" without
+editing a text file. Also the only way to create program configurations is
+also by editing a text file. Personally I find this okay, but it might be
+too complicated for some users. The text file formats are, however, 
+exceedingly simple, based on Windows' "ini" files. I may create some
+cross-platform GUI program for configuration of the LoopDub environment.
 </ul>
 
-<h3>Contact</h3>
+<p><a name="contact"/><h3>Contact</h3>
 <p>Get in touch with me at
 <script language='javascript'>document.write("<a href=\"mail");document.write("to:");document.write("radarsat1");document.write("@");document.write("gmail.com");document.write("\">");document.write("radarsat1");document.write("@");document.write("gmail.com");</script></a>
 
-<p><font size=2>Last edited by Steve Sinclair: Mar 12, 2005</font>
-
+<p><font size=2>Last edited by Stephen Sinclair: July 1, 2006</font>
 </body>
 </html>

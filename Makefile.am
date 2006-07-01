@@ -26,5 +26,5 @@ loopdub_SOURCES = filter.cpp \
 	sample.h \
 	vumeter.h
 
-dist_pkgdata_DATA = Dotum10.raw .loopdub.midi.conf programs.ini.example
+dist_pkgdata_DATA = Dotum10.raw loopdub.midi.conf.example programs.ini.example
 EXTRA_DIST = portmidi17nov04.zip

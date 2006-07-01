@@ -1,13 +1,24 @@
 
-* Mar 12, 2005
-Initial import into CVS.  Marked as version 0.1
+* Jul 1, 2006
+Release 0.2. Have not been keeping this file properly, sorry.
+This version includes many new features:
+- Program-change for MIDI (see programs.ini.example)
+- Load "background samples" that can be switched quickly
+  Currently only supported by program-change functionality.
+- "Switch" button to change to background sample
+- Compiles, with a little work, on Windows and OS X in addition to Linux
+- Remembers MIDI settings in ~/.loopdub.midi.conf
+  See "loopdub.midi.conf.example" for details.
+	
+* May 16, 2005
+Logarithmic sliders!  So much better. (Applies to Cutoff & Resonance)
+Clicking a folder now sets all filebrowsers to same folder.
 
 * May 15, 2005
 Windows version sort of works.  Still needs some thread priority bugs
 to be worked out.
 
-* May 16, 2005
-Logarithmic sliders!  So much better.  Why didn't I do this earlier?
-(Applies to Cutoff & Resonance)
-Clicking a folder now sets all filebrowsers to same folder.
+* Mar 12, 2005
+Initial import into CVS.  Marked as version 0.1
+
 	

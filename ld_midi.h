@@ -25,6 +25,7 @@ enum CtrlType
 	 CT_EFFECT1,
 	 CT_EFFECT2,
 	 CT_EFFECT3,
+	 CT_EFFECT4,
 	 CT_BUTTON,
 	 CT_SELECT,
 	 N_CT
@@ -38,12 +39,12 @@ enum CtrlType
 // to be pushed, and other CCs to individual loops.
 enum Buttons
 {
-	BT_CUE,
-	BT_SPLIT,
-	BT_HOLD,
-	BT_KEYS,
-	BT_NORM,
-	BT_SWITCH,
+	BT_CUE=0,
+	BT_SPLIT=1,
+	BT_HOLD=2,
+	BT_KEYS=3,
+	BT_NORM=4,
+	BT_SWITCH=5,
 	N_BT
 };
 

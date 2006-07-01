@@ -21,7 +21,7 @@ the same, and they are limited to only eight.  The buttons are always in the
 same place, and the mouse actions always do what you expect.
 
   After using it for a few hours, you will find that the interface blends very
-well with what you are doing, and because it is so simply, you will almost
+well with what you are doing, and because it is so simple, you will almost
 forget the interface is even there.  This is what I call TRANSPARENCY.  You
 will, if I have achieved my goal, feel like you are no longer using "an
 application" to create music, but that you are "playing" your computer, just
@@ -38,8 +38,8 @@ performed with LoopDub is going to sound... loopy.  But since it uses standard
 .wav files and gives no restrictions on loop size and what can be done with
 them, it is hoped that the interface will not influence the style of music
 performed, within the target genre.  Any kind of electronic music oriented
-around the loop, such as techno, house, or whatever, could use LoopDub for a
-performance, and you should not really be able to tell they are using it.
+around the loop, such as techno, house, hiphop or whatever, could use LoopDub
+for a performance, and you should not really be able to tell they are using it.
 
 
 Why I wrote LoopDub
@@ -69,31 +69,17 @@ no doubt that you could use sequencers such as Acid Pro or even Cubase in a
 dynamic and live kind of way, but I wanted something designed from scratch,
 and it's been fun to design, and having it specifically oriented around live
 performances has allowed me to customize certain useful features to do what
-I need.  (Such as the "wait for next bar" feature, incredibly useful!)
+I need.  (Such as the "wait for next bar (hold)" feature, incredibly useful!)
 
-  Besides, I really felt compelled to contribute an application to the open-
-source world, since I have gained so much from it myself, and music software
-is an area where I felt 1. I have a great interest and 2. there is not a lot
-of quality software compared to how much there is for Windows and OS X.
-(Of course there IS _some_ quality audio software, but not a lot.)  I'd really
-like to see audio take off on Linux, and hopefully my small contributions can
-help in some way.
-
-  That said, this software was designed using cross-platform libraries, and as
-such I would like to encourage everyone to start designing their applications
-to run on any platform.  I believe there are enough solutions out there at
-present for GUI, audio, and many other areas that are cross-platform
-compatible.  We should no longer be letting any operating system push itself
-on the application world.  The OS should be an independant entity, that can
-be switched without seriously affecting the productivity of the end user.
-Only when this is the case will it be possible for people to finally realize
-that there's no reason for them to be using proprietary software and standards.
-
-  It is currently Linux-only, but because I used PortAudio, PortMidi and SDL
-for sound and graphics support, it should only take a few tweaks to get it
-working in Windows, which I will do as soon as possible.  I would port it to
-OS X as well, but I don't have a Mac!  (Actually its possible it works in
-other Unix environments, but I haven't tested anything but Linux.)
+  At the moment I use it mainly under Linux. It was designed with cross-platform
+compatibility in mind.  The next release version will certainly include Windows
+and OS X binaries.  Already you can compile it for those platforms, however I
+have been looking at some thread priority issues which are stopping me from
+considering those platform versions "stable". However, at this time, I have
+already performed one live set using this software on OS X so I can guarantee
+that it does work. However I am not yet ready to provide binary versions. With
+a little work you can get it to compile in Visual Studio, or from the command
+line in OS X.
 
   There are MANY many more things I could add or need to fix.  See the TODO
 file for some examples.  It is definitely not an exhaustive list, as I keep

@@ -25,7 +25,7 @@
 
 #define chdir _chdir
 
-#else				/* Linux */
+#else				/* Linux / OSX */
 #include <pthread.h>
 #include <unistd.h>
 

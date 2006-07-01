@@ -7,6 +7,8 @@
 #include <iostream.h>
 #include <fstream.h>
 
+#define EMBEDDED_FONTS 1
+
 //using namespace ScrobUI;
 
 /*
@@ -396,8 +398,10 @@ DrawingTools::DrawingTools()
 
 DrawingTools::~DrawingTools()
 {
+#ifdef EMBEDDED_FONTS
 	if (m_pCharacterData)
 		delete m_pCharacterData;
+#endif
 
 	if (m_pCharacterSurface)
 		SDL_FreeSurface(m_pCharacterSurface);
@@ -521,14 +525,15 @@ bool DrawingTools::LoadCharacterData(char *filename)
 {
 	short sx, sy;
 
-	 #if 1
+#ifdef EMBEDDED_FONTS
+
 	 m_nFontHeight = sy = Font_Height;
 	 sx = Font_BitmapWidth;
 	 m_pCharacterData = Font_CharacterData;
 	 m_nCharOffsets = Font_CharOffsets;
 	 m_nCharWidths = Font_CharWidths;
 
-	 #else
+#else
 
 	ifstream charfile(filename, ios::in | ios::binary);
 	int i, j;
@@ -551,23 +556,27 @@ bool DrawingTools::LoadCharacterData(char *filename)
 
 	m_pCharacterData = new unsigned char[sx*sy];
 
-	if (!charfile.fail() && !charfile.bad())
+	if (m_pCharacterData && !charfile.fail() && !charfile.bad())
 		 charfile.read((char*)m_pCharacterData, sx*sy);
 
-	if (charfile.fail() || charfile.bad())
+	if (!m_pCharacterData || charfile.fail() || charfile.bad())
 	{
 		fprintf(stderr, "Error reading character data.\n");
-		delete m_pCharacterData;
+		if (m_pCharacterData)
+			 delete m_pCharacterData;
 		m_pCharacterData = NULL;
 		return false;
 	}
-	#endif
+
+#endif // EMBEDDED_FONTS
 
 	m_pCharacterSurface = SDL_CreateRGBSurfaceFrom(m_pCharacterData, sx, sy, 8, sx, 0, 0, 0, 0);
 	if (!m_pCharacterSurface)
 	{
 		fprintf(stderr, "Couldn't create character surface.\n");
+#ifdef EMBEDDED_FONTS
 		delete m_pCharacterData;
+#endif
 		m_pCharacterData = NULL;
 		return false;
 	}

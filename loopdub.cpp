@@ -18,9 +18,11 @@ class Timer
 public:
 	 void init()
 		  {
+		    #ifdef TIMING
 			   time = clock();
 			   avgtime=0;
 			   count=0;
+		    #endif
 		  }
 
 	 void reinit()
@@ -31,8 +33,10 @@ public:
 
 	 double elapsed()
 		  {
+		    #ifdef TIMING
 			   clock_t t;
 			   //if (count<100000)
+
 					t = clock();
 
 			   /*
@@ -47,7 +51,10 @@ public:
 
 			   avgtime = (avgtime*count + result) / (count+1);
 			   count++;
-			   return result;
+			   return result;			   
+       		   #else
+			   return 0;
+       		   #endif
 		  }
 
 protected:
@@ -104,7 +111,8 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 		 priority = true;
 	}
 
-	LOCKMUTEX(app.mutex);
+	// TODO: Is mutex necessary?
+	//LOCKMUTEX(app.mutex);
 
 	// MIDI clock
 	int ticksize = 816;
@@ -181,7 +189,7 @@ timer[0].elapsed();
 		 app.updated = false;
 	}
 
-	UNLOCKMUTEX(app.mutex);
+	//UNLOCKMUTEX(app.mutex);
 }
 
 THREADFUNC loadSampleThread(void* pApp)

@@ -153,6 +153,10 @@ bool Sample::LoadFromFile(char *filename)
 				ENDIANFLIP32(size);
 				size /= sizeof(short)*fmt.wChannels;
 				m_nSamples = size;
+
+				if (size <= 0)
+					 return false;
+
 				m_pData = new short[m_nSamples];
 				if (m_pData)
 				{

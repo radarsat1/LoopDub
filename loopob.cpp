@@ -333,8 +333,8 @@ bool LoopOb::Create(Scrob *pParent, const Rect& r, int number, Sample *pSample)
 	m_nPos = 0;
 	m_nLastPos = 0;
 
-	m_filterbank[0] = &lowpass;
-	m_filterbank[1] = &delay;
+	m_filterbank[0] = &delay;
+	m_filterbank[1] = &lowpass;
 	for (i=0; i<N_FILTERS; i++)
 		 m_filterbank[i]->Initialize();
 

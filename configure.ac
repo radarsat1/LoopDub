@@ -96,31 +96,46 @@ AC_FUNC_STAT
 AC_CHECK_FUNCS([memset pow realpath strcasecmp strchr])
 
 # Checks for libraries.
-#CFLAGS="$CFLAGS -I$HOME/.local/include"
-#LDFLAGS="$LDFLAGS -L$HOME/.local/lib"
-#LIBS="$LIBS -lobjc"
+
+if test "${SYS}" == "darwin"; then
+   echo "Adding paths for Fink..."
+   CFLAGS="$CFLAGS -I/sw/include"
+   CPPFLAGS="$CPPFLAGS -I/sw/include"
+   LDFLAGS="$LDFLAGS -L/sw/lib"
+
+   # For portmidi and OSX frameworks
+   AC_SUBST([PM_EXTRA],["-Lportmidi -lportmidi -framework CoreAudio -framework CoreMIDI -framework Carbon -framework AppKit"])
+fi
+
+if test "${SYS}" == "linux"; then
+   # For portmidi
+   AC_SUBST([PM_EXTRA],["-Lportmidi/pm_linux -lportmidi -Lportmidi/porttime -lporttime"])
+fi
+
 AC_CHECK_LIB(SDL, SDL_Init, [],
 	[echo "Error! You need to install SDL."; exit -1])
+AC_CHECK_LIB(SDLmain, main, [],
+	[echo "Error! Can't find SDLmain."; exit -1])
 AC_CHECK_HEADERS([/usr/include/SDL/SDL.h],
 	[AC_SUBST([SDL_LOCATION],[/usr/include/SDL])],
 	[AC_CHECK_HEADERS([SDL.h],
 		[AC_SUBST([SDL_LOCATION],[])],
 		[AC_CHECK_HEADERS([$HOME/.local/include/SDL/SDL.h],
 			[AC_SUBST([SDL_LOCATION],[$HOME/.local/include/SDL])],
+			[AC_CHECK_HEADERS([/sw/include/SDL/SDL.h],
+				[AC_SUBST([SDL_LOCATION],[/sw/include/SDL])],
 				[echo "Error! Cannot find SDL.h. You need to install SDL."; exit -1])
-				])])
+])])])
 
 AC_CHECK_LIB(portaudio, Pa_Initialize, [],
 	[echo "Error! You need to install PortAudio."; exit -1])
 
-#note: AC_CHECK_LIB cannot be called conditionally.. sigh.
-#if test "x${HAVE_LINUX}" == "xyes"; then
 AC_CHECK_LIB(asound, Pa_Initialize, [],
-	[echo "Error! You need to install ALSA."; exit -1])
-#fi
+	[if "${SYS}" == "linux"; then echo "Error! You need to install ALSA."; exit -1; fi])
 
 AC_CONFIG_FILES([Makefile
                  gui/Makefile])
+
 AC_OUTPUT
 
 # patch the Makefile to unpack and compile port midi
@@ -131,16 +146,27 @@ cp Makefile Makefile.tmp
 if test "${SYS}" == "linux"; then
    cat Makefile | sed s/^all:/all:\ portmidi\\/pm_linux\\/libportmidi.a/ >Makefile.tmp
    echo "" >>Makefile.tmp
-   echo "\# Patch: unzip and compile portmidi library" >>Makefile.tmp
+   echo "# Patch: unzip and compile portmidi library" >>Makefile.tmp
    echo "portmidi/pm_linux/libportmidi.a: portmidi" >>Makefile.tmp
-   echo '	\$(MAKE) -C portmidi' >>Makefile.tmp
+   echo '	$(MAKE) -C portmidi' >>Makefile.tmp
    echo "" >>Makefile.tmp
 fi
 
 if test "${SYS}" == "darwin"; then
-   cat Makefile | sed s/^all:/all:\ portmidi\\/pm_mac\\/build\\/libportmidi.a/ >Makefile.tmp
+   cat Makefile | sed s/^all:/all:\ portmidi\\/libportmidi.a/ >Makefile.tmp
    echo "" >>Makefile.tmp
-   echo "\# Patch: unzip portmidi library" >>Makefile.tmp
+   echo "# Patch: unzip portmidi library" >>Makefile.tmp
+   echo "portmidi/libportmidi.a: portmidi" >>Makefile.tmp
+   echo "	gcc -Iportmidi/pm_common -Iportmidi/porttime -c -o portmidi/pmmac.o portmidi/pm_mac/pmmac.c" >>Makefile.tmp
+   echo "	gcc -Iportmidi/pm_common -Iportmidi/porttime -c -o portmidi/pmmacosxcm.o portmidi/pm_mac/pmmacosxcm.c" >>Makefile.tmp
+   echo "	gcc -Iportmidi/pm_common -Iportmidi/porttime -c -o portmidi/pmutil.o portmidi/pm_common/pmutil.c" >>Makefile.tmp
+   echo "	gcc -Iportmidi/pm_common -Iportmidi/porttime -c -o portmidi/portmidi.o portmidi/pm_common/portmidi.c" >>Makefile.tmp
+   echo "	gcc -Iportmidi/pm_common -Iportmidi/porttime -c -o portmidi/porttime.o portmidi/porttime/porttime.c" >>Makefile.tmp
+   echo "	gcc -Iportmidi/pm_common -Iportmidi/porttime -c -o portmidi/ptmacosx_cf.o portmidi/porttime/ptmacosx_cf.c" >>Makefile.tmp
+   echo "	gcc -Iportmidi/pm_common -Iportmidi/porttime -c -o portmidi/ptmacosx_mach.o portmidi/porttime/ptmacosx_mach.c" >>Makefile.tmp
+   echo "	ar -ruv portmidi/libportmidi.a portmidi/*.o" >>Makefile.tmp
+
+   echo "" >>Makefile.tmp
 fi
 
 echo "portmidi:" >>Makefile.tmp

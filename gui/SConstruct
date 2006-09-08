@@ -1,0 +1,12 @@
+
+if 'debug' in ARGUMENTS:
+	CCFLAGS = '-g -ggdb '
+else:
+	CCFLAGS = ''
+
+CCFLAGS += '-DFLAT_GUI'
+
+StaticLibrary('scrobui', ['scrobui.cpp', 'toolkit.cpp', 'dotum10.cpp'],
+			  LIBS=['SDL'],
+			  CPPPATH=['/usr/include/SDL', '.'],
+			  CCFLAGS=CCFLAGS)

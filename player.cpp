@@ -5,7 +5,6 @@
 
 Player::Player()
 {
-	paStream = NULL;
 	m_pLeftBuffer = NULL;
 	m_pRightBuffer = NULL;
 	
@@ -15,15 +14,18 @@ Player::Player()
 
 Player::~Player()
 {
-	if (paStream)
-	{
-		Pa_CloseStream(paStream);
-		paStream = NULL;
-		
-		Pa_Terminate();
-	}
+	 rtaudio.closeStream();
 }
 
+int callback( char* buffer, int bufferSize, void* userData)
+{
+	 ((Player*)userData)->Mix((short*)buffer, bufferSize, 0);
+
+	 // true to stop the stream
+	 return false;
+}
+
+/*
 int callback(  void *inputBuffer, void *outputBuffer,
                    unsigned long framesPerBuffer,
                    double outTime, void *userData )
@@ -31,6 +33,7 @@ int callback(  void *inputBuffer, void *outputBuffer,
 	((Player*)userData)->Mix((short*)outputBuffer, framesPerBuffer, (int)outTime);
 	return 0;
 }
+*/
 
 bool Player::Initialize(void (FillBuffers)(void*, int), void* param)
 {
@@ -47,22 +50,24 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param)
 	}
 
 	// Initialize sound
-	int rc;
-	if ((rc=Pa_Initialize()) != paNoError)
-	{
-		 printf("Couldn't initialize PortAudio: %d\n", rc);
-		return false;
-	}
+	// RtAudio was initialized in contructor
 
-	// Open stream. 
-	if (Pa_OpenDefaultStream( &paStream, 0, 2, paInt16, SAMPLE_RATE, BUFFER_SAMPLES,
-							  0, callback, (void*)this) != paNoError)
+	// Open stream.
+	try {
+		int bufferSize = BUFFER_SAMPLES;
+		rtaudio.openStream(0, 2, 0, 0,
+			RTAUDIO_SINT16, SAMPLE_RATE,
+			&bufferSize, 0);
+
+		rtaudio.setStreamCallback(callback, this);
+	}
+	catch (RtError e)
 	{
-		 printf("Couldn't open PortAudioStream.\n");
+		printf("RtError in Player::Initialize(): %s\n", e.getMessage().c_str());
 		return false;
 	}
-	
-	printf("PortAudioStream opened.\n");
+		
+	printf("RtAudio stream opened.\n");
 	
 	// buffer size
 	m_nBufferLengthBytes = BUFFER_SAMPLES * BYTES_PER_SAMPLE;
@@ -94,22 +99,31 @@ void Player::Mix(short *outputBuffer, unsigned long framesPerBuffer, int outTime
 
 void Player::Play()
 {
-	PaError err;
-	if (paStream)
-		err = Pa_StartStream(paStream);
-
-	m_bPlaying=(err==paNoError);
+	try {
+		rtaudio.startStream();
+		m_bPlaying=true;
+	}
+	catch (RtError e)
+	{
+		printf("RtError in Player::Play(): %s\n", e.getMessage().c_str());
+		m_bPlaying=false;
+	}
 }
 
 void Player::Stop()
 {
-	if (paStream) m_bPlaying=!(Pa_StopStream(paStream)==paNoError);
+	try {
+		rtaudio.stopStream();
+		m_bPlaying=false;
+	}
+	catch (RtError e)
+	{
+		printf("RtError in Player::Stop(): %s\n", e.getMessage().c_str());
+	}
 }
 
 int Player::GetPlayPositionSamples()
 {
-	 if (paStream)
-		  return (int)Pa_StreamTime(paStream);
-	 else
-		  return 0;
+	// TODO
+	return 0;
 }

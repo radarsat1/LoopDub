@@ -4,6 +4,8 @@
 
 #include "platform.h"
 #include "sample.h"
+
+#include <sndfile.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
@@ -93,112 +95,28 @@ void Sample::Normalize()
 
 bool Sample::LoadFromFile(char *filename)
 {
-	unsigned long dw, size;
-
-	struct
-	{
-		short          wFormatTag;
-		unsigned short wChannels;
-		unsigned long  dwSamplesPerSec;
-		unsigned long  dwAvgBytesPerSec;
-		unsigned short wBlockAlign;
-		unsigned short wBitsPerSample;
-	} fmt;
-	memset(&fmt, 0, sizeof(fmt));
-
-	FILE *f = fopen(filename, "rb");
-	if (f)
-	{
-	printf("Loading %s\n", filename);
-		fread(&dw, 4, 1, f);
-		char *s = (char*)&dw;
-		dw = LITTLEENDIAN32(dw);
-		if (dw!='RIFF')
-		{
-			fclose(f);
-			return false;
-		}
-
-		fread(&dw, 4, 1, f);
-		fread(&dw, 4, 1, f);
-		dw = LITTLEENDIAN32(dw);
-		if (dw!='WAVE')
-		{
-			fclose(f);
-			return false;
-		}
-
-		fread(&dw, 4, 1, f);
-		while (!feof(f))
-		{
-			dw = LITTLEENDIAN32(dw);
-			if (dw=='fmt ')
-			{
-				fread(&size, 4, 1, f);
-				ENDIANFLIP32(size);
-				fread(&fmt, (size < sizeof(fmt)) ? size : sizeof(fmt), 1, f);
-				size -= sizeof(fmt);
-				while (size-- > 0)
-					fread(&dw, 1, 1, f);
-				ENDIANFLIP16(fmt.wFormatTag);
-				ENDIANFLIP16(fmt.wChannels);
-				ENDIANFLIP32(fmt.dwSamplesPerSec);
-				ENDIANFLIP32(fmt.dwAvgBytesPerSec);
-				ENDIANFLIP16(fmt.wBlockAlign);
-				ENDIANFLIP16(fmt.wBitsPerSample);
-			}
-			else if (dw=='data' && !m_pData)
-			{
-				fread(&size, 4, 1, f);
-				ENDIANFLIP32(size);
-				size /= sizeof(short)*fmt.wChannels;
-				m_nSamples = size;
-
-				if (size <= 0)
-					 return false;
-
-				m_pData = new short[m_nSamples];
-				if (m_pData)
-				{
-					short s, *p=m_pData;
-					int i;
-					while (size > 0)
-					{
-						*p = 0;
-						for (i=0; i<fmt.wChannels; i++)
-						{
-							fread(&s, sizeof(short), 1, f);
-							ENDIANFLIP16(s);
-							*p += s/fmt.wChannels;
-						}
-						p++;
-						size--;
-					}
-				}
-				else
-				{
-					fclose(f);
-					m_nSamples = 0;
-					return false;
-				}
-			}
-			else
-			{
-				fread(&size, 4, 1, f);
-				while (size-- > 0)
-					fread(&dw, 1, 1, f);
-			}
-
-			USLEEP(10);
-
-			fread(&dw, 4, 1, f);
-		}
-
-		strcpy(m_filename, filename);
-		fclose(f);
-	}
-	else
+	SF_INFO fileinfo;
+	SNDFILE *file = sf_open(filename, SFM_READ, &fileinfo);
+	if (!file)
 		return false;
 
+	m_nSamples = fileinfo.frames;
+	m_pData = new short[m_nSamples];
+	if (!m_pData) {
+		sf_close(file);
+		printf("Not enough memory!\n");
+		m_pData = NULL;
+		m_nSamples = 0;
+		return false;
+	}
+
+	int i=0;
+	while (i<m_nSamples)
+	{
+		i += sf_read_short(file, &m_pData[i], m_nSamples-i);
+		printf("Read %d items\n", i);
+	}
+
+	sf_close(file);
 	return true;
 }

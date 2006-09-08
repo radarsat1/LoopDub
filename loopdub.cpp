@@ -128,7 +128,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 	// Audio
 	short* pBufferL = app.m_Player.LeftBuffer();
 	short* pBufferR = app.m_Player.RightBuffer();
-	int max=0;
+	int maxval=0;
 	int volume, volmax;
 	
 	volume = app.m_pVolumeSlider->GetValue();
@@ -166,7 +166,7 @@ timer[1].elapsed();
 
 			 if (value[i] > 32767)  value[i] = 32767;
 			 if (value[i] < -32767) value[i] = -32767;
-			 if (value[i] > max) max = value[i];
+			 if (value[i] > maxval) maxval = value[i];
 		}
 
 //		*(pBufferR++) = value[0];
@@ -180,7 +180,7 @@ timer[1].elapsed();
 timer[0].elapsed();
 	}
 
-	app.m_pVUMeter->SetPercentage(max * 100 / 32767);
+	app.m_pVUMeter->SetPercentage(maxval * 100 / 32767);
 
 	if (app.updated) {
 		 SDL_Event evt;
@@ -205,14 +205,18 @@ THREADFUNC loadSampleThread(void* pApp)
 	 LoopDub &app = *(LoopDub*)pApp;
 
 	 Sample *pSample = new Sample();
-	 if (pSample && pSample->LoadFromFile(app.m_strLoadingSample))
+	 if (pSample)
 	 {
+		if (!pSample->LoadFromFile(app.m_strLoadingSample))
+			printf("Error loading %s.\n", app.m_strLoadingSample);
+		else {
 		  LOCKMUTEX(app.mutex);
 		  if (app.m_nLength==0) app.m_nLength = pSample->m_nSamples;
 		  Sample *pOldSample = app.m_pLoopOb[app.m_nLoadingSampleFor]->SetSample(pSample);
 		  if (pOldSample)
 			   delete pOldSample;
 		  UNLOCKMUTEX(app.mutex);
+		}
 	 }
 
 	 return NULL;
@@ -280,7 +284,7 @@ int LoopDub::Run()
 	{
 		 sprintf(str, "%d. %s", i+1, m_ProgramChanger.GetProgramName(i));
 		 w = dt.GetTextWidth(str, strlen(str));
-		 mx = max(mx, w);
+		 if (w > mx) mx = w;
 		 y += dt.GetFontHeight()+2;
 		 m_pProgramArea->AddChild(new Label(m_pProgramArea,
 											Rect(x, y, x+w, y+dt.GetFontHeight()),
@@ -426,8 +430,8 @@ int LoopDub::Run()
 		if (!bQuit)
 		{
 			 int cmd;
-			 void *value;
-			 if (gui.GetCommand(&cmd, &value))
+			 long value;
+			 if (gui.GetCommand(&cmd, (void**)&value))
 			 {
 				  if (cmd==CMD_LEARN)
 				  {
@@ -436,8 +440,8 @@ int LoopDub::Run()
 				  }
 				  else if (cmd==CMD_SELECT)
 				  {
-					   printf("Select: %d\n", (int)value);
-					   m_Midi.SelectDevice((int)value);
+					   printf("Select: %d\n", value);
+					   m_Midi.SelectDevice(value);
 				  }
 				  else if (cmd==CMD_BEATS)
 				  {
@@ -478,7 +482,7 @@ int LoopDub::Run()
 							delete pOldSample;
 				  }
 				  else if (cmd==CMD_NORMALIZE) {
-					   int ch = (int)value;
+					   int ch = value;
 					   if (m_pLoopOb[ch]->GetSample()) {
 							m_pLoopOb[ch]->GetSample()->Normalize();
 							m_pLoopOb[ch]->SetSample(m_pLoopOb[ch]->GetSample());
@@ -486,7 +490,7 @@ int LoopDub::Run()
 					   }
 				  }
 				  else if (cmd==CMD_KEYS) {
-					   int ch = (int)value;
+					   int ch = value;
 					   if (m_nKeysChannel > -1)
 							m_pLoopOb[m_nKeysChannel]->LoseKeys();
 
@@ -499,15 +503,15 @@ int LoopDub::Run()
 							m_nKeysChannel = -1;
 				  }
 				  else if (cmd==CMD_SPLIT) {
-						int ch = (int)value;
+						int ch = value;
 						m_pLoopOb[ch]->Split();
 				  }
 				  else if (cmd==CMD_HOLD) {
-						int ch = (int)value;
+						int ch = value;
 						m_pLoopOb[ch]->SetHolding(m_pLoopOb[ch]->m_pHoldButton->IsPressed());
 				  }
 				  else if (cmd==CMD_SWITCH) {
-						int ch = (int)value;
+						int ch = value;
 						m_pLoopOb[ch]->SetSwitching(m_pLoopOb[ch]->m_pSwitchButton->IsPressed());
 				  }
 				  else if (cmd==CMD_PROGRAMCHANGE) {

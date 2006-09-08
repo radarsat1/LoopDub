@@ -84,7 +84,7 @@ MidiControl::MidiControl()
 
 MidiControl::~MidiControl()
 {
-	 if (m_bInitialized)
+	 if (m_bInitialized && m_pmListen)
 		  Pm_Terminate();
 
 	 if (m_bMidiCodesHaveChanged) {
@@ -169,7 +169,8 @@ void MidiControl::SelectDevice(int n)
 		  if (m_pmListen)
 			   Pm_Close(m_pmListen);
 
-		  err = Pm_OpenInput( &m_pmListen, n, NULL, 10, NULL, NULL);
+		  //err = Pm_OpenInput( &m_pmListen, n, NULL, 10, NULL, NULL);
+		  err = (PmError)-pmNoError;
 		  if (err != pmNoError)
 			   m_pmListen = NULL;
 		  break;

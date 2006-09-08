@@ -1,9 +1,9 @@
 
 
 SUBDIRS = gui
+EXTRA_LIBS = $(PM_EXTRA)
 LDADD = gui/libscrobui.a $(EXTRA_LIBS)
 AM_CPPFLAGS = -I$(srcdir)/gui/ -I$(SDL_LOCATION) -Iportmidi/pm_common
-EXTRA_LIBS = $(PM_EXTRA)
 bin_PROGRAMS = loopdub
 loopdub_SOURCES = filter.cpp \
 	ld_midi.cpp \

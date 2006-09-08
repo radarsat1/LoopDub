@@ -4,10 +4,10 @@
 #define _SCROBUI_CPP_
 #include "scrobui.h"
 #include "dotum10.h"
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 
-#define EMBEDDED_FONTS 1
+using namespace std;
 
 //using namespace ScrobUI;
 
@@ -194,7 +194,7 @@ bool GUI::Initialize(char *strTitle, bool bFullScreen, int nWidth, int nHeight, 
 	SDL_EnableUNICODE(1);
 
 	// Load character data
-	if (!dt.LoadCharacterData(DATADIR "Dotum10.raw"))
+	if (!dt.LoadCharacterData())
 		return false;
 
 	// create a window
@@ -521,62 +521,20 @@ void DrawingTools::FillRect(Rect r, int color)
 }
 
 #include <assert.h>
-bool DrawingTools::LoadCharacterData(char *filename)
+bool DrawingTools::LoadCharacterData()
 {
 	short sx, sy;
 
-#ifdef EMBEDDED_FONTS
-
-	 m_nFontHeight = sy = Font_Height;
-	 sx = Font_BitmapWidth;
-	 m_pCharacterData = Font_CharacterData;
-	 m_nCharOffsets = Font_CharOffsets;
-	 m_nCharWidths = Font_CharWidths;
-
-#else
-
-	ifstream charfile(filename, ios::in | ios::binary);
-	int i, j;
-
-	if (!charfile.is_open())
-	{
-		fprintf(stderr, "Couldn't open %s.\n", filename);
-		return false;
-	}
-
-	for (i=0; i<95; i++)
-	{
-		charfile.read((char*)&m_nCharOffsets[i], 2);
-		charfile.read((char*)&m_nCharWidths[i], 1);
-	}
-
-	charfile.read((char*)&sx, 2);
-	charfile.read((char*)&sy, 2);
-	m_nFontHeight = sy;
-
-	m_pCharacterData = new unsigned char[sx*sy];
-
-	if (m_pCharacterData && !charfile.fail() && !charfile.bad())
-		 charfile.read((char*)m_pCharacterData, sx*sy);
-
-	if (!m_pCharacterData || charfile.fail() || charfile.bad())
-	{
-		fprintf(stderr, "Error reading character data.\n");
-		if (m_pCharacterData)
-			 delete m_pCharacterData;
-		m_pCharacterData = NULL;
-		return false;
-	}
-
-#endif // EMBEDDED_FONTS
+	m_nFontHeight = sy = Font_Height;
+	sx = Font_BitmapWidth;
+	m_pCharacterData = Font_CharacterData;
+	m_nCharOffsets = Font_CharOffsets;
+	m_nCharWidths = Font_CharWidths;
 
 	m_pCharacterSurface = SDL_CreateRGBSurfaceFrom(m_pCharacterData, sx, sy, 8, sx, 0, 0, 0, 0);
 	if (!m_pCharacterSurface)
 	{
 		fprintf(stderr, "Couldn't create character surface.\n");
-#ifdef EMBEDDED_FONTS
-		delete m_pCharacterData;
-#endif
 		m_pCharacterData = NULL;
 		return false;
 	}

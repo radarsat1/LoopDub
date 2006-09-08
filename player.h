@@ -1,9 +1,9 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "portaudio.h"
+#include <RtAudio.h>
 
-#define SAMPLE_RATE 44100
+#define SAMPLE_RATE 48000
 #define BUFFER_SAMPLES 2048	// in samples
 #define BYTES_PER_SAMPLE (sizeof(short)*2)
 
@@ -27,7 +27,7 @@ public:
 	bool IsPlaying() { return m_bPlaying; }
 
 protected:
-	PortAudioStream *paStream;
+	RtAudio rtaudio;
 
 	int m_nBufferLengthBytes;
 	short *m_pLeftBuffer;

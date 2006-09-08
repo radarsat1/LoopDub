@@ -8,7 +8,7 @@ AC_CONFIG_SRCDIR([def.h])
 AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.
-AC_PROG_CXX
+AC_PROG_CXX AC_LANG(C++)
 AC_PROG_CC
 AC_PROG_RANLIB
 AC_PROG_INSTALL
@@ -132,6 +132,15 @@ AC_CHECK_LIB(portaudio, Pa_Initialize, [],
 
 AC_CHECK_LIB(asound, Pa_Initialize, [],
 	[if "${SYS}" == "linux"; then echo "Error! You need to install ALSA."; exit -1; fi])
+
+AC_CHECK_HEADERS([sndfile.h], [],
+	[echo "Error! Cannot find libsndfile headers."; exit -1])
+
+AC_CHECK_LIB(sndfile, sf_open, [],
+	[echo "Error! You need to install libsndfile."; exit -1])
+
+AC_CHECK_HEADERS([stk/RtAudio.h], [],
+	[echo "Error! RtAudio not found: Install STK."; exit -1])
 
 AC_CONFIG_FILES([Makefile
                  gui/Makefile])

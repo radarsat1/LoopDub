@@ -8,7 +8,6 @@
 #include "portmidi/pm_common/portmidi.h"
 //using namespace ScrobUI;
 
-
 #include "def.h"
 #include "loopob.h"
 #include "sample.h"

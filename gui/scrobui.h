@@ -221,7 +221,7 @@ class DrawingTools
 public:
 	DrawingTools();
 	~DrawingTools();
-	bool LoadCharacterData(char *filename);
+	bool LoadCharacterData();
 
 	Scrob* SetCurrentObject(Scrob* pScrob);
 	Scrob* GetCurrentObject() { return m_pCurrentObject; }

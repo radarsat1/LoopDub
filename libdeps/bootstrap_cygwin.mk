@@ -4,7 +4,7 @@ PACKAGES = scons rtaudio rtmidi libsndfile sdl
 all: loopdub
 
 loopdub: $(PACKAGES)
-	echo "Nothing"
+	echo "Dependancies are all compiled. LoopDub should now be able to compile and link. Type './scons' to proceed."
 
 # RtAudio
 rtaudio: $(PKG_RTAUDIO_LIB)
@@ -55,6 +55,7 @@ scons.py: scons.verified
 	@echo "Unpacking Scons..."
 	tar -xzf $(PKG_SCONS_TAR)
 	chmod +x scons.py
+	ln -s "$PWD/scons.py" ../scons
 
 scons.verified:
 	@echo "Getting Scons..."

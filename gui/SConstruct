@@ -9,4 +9,6 @@ CCFLAGS += '-DFLAT_GUI -DCYGWIN'
 
 StaticLibrary('scrobui', ['scrobui.cpp', 'toolkit.cpp', 'dotum10.cpp'],
 			  LIBS=['SDL'],
+			  LIBPATH=['../libdeps/SDL-1.2.11/build/.libs'],
+			  CPPPATH=['../libdeps/SDL-1.2.11/include'],
 			  CCFLAGS=CCFLAGS)

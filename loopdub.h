@@ -5,7 +5,7 @@
 #include "platform.h"
 #include <SDL.h>
 #include "gui/scrobui.h"
-#include "portmidi/pm_common/portmidi.h"
+//#include "portmidi/pm_common/portmidi.h"
 //using namespace ScrobUI;
 
 #include "def.h"

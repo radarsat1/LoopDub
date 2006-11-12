@@ -4,20 +4,19 @@ if 'debug' in ARGUMENTS:
 else:
 	CCFLAGS = ''
 
-LIBS=['scrobui','SDL','SDLmain','sndfile','portmidi','porttime']
-LIBPATH=['gui','portmidi/porttime']
+LIBS=['scrobui','SDL','SDLmain','sndfile']
+LIBPATH=['gui']
 LDFLAGS=[]
 CPPPATH=['gui','.']
 
 #cygwin
 CCFLAGS += '-DWIN32 -DCYGWIN '
 LIBS += ['winmm','rtaudio','rtmidi','SDL']
-LIBPATH += ['portmidi','libdeps/rtaudio-3.0.3','libdeps/rtmidi-1.0.6','libdeps/SDL-1.2.11/build/.libs']
+LIBPATH += ['libdeps/rtaudio-3.0.3','libdeps/rtmidi-1.0.6','libdeps/SDL-1.2.11/build/.libs']
 CPPPATH += ['libdeps/SDL-1.2.11/include','libdeps/rtaudio-3.0.3/']
 
 #linux
 #LIBS += ['jack']
-#LIBPATH += ['portmidi/pm_linux']
 
 SConscript(['gui/SConstruct'], 'CCFLAGS')
 

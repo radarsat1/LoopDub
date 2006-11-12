@@ -1,5 +1,5 @@
 
-PACKAGES = scons rtaudio rtmidi libsndfile sdl
+PACKAGES = scons rtaudio rtmidi libsndfile sdl sdldx
 
 all: loopdub
 
@@ -59,7 +59,7 @@ scons.py: scons.verified
 	@echo "Unpacking Scons..."
 	tar -xzf $(PKG_SCONS_TAR)
 	chmod +x scons.py
-	if ! [ -f ../scons ]; then ln -s "$(shell pwd)/scons.py" ../scons; fi
+	if ! [ -h ../scons ]; then ln -s "$(shell pwd)/scons.py" ../scons; fi
 
 scons.verified:
 	@echo "Getting Scons..."
@@ -77,7 +77,7 @@ $(PKG_LIBSNDFILE_LIB): $(PKG_LIBSNDFILE_DIR)/Makefile
 	cd $(shell cygpath -u '$(shell cygpath -asw "$(PKG_LIBSNDFILE_DIR)")'); make
 
 $(PKG_LIBSNDFILE_DIR)/Makefile: libsndfile.unpacked
-	cd $(PKG_LIBSNDFILE_DIR); ./configure
+	cd $(PKG_LIBSNDFILE_DIR); ./configure --disable-shared
 
 libsndfile.unpacked: libsndfile.verified
 	@echo "Unpacking libsndfile..."
@@ -92,14 +92,14 @@ libsndfile.verified:
 
 # SDL
 sdl: $(PKG_SDL_LIB)
-	echo PKG_SDL_LIB = $(PKG_SDL_LIB)
 	if [ -f $(PKG_SDL_LIB) ]; then echo "SDL verified."; else echo "Error processing SDL."; false; fi
 
-$(PKG_SDL_LIB): $(PKG_SDL_DIR)/Makefile
+$(PKG_SDL_LIB): $(PKG_SDL_DIR)/Makefile sdldx
 	cd $(PKG_SDL_DIR); make
 
 $(PKG_SDL_DIR)/Makefile: sdl.unpacked
-	cd $(PKG_SDL_DIR); ./configure
+#	disable a few features that we aren't using but are causing linking problems
+	cd $(PKG_SDL_DIR); ./configure --disable-threads --disable-diskaudio --enable-directx --disable-shared
 
 sdl.unpacked: sdl.verified
 	@echo "Unpacking SDL..."
@@ -110,3 +110,17 @@ sdl.verified:
 	@echo "Getting SDL..."
 	wget $(PKG_SDL_URL) -O $(PKG_SDL_TAR)
 	if [ `md5sum $(PKG_SDL_TAR) | cut -d" " -f1`x == $(PKG_SDL_MD5)x ]; then touch sdl.verified; else echo "MD5SUM error on $(PKG_SDL_TAR)"; false; fi
+
+# SDL DirectX includes
+sdldx: sdldx.unpacked
+	if [ -f $(PKG_SDLDX_LIB) ]; then echo "SDL DirectX verified."; else echo "Error processing SDL DirectX."; false; fi
+
+sdldx.unpacked: sdldx.verified sdl.unpacked
+	@echo "Unpacking SDL DirectX..."
+	cd $(PKG_SDL_DIR); tar -xzf ../$(PKG_SDLDX_TAR)
+	touch sdldx.unpacked
+
+sdldx.verified:
+	@echo "Getting SDL DirectX..."
+	wget $(PKG_SDLDX_URL) -O $(PKG_SDLDX_TAR)
+	if [ `md5sum $(PKG_SDLDX_TAR) | cut -d" " -f1`x == $(PKG_SDLDX_MD5)x ]; then touch sdldx.verified; else echo "MD5SUM error on $(PKG_SDLDX_TAR)"; false; fi

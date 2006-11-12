@@ -97,11 +97,13 @@ timer[1].init();
 
 	 CREATEMUTEX(mutex);
 
+	 /*
 	 if (count==0) {
 	   count++;
 	   Run();
 	 }
 	 else exit(0);
+	 */
 }
 
 LoopDub::~LoopDub()
@@ -580,4 +582,3 @@ int main(int argc, char* argv[])
 
 	return app.Run();
 }
-

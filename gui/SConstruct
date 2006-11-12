@@ -2,7 +2,7 @@
 CCFLAGS = ''
 
 if 'debug' in ARGUMENTS:
-	CCFLAGS =+ '-g -ggdb '
+	CCFLAGS += '-g -ggdb '
 
 #CCFLAGS += '-DFLAT_GUI -DWIN32 -DCYGWIN'
 CCFLAGS += '-DFLAT_GUI -DCYGWIN'

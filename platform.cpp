@@ -35,14 +35,28 @@ void HIGHPRIORITY()
 
 #ifdef CYGWIN
 
+
 int main(int argc, char* argv[]);
 
 int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,
 		   LPSTR lpCmdLine,int CmdShow)
 {
   char *cmd[0] = {};
+  printf("Here!\n");
   main(0, cmd);
   exit(0);
   return 0;
 } 
+
+/* SDL depends on these two functions which are defined in MSVCRT.DLL,
+   which we are not linking to, so provide stubs here. We are not using
+   them anyways. */
+unsigned long  _beginthreadex  (void *, unsigned, unsigned (__stdcall *) (void *),
+								void*, unsigned, unsigned*)
+{
+}
+void _endthreadex (unsigned)
+{
+}
+
 #endif

@@ -100,6 +100,8 @@ bool Sample::LoadFromFile(char *filename)
 	if (!file)
 		return false;
 
+	strncpy(m_filename, filename, 1024);
+
 	m_nSamples = fileinfo.frames;
 	m_pData = new short[m_nSamples];
 	if (!m_pData) {
@@ -110,11 +112,24 @@ bool Sample::LoadFromFile(char *filename)
 		return false;
 	}
 
-	int i=0;
+	int i=0, t, c, k;
+	short buf[8192];
 	while (i<m_nSamples)
 	{
-		i += sf_read_short(file, &m_pData[i], m_nSamples-i);
-		printf("Read %d items\n", i);
+	  int ntoread = 8192, nread;
+	  if ((m_nSamples-i)*fileinfo.channels < ntoread)
+	    ntoread = (m_nSamples-i)*fileinfo.channels;
+
+	  nread = sf_read_short(file, buf, ntoread);
+	  k=0;
+	  for (t=0; t<nread;) {	
+	    int sample=0;
+	    for (c=0; c<fileinfo.channels; c++)
+	      sample += buf[t++];
+	    m_pData[i+(k++)] = (short)(sample / fileinfo.channels);
+	  }
+
+	  i += k;
 	}
 
 	sf_close(file);

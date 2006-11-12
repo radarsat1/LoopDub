@@ -3,8 +3,8 @@
 
 #include <RtAudio.h>
 
-#define SAMPLE_RATE 48000
-#define BUFFER_SAMPLES 2048	// in samples
+#define SAMPLE_RATE 44100
+#define BUFFER_SAMPLES 512	// in samples
 #define BYTES_PER_SAMPLE (sizeof(short)*2)
 
 class Player

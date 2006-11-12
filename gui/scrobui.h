@@ -3,6 +3,10 @@
 
 #include <SDL.h>
 
+#ifdef TextOut
+#undef TextOut
+#endif
+
 //namespace ScrobUI {
 
 /*

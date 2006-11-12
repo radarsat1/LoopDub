@@ -57,7 +57,7 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param)
 		int bufferSize = BUFFER_SAMPLES;
 		rtaudio.openStream(0, 2, 0, 0,
 			RTAUDIO_SINT16, SAMPLE_RATE,
-			&bufferSize, 0);
+			&bufferSize, 3);
 
 		rtaudio.setStreamCallback(callback, this);
 	}
@@ -89,12 +89,24 @@ void Player::Mix(short *outputBuffer, unsigned long framesPerBuffer, int outTime
 	m_pFillBuffers(m_Param, outTimeSample);
 	
 	// fill soundbuffer
-	static int c=0;
-	for (int i=0; i<(framesPerBuffer); i++)
+	static int c=0, i=0;
+	for (i=0; i<(framesPerBuffer); i++)
 	{
 		outputBuffer[(i<<1)+0] = m_pRightBuffer[i];
 		outputBuffer[(i<<1)+1] = m_pLeftBuffer[i];
 	}
+
+	/*
+	// call mix callback
+	m_pFillBuffers(m_Param, outTimeSample);
+	
+	// fill soundbuffer
+	for (i=0; i<(framesPerBuffer); i++)
+	{
+		outputBuffer[(i<<0)+framesPerBuffer] = m_pRightBuffer[i];
+		//outputBuffer[(i<<1)+1] = m_pLeftBuffer[i];
+	}
+	*/
 }
 
 void Player::Play()

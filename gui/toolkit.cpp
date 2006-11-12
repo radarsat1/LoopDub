@@ -11,7 +11,9 @@
 #ifdef WIN32
   #include <io.h>
   #define snprintf _snprintf
-  #define realpath(srcpath, destpath) _fullpath(destpath, srcpath, MAX_PATH)
+  #ifndef CYGWIN
+    #define realpath(srcpath, destpath) fullpath(destpath, srcpath, MAX_PATH)
+  #endif
   #define DIR_SEPARATOR "\\"
 #else
   #include <dirent.h>
@@ -804,8 +806,8 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 #ifdef WIN32
 
 	char realdir[MAX_PATH];
-	if (!_fullpath(realdir, fb->m_strDir, MAX_PATH))
-		return;
+	if (!realpath(fb->m_strDir, realdir))
+		return 0;
 	strncpy(fb->m_strDir, realdir, MAX_PATH);
 	if (fb->m_pFolder)
 		fb->m_pFolder->SetText(fb->m_strDir);
@@ -874,18 +876,19 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 
 		 while ((de = readdir(dir)) && fb->m_nNames<MAX_FB_NAMES)
 		 {
+		   bool is_dir = false;
 			  strcpy(pathstr, fb->m_strDir);
 			  strcat(pathstr, DIR_SEPARATOR);
 			  strcat(pathstr, de->d_name);
 
 			  if ((stat(pathstr, &st)==0) && S_ISDIR(st.st_mode))
-				   de->d_type |= DT_DIR; // sketchy? possibly :)
+			    is_dir = true;
 
-			  if ((de->d_type & DT_DIR) || (fb->m_bExt ? (strcasecmp(de->d_name+strlen(de->d_name)-extlen, fb->m_strExt)==0) : true))
+			  if (is_dir || (fb->m_bExt ? (strcasecmp(de->d_name+strlen(de->d_name)-extlen, fb->m_strExt)==0) : true))
 			  {
 				   if (strcmp(de->d_name, ".")==0) continue;
 				   if (bBaseDir && strcmp(de->d_name, "..")==0) continue;
-				   fb->m_isdir[fb->m_nNames] = (de->d_type & DT_DIR)!=0;
+				   fb->m_isdir[fb->m_nNames] = is_dir;
 				   strcpy(fb->m_names[fb->m_nNames++], de->d_name);
 			  }
 		 }

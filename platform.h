@@ -1,7 +1,7 @@
 // Platform-specific stuff
 #ifdef WIN32
 #include <windows.h>
-#include <direct.h>
+//#include <direct.h>
 
 #ifndef MAX_PATH
 #define MAX_PATH _MAX_PATH
@@ -24,6 +24,7 @@
 #define USLEEP(n) Sleep(n);
 
 #define chdir _chdir
+#define _snprintf snprintf
 
 #else				/* Linux / OSX */
 #include <pthread.h>

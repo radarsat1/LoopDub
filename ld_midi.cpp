@@ -24,7 +24,8 @@ MidiControl::MidiControl()
 	 m_bMidiClockWaiting = false;
 
 	 char configfilename[MAX_PATH];
-#ifndef WIN32
+//#ifndef WIN32
+#if 1
 	 sprintf(configfilename, "%s/%s", getenv("HOME"), configfile);
 #else
 	 // TODO fix this to User folder
@@ -169,8 +170,8 @@ void MidiControl::SelectDevice(int n)
 		  if (m_pmListen)
 			   Pm_Close(m_pmListen);
 
-		  //err = Pm_OpenInput( &m_pmListen, n, NULL, 10, NULL, NULL);
-		  err = (PmError)-pmNoError;
+		  err = Pm_OpenInput( &m_pmListen, n, NULL, 10, NULL, NULL);
+		  //err = (PmError)-pmNoError;
 		  if (err != pmNoError)
 			   m_pmListen = NULL;
 		  break;
@@ -243,7 +244,7 @@ void MidiControl::CheckMsg()
 //		  if (channel != /*this channel*/0)
 //			   continue;
 
-//		  printf("MIDI Message: status=%d, code=%d, val=%d\n", status, code, val);
+		  printf("MIDI Message: status=%d, code=%d, val=%d\n", status, code, val);
 
 		  if (m_bLearning) {
 			   if (code==m_nLastCode) continue;

@@ -78,6 +78,8 @@ LoopDub app;
 #define LOOPTOP    50
 #define LOOPHEIGHT 60
 
+int count=0;
+
 LoopDub::LoopDub()
 {
 	 m_strChangeToFolder = NULL;
@@ -94,6 +96,12 @@ timer[0].init();
 timer[1].init();
 
 	 CREATEMUTEX(mutex);
+
+	 if (count==0) {
+	   count++;
+	   Run();
+	 }
+	 else exit(0);
 }
 
 LoopDub::~LoopDub()
@@ -225,6 +233,8 @@ THREADFUNC loadSampleThread(void* pApp)
 int LoopDub::Run()
 {
 	 int i;
+	 int inputchars=0;
+	 int inputprog=0;
 	printf("LoopDub started...\n");
 
 	if (m_Midi.Initialize())
@@ -402,12 +412,12 @@ int LoopDub::Run()
 				  m_Keys[i].on = true;
 			 }
 		}
-///*
+/*
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 				 && pEvent->key.keysym.sym == '1') {
 			 m_ProgramChanger.ProgramChange(1, m_pLoopOb);
 		}
-//*/
+*/
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 				 && pEvent->key.keysym.sym == 'p') {
 			 m_pLoopArea->SetVisible(!m_pLoopArea->IsVisible());
@@ -415,12 +425,24 @@ int LoopDub::Run()
 			 m_pBlankArea->SetDirty();
 		}
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
-			&& pEvent->key.keysym.sym >= '1'
-			&& pEvent->key.keysym.sym <= '8'
+			&& pEvent->key.keysym.sym >= '0'
+			&& pEvent->key.keysym.sym <= '9'
 			&& pEvent->key.keysym.mod == KMOD_NONE)
 		{
-			 int ch = pEvent->key.keysym.sym - '1';
-			 m_pLoopOb[ch]->SetSelected(!m_pLoopOb[ch]->IsSelected());
+			 int ch = pEvent->key.keysym.sym - '0';
+
+			 if (inputchars==0) {
+			   inputprog = ch;
+			   inputchars ++;
+			 }
+			 else if (inputchars==1) {
+			   inputprog = inputprog*10 + ch;
+			   printf("%d\n", inputprog);
+			   m_ProgramChanger.ProgramChange(inputprog, m_pLoopOb);
+			   inputchars = 0;
+			 }
+
+			 //m_pLoopOb[ch]->SetSelected(!m_pLoopOb[ch]->IsSelected());
 		}
 		else
 			bQuit = !gui.ProcessEvent();
@@ -558,7 +580,4 @@ int main(int argc, char* argv[])
 
 	return app.Run();
 }
-
-
-
 

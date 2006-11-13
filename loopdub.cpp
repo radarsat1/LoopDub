@@ -131,7 +131,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 	int i, n=app.m_Player.BufferSizeSamples();
 //	if (startnow) printf("starting now?\n");
 	for (i=first; i<n; i += ticksize) {
-		 int ms = (outTimeSample + i) * 1000 / 44100;
+		 int ms = (outTimeSample + i) * 1000 / SAMPLE_RATE;
 		 app.m_Midi.SendClockTick(ms, startnow);
 	}
 

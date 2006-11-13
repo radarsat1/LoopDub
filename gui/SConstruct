@@ -1,14 +1,22 @@
 
-CCFLAGS = ''
+import commands
+OS = commands.getoutput('uname')
+
+CCFLAGS = '-DFLAT_GUI '
+LIBS=['SDL'],
+LIBPATH=[]
+CPPPATH=[]
 
 if 'debug' in ARGUMENTS:
 	CCFLAGS += '-g -ggdb '
 
-#CCFLAGS += '-DFLAT_GUI -DWIN32 -DCYGWIN'
-CCFLAGS += '-DFLAT_GUI -DCYGWIN'
+if OS=='Cygwin':
+	CCFLAGS += '-DCYGWIN '
+	LIBPATH += ['../libdeps/SDL-1.2.11/build/.libs']
+	CPPPATH += ['../libdeps/SDL-1.2.11/include']
+
+if OS=='Linux':
+	CPPPATH += ['/usr/include/SDL']
 
 StaticLibrary('scrobui', ['scrobui.cpp', 'toolkit.cpp', 'dotum10.cpp'],
-			  LIBS=['SDL'],
-			  LIBPATH=['../libdeps/SDL-1.2.11/build/.libs'],
-			  CPPPATH=['../libdeps/SDL-1.2.11/include'],
-			  CCFLAGS=CCFLAGS)
+			  LIBS=LIBS, LIBPATH=LIBPATH, CPPPATH=CPPPATH, CCFLAGS=CCFLAGS)

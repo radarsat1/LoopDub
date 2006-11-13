@@ -56,7 +56,7 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param)
 	try {
 		int bufferSize = BUFFER_SAMPLES;
 		rtaudio.openStream(0, 2, 0, 0,
-			RTAUDIO_SINT16, SAMPLE_RATE,
+						   RTAUDIO_SINT16, 48000,//SAMPLE_RATE,
 			&bufferSize, 3);
 
 		rtaudio.setStreamCallback(callback, this);

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+case `uname` in
+	Cygwin*)
+		echo "Bootstrapping for Cygwin..."
+
 DXDIR="$1"
 
 if [ "$DXDIR"x == "x" ]; then
@@ -70,3 +74,52 @@ make -C libdeps -f ./bootstrap_cygwin.mk DXDIR="$DXDIR" \
  PKG_LIBSNDFILE_TAR="$PKG_LIBSNDFILE_TAR" PKG_LIBSNDFILE_DIR="$PKG_LIBSNDFILE_DIR" PKG_LIBSNDFILE_URL="$PKG_LIBSNDFILE_URL" PKG_LIBSNDFILE_MD5="$PKG_LIBSNDFILE_MD5" PKG_LIBSNDFILE_LIB="$PKG_LIBSNDFILE_LIB" \
  PKG_SDL_TAR="$PKG_SDL_TAR" PKG_SDL_DIR="$PKG_SDL_DIR" PKG_SDL_URL="$PKG_SDL_URL" PKG_SDL_MD5="$PKG_SDL_MD5" PKG_SDL_LIB="$PKG_SDL_LIB" \
  PKG_SDLDX_TAR="$PKG_SDLDX_TAR" PKG_SDLDX_URL="$PKG_SDLDX_URL" PKG_SDLDX_MD5="$PKG_SDLDX_MD5"
+
+    ;;
+    Linux*)
+		echo "Bootstrapping for Linux..."
+
+if ! [ "$1"x == "x" ]; then
+	echo
+	echo "This script bootstraps a development environment for LoopDub under"
+	echo "under Linux. That is, it will download tarballs of needed libraries"
+	echo "from various places on the web and compile them."
+	echo "It won't install anything outside the current folder, so you do"
+	echo "not need to worry about damaging your system."
+	echo
+	echo "It needs the following packages  pre-installed:"
+	echo
+	echo "scons"
+	echo "make"
+	echo "gcc"
+	echo "python"
+	echo "md5sum"
+	echo "libSDL-dev"
+	echo "libsndfile-dev"
+	echo
+	echo "Usage: ./bootstrap_linux.sh"
+	echo
+	exit
+fi
+
+
+# Package locations
+PKG_RTAUDIO_TAR="rtaudio-3.0.3.tar.gz"
+PKG_RTAUDIO_MD5="dcc08fa6b81971eabacc872acd56319a"
+PKG_RTAUDIO_DIR="rtaudio-3.0.3"
+PKG_RTAUDIO_URL="http://music.mcgill.ca/~gary/rtaudio/release/rtaudio-3.0.3.tar.gz"
+PKG_RTAUDIO_LIB="$PKG_RTAUDIO_DIR/librtaudio.a"
+
+PKG_RTMIDI_TAR="rtmidi-1.0.6.tar.gz"
+PKG_RTMIDI_MD5="3f433b3d398c6ee73fccf218438f796e"
+PKG_RTMIDI_DIR="rtmidi-1.0.6"
+PKG_RTMIDI_URL="http://music.mcgill.ca/~gary/rtmidi/release/rtmidi-1.0.6.tar.gz"
+PKG_RTMIDI_LIB="$PKG_RTMIDI_DIR/librtmidi.a"
+
+# Build everything
+make -C libdeps -f ./bootstrap_linux.mk \
+ PKG_RTAUDIO_TAR="$PKG_RTAUDIO_TAR" PKG_RTAUDIO_DIR="$PKG_RTAUDIO_DIR" PKG_RTAUDIO_URL="$PKG_RTAUDIO_URL" PKG_RTAUDIO_MD5="$PKG_RTAUDIO_MD5" PKG_RTAUDIO_LIB="$PKG_RTAUDIO_LIB" \
+ PKG_RTMIDI_TAR="$PKG_RTMIDI_TAR" PKG_RTMIDI_DIR="$PKG_RTMIDI_DIR" PKG_RTMIDI_URL="$PKG_RTMIDI_URL" PKG_RTMIDI_MD5="$PKG_RTMIDI_MD5" PKG_RTMIDI_LIB="$PKG_RTMIDI_LIB"
+
+    ;;
+esac

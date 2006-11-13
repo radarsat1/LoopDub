@@ -1,4 +1,8 @@
 
+import commands
+
+OS=commands.getoutput('uname')
+
 CCFLAGS = ''
 if 'debug' in ARGUMENTS:
 	CCFLAGS += '-g -ggdb '
@@ -8,14 +12,25 @@ LIBPATH=['gui']
 LDFLAGS=[]
 CPPPATH=['gui','.']
 
-#cygwin
-CCFLAGS += '-DWIN32 -DCYGWIN '
-LIBS += ['winmm','user32','gdi32','ntoskrnl']
-LIBPATH += ['libdeps/rtaudio-3.0.3','libdeps/rtmidi-1.0.6','libdeps/SDL-1.2.11/build/.libs','libdeps/SDL-1.2.11/build/','libdeps/libsndfile-1.0.17/src/.libs']
-CPPPATH += ['libdeps/SDL-1.2.11/include','libdeps/rtaudio-3.0.3/','libdeps/libsndfile-1.0.17/src']
+if OS=='Cygwin':
+	print 'Cygwin detected.'
+	CCFLAGS += '-DWIN32 -DCYGWIN '
+	LIBS += ['winmm','user32','gdi32','ntoskrnl']
+	LIBPATH += ['libdeps/rtaudio-3.0.3',
+				'libdeps/rtmidi-1.0.6',
+				'libdeps/SDL-1.2.11/build/.libs',
+				'libdeps/SDL-1.2.11/build/',
+				'libdeps/libsndfile-1.0.17/src/.libs']
+	CPPPATH += ['libdeps/SDL-1.2.11/include',
+				'libdeps/rtaudio-3.0.3/',
+				'libdeps/libsndfile-1.0.17/src']
 
-#linux
-#LIBS += ['jack']
+if OS=='Linux':
+	print 'Linux detected.'
+	LIBPATH += ['libdeps/rtaudio-3.0.3',
+				'libdeps/rtmidi-1.0.6']
+	CPPPATH += ['libdeps/rtaudio-3.0.3/',
+				'/usr/include/SDL']
 
 SConscript(['gui/SConstruct'], 'CCFLAGS')
 
@@ -28,3 +43,4 @@ Program('loopdub',
 	LIBPATH=LIBPATH,
 	LDFLAGS=LDFLAGS
 	)
+

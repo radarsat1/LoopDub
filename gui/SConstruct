@@ -12,6 +12,7 @@ if 'debug' in ARGUMENTS:
 
 if OS=='Cygwin':
 	CCFLAGS += '-DCYGWIN '
+if OS=='Darwin' or OS=='Cygwin':
 	LIBPATH += ['../libdeps/SDL-1.2.11/build/.libs']
 	CPPPATH += ['../libdeps/SDL-1.2.11/include']
 

@@ -1,5 +1,20 @@
 
 import commands
+import os
+import SCons.Util
+
+"""
+if os.environ.has_key('CC'):
+	env['CC'] = os.environ['CC']
+if os.environ.has_key('CFLAGS'):
+	env['CCFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
+if os.environ.has_key('CXX'):
+	env['CXX'] = os.environ['CXX']
+if os.environ.has_key('CXXFLAGS'):
+	env['CXXFLAGS'] += SCons.Util.CLVar(os.environ['CXXFLAGS'])
+if os.environ.has_key('LDFLAGS'):
+	env['LINKFLAGS'] += SCons.Util.CLVar(os.environ['LDFLAGS'])
+"""
 
 OS=commands.getoutput('uname')
 
@@ -8,14 +23,23 @@ if 'debug' in ARGUMENTS:
 	CCFLAGS += '-g -ggdb '
 
 LIBS=['scrobui','SDL','sndfile','rtaudio','rtmidi']
+LINKFLAGS=''
 LIBPATH=['gui']
-LDFLAGS=[]
 CPPPATH=['gui','.']
 
 if OS=='Cygwin':
 	print 'Cygwin detected.'
 	CCFLAGS += '-DWIN32 -DCYGWIN '
 	LIBS += ['winmm','user32','gdi32','ntoskrnl']
+
+if OS=='Darwin':
+	print 'Darwin detected.'
+	LINKFLAGS += (	'-framework CoreAudio -framework CoreMIDI -framework Carbon ' +
+			'-framework AppKit -framework AudioUnit -framework QuickTime ' +
+			'-framework IOKit -framework OpenGL'  )
+	LIBS += ['SDLmain']
+
+if OS=='Cygwin' or OS=='Darwin':
 	LIBPATH += ['libdeps/rtaudio-3.0.3',
 				'libdeps/rtmidi-1.0.6',
 				'libdeps/SDL-1.2.11/build/.libs',
@@ -42,6 +66,6 @@ Program('loopdub',
 	CCFLAGS=CCFLAGS,
 	LIBS=LIBS,
 	LIBPATH=LIBPATH,
-	LDFLAGS=LDFLAGS
+	LINKFLAGS=LINKFLAGS
 	)
 

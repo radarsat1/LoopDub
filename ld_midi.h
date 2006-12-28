@@ -1,7 +1,7 @@
 #ifndef _LD_MIDI_H_
 #define _LD_MIDI_H_
 
-//#include "portmidi/pm_common/portmidi.h"
+#include "libdeps/rtmidi-1.0.6/RtMidi.h"
 
 // The PCR-30 has 8 sets of controls
 // Other controllers may have more or fewer,
@@ -66,7 +66,7 @@ class MidiControl
 	 int GetMidiNum();
 	 
 	 // Return name of MIDI device n
-	 char *GetMidiName(int n);
+	 const char *GetMidiName(int n);
 
 	 // Return type of MIDI device
 	 MidiType GetMidiType(int n);
@@ -101,10 +101,8 @@ class MidiControl
 	 int m_nButtonMode;
 
 	 // Midi streams
-	 //PmStream *m_pmListen;
-	 //PmStream *m_pmOutput;
-
-	 //static PmTimestamp timeProc(void* time_info);
+	 RtMidiIn  *m_pMidiIn;
+	 RtMidiOut *m_pMidiOut;
 
 	 bool m_bInitialized;
 };

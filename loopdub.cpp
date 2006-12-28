@@ -2,15 +2,11 @@
 #define _LOOPDUB_CPP_
 #include <stdio.h>
 #include <string.h>
-#include "loopdub.h"
-#include "ld_logo.h"
-
 #include <time.h>
 
-#ifdef WIN32
-#else
-  #include <unistd.h>
-#endif
+#include "loopdub.h"
+#include "ld_logo.h"
+#include "platform.h"
 
 
 class Timer
@@ -129,7 +125,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 	int first = app.m_nPos % ticksize;
 	bool startnow = (app.m_nPos == first);
 	int i, n=app.m_Player.BufferSizeSamples();
-//	if (startnow) printf("starting now?\n");
+
 	for (i=first; i<n; i += ticksize) {
 		 int ms = (outTimeSample + i) * 1000 / SAMPLE_RATE;
 		 app.m_Midi.SendClockTick(ms, startnow);
@@ -154,7 +150,7 @@ timer[0].reinit();
 		for (i=0; i<N_LOOPS; i++)
 		{
 timer[1].reinit();
-			 side = 0;//app.m_pLoopOb[i]->IsCue() ? 1 : 0;
+			 side = 0;//app.m_pLoopOb[i]->IsCue() ? 1 : 0; (TODO: cueing disabled for now)
 			 if (i!=app.m_nKeysChannel) {
 				  value[side] += app.m_pLoopOb[i]->GetSampleValue(app.m_nPos);
 			 }
@@ -244,7 +240,7 @@ int LoopDub::Run()
 	else
 		 printf("Couldn't initialize MIDI.\n");
 
-	if (!gui.Initialize("LoopDub", false, 800, 600, SDL_INIT_TIMER))
+	if (!gui.Initialize("LoopDub", false, WIDTH, HEIGHT, SDL_INIT_TIMER))
 	{
 		printf("Error initializing GUI.\n");
 		return 1;
@@ -261,9 +257,7 @@ int LoopDub::Run()
 
 	/* Blank area */
     /* Note: Blank area is used to force blanking and re-draw of entire loop area when switching between contexts */
-	m_pBlankArea = new Box(pMainScrob, Rect(0, LOOPTOP,
-											 pMainScrob->GetRect().Width(),
-											 pMainScrob->GetRect().Height()), -1, 0);
+	m_pBlankArea = new Box(pMainScrob, Rect(0, LOOPTOP, WIDTH, HEIGHT-30), -1, 0);
 	pMainScrob->AddChild(m_pBlankArea);
 
 	/* Loop area */
@@ -301,7 +295,7 @@ int LoopDub::Run()
 		 m_pProgramArea->AddChild(new Label(m_pProgramArea,
 											Rect(x, y, x+w, y+dt.GetFontHeight()),
 											str, 3, -1));
-		 if (y > (m_pProgramArea->GetRect().Height()-50))
+		 if (y > (HEIGHT-50))
 		 {
 			  y = 20;
 			  x += mx+20;
@@ -330,7 +324,34 @@ int LoopDub::Run()
 				   logo_width, logo_height, logo_data)
 		 );
 
-/*
+	/* Controls along the bottom */
+	Box *pLoopDirBox = new Box(pMainScrob,
+							   Rect(WIDTH-500,HEIGHT-145,WIDTH,HEIGHT-30), 2, 0);
+	pLoopDirBox->SetVisible(false);
+	pMainScrob->AddChild(pLoopDirBox);
+
+	FileBrowser *pLoopDirBrowser = new FileBrowser;
+	pLoopDirBrowser->SetExtension(".wav");
+	pLoopDirBrowser->SetBase("/");
+	if (!pLoopDirBrowser->Create(pLoopDirBox,
+								 Rect(1,1,498,98),
+								 ".", 0/*FILECLICK*/, 0/*DIRCLICK*/, false))
+	{
+		 printf("Error creating loopdir browser.\n");
+		 return false;
+	}
+	pLoopDirBox->AddChild(pLoopDirBrowser);
+
+	pLoopDirBox->AddChild(
+		 new Button(pLoopDirBox, Rect(498-75,113-15,498,113), "Select",
+					0, 2, CMD_LOOPDIRSEL));
+	
+	Button *pLoopDirBtn = new Button(pMainScrob, Rect(WIDTH-90, HEIGHT-25,
+													  WIDTH-10, HEIGHT-10),
+									 "Loop Folder", 0, 2, CMD_LOOPDIR, NULL, true);
+	pMainScrob->AddChild(pLoopDirBtn);
+
+/* TODO: change tempo?
 	m_pTempoSlider = new Slider(pMainScrob, Rect(5, 5, 205, 20), false);
 	pMainScrob->AddChild(m_pTempoSlider);
 	m_pTempoSlider->SetValue((m_nTempo-MIN_TEMPO)*m_pTempoSlider->GetMaxValue()/(MAX_TEMPO-MIN_TEMPO));
@@ -540,6 +561,37 @@ int LoopDub::Run()
 				  }
 				  else if (cmd==CMD_PROGRAMCHANGE) {
 					   m_ProgramChanger.ProgramChange((int)value, m_pLoopOb);
+				  }
+				  else if (cmd==CMD_LOOPDIR) {
+					   if (pLoopDirBox->IsVisible()) {
+							m_pLoopArea->SetDirty();
+							m_pProgramArea->SetDirty();
+							m_pBlankArea->SetDirty();
+					   }
+					   pLoopDirBrowser->SetVisible(!pLoopDirBox->IsVisible());
+					   pLoopDirBox->SetVisible(!pLoopDirBox->IsVisible());
+				  }
+				  else if (cmd==CMD_LOOPDIRSEL) {
+					   if (pLoopDirBox->IsVisible()) {
+							m_pLoopArea->SetDirty();
+							m_pProgramArea->SetDirty();
+							m_pBlankArea->SetDirty();
+					   }
+					   pLoopDirBox->SetVisible(!pLoopDirBox->IsVisible());
+					   pLoopDirBtn->SetPressed(false);
+
+					   /* Change base folder for all browsers */
+					   for (i=0; i<N_LOOPS; i++) {
+							m_pLoopOb[i]->m_pFileBrowser->SetBase(
+								 pLoopDirBrowser->GetDirectory());
+					   }
+
+					   /* Change to loop folder */
+					   if (chdir(pLoopDirBrowser->GetDirectory()))
+							printf("Warning: Couldn't change to %s\n", m_strChangeToFolder);
+					   
+					   /* Load program changer */
+					   m_ProgramChanger.LoadPrograms();
 				  }
 			 }
 

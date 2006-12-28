@@ -175,7 +175,7 @@ public:
 	GUI();
 	~GUI();
 
-	bool Initialize(char *strTitle=NULL, bool bFullScreen=false,
+	bool Initialize(const char *strTitle=NULL, bool bFullScreen=false,
 		int nWidth=800, int nHeight=600, unsigned int extraSDLflags=0);
 	void Cleanup();
 	Scrob* GetScrobList() { return m_pScrobList; }
@@ -233,7 +233,7 @@ public:
 	void DrawRect(const Rect& r, int color);
 	void DrawEdge(const Rect& r, bool bBevel, bool bFlat=true);
 	void FillRect(Rect r, int color);
-	void TextOut(Point pt, char *str, int color);
+	void TextOut(Point pt, const char *str, int color);
 	void SetClipRect(Rect pr);
 	void SetClipRect();
 	void PutPixel(Point pt, int color);
@@ -242,7 +242,7 @@ public:
 	void SetSurface(SDL_Surface *pSurface) { m_pSurface = pSurface; }
 
 	int GetFontHeight() { return m_nFontHeight; }
-	int GetTextWidth(char *str, int nChars);
+	int GetTextWidth(const char *str, int nChars);
 
 protected:
 	Scrob *m_pCurrentObject;

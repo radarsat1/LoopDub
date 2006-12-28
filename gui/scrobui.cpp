@@ -181,7 +181,7 @@ GUI::~GUI()
 	Cleanup();
 }
 
-bool GUI::Initialize(char *strTitle, bool bFullScreen, int nWidth, int nHeight, unsigned int extraSDLflags)
+bool GUI::Initialize(const char *strTitle, bool bFullScreen, int nWidth, int nHeight, unsigned int extraSDLflags)
 {
 	// Initialize SDL
 	if (SDL_Init ( SDL_INIT_VIDEO | extraSDLflags )!=0)
@@ -542,7 +542,7 @@ bool DrawingTools::LoadCharacterData()
 	return true;
 }
 
-void DrawingTools::TextOut(Point pt, char *str, int color)
+void DrawingTools::TextOut(Point pt, const char *str, int color)
 {
 	int i=0, pos=pt.x;
 	char ch, c;
@@ -606,7 +606,7 @@ int DrawingTools::GetPixel(Point pt)
 	return ((Uint8 *)m_pSurface->pixels)[pt.y*m_pSurface->pitch + pt.x];
 }
 
-int DrawingTools::GetTextWidth(char *str, int nChars)
+int DrawingTools::GetTextWidth(const char *str, int nChars)
 {
 	int x=0;
 	for (int i=0; (i < nChars) && str[i]; i++)

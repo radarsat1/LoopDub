@@ -74,14 +74,14 @@ class Label : public Scrob
 {
 public:
 	Label();
-	Label(Scrob *pParent, const Rect& r, char *strText, int color=3, int bkcolor=0);
+	Label(Scrob *pParent, const Rect& r, const char *strText, int color=3, int bkcolor=0);
 	~Label();
-	bool Create(Scrob *pParent, const Rect& r, char *strText, int color=3, int bkcolor=0);
+	bool Create(Scrob *pParent, const Rect& r, const char *strText, int color=3, int bkcolor=0);
 	void Draw();
 
 	void SetColor(int color);
 	void SetBkColor(int bkcolor);
-	void SetText(char *strText);
+	void SetText(const char *strText);
 	char* GetText() { return m_strText; }
 	void SetInteger(int value);
 	int GetInteger() { return atoi(m_strText); }
@@ -97,25 +97,25 @@ class Image : public Scrob
 {
   public:
 	Image();
-	Image(Scrob *pParent, const Rect& r, int width, int height, char* data);
-	bool Create(Scrob *pParent, const Rect& r, int width, int height, char* data);
+	Image(Scrob *pParent, const Rect& r, int width, int height, const char* data);
+	bool Create(Scrob *pParent, const Rect& r, int width, int height, const char* data);
 	
 	void Draw();
 
   protected:
 	int m_nWidth;
 	int m_nHeight;
-	char* m_pData;
+	const char* m_pData;
 };
 
 class Button : public Label
 {
 public:
 	Button();
-	Button(Scrob *pParent, const Rect& r, char *strText, int color, int bkcolor=0,
+	Button(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor=0,
 		   int command=0, void* command_value=NULL, bool bToggle=false);
 	~Button();
-	bool Create(Scrob *pParent, const Rect& r, char *strText, int color, int bkcolor=0,
+	bool Create(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor=0,
 				int command=0, void* command_value=NULL, bool bToggle=false);
 	void Draw();
 
@@ -138,14 +138,14 @@ class Field : public Scrob
 {
 public:
 	Field();
-	Field(Scrob *pParent, const Rect& r, char *strText, int nMaxChars, int color, int bkcolor=0);
+	Field(Scrob *pParent, const Rect& r, const char *strText, int nMaxChars, int color, int bkcolor=0);
 	~Field();
-	bool Create(Scrob *pParent, const Rect& r, char *strText, int nMaxChars, int color, int bkcolor=0);
+	bool Create(Scrob *pParent, const Rect& r, const char *strText, int nMaxChars, int color, int bkcolor=0);
 	void Draw();
 
 	void SetColor(int color);
 	void SetBkColor(int bkcolor);
-	void SetText(char *strText);
+	void SetText(const char *strText);
 	char* GetText() { return m_strText; }
 	void SetInteger(int value);
 
@@ -166,23 +166,25 @@ class FileBrowser : public Scrob
 {
 public:
 	FileBrowser();
-	FileBrowser(Scrob *pParent, const Rect& r, char *strDir=NULL, int filecommand=-1, int dircommand=-1, bool showDir=true);
+	FileBrowser(Scrob *pParent, const Rect& r, const char *strDir=NULL, int filecommand=-1, int dircommand=-1, bool showDir=true);
 	~FileBrowser();
-	bool Create(Scrob *pParent, const Rect& r, char *strDir=NULL, int filecommand=-1, int dircommand=-1, bool showDir=true);
+	bool Create(Scrob *pParent, const Rect& r, const char *strDir=NULL, int filecommand=-1, int dircommand=-1, bool showDir=true);
 
 	void Draw();
 	void OnMouseUp(Point mouse);
 
-	void SetDirectory(char *strDir);
-	void SetDirectoryFromBase(char *strDir);
+	void SetDirectory(const char *strDir);
+	void SetDirectoryFromBase(const char *strDir);
+	const char* GetDirectory() { return m_strDir; }
 
 	// extension for filtering listed entries
-	void SetExtension(char *strExt);
+	void SetExtension(const char *strExt);
+	const char* GetExtension() { return m_strExt; }
 
 	// set a base directory, bottom-level directory that user
     // cannot browse out of.
-	void SetBase(char *strBase);
-	char* GetBase() { return m_bBase ? m_strBase : 0; };
+	void SetBase(const char *strBase);
+	const char* GetBase() { return m_bBase ? m_strBase : 0; };
 
 protected:
 	int m_nColumns;

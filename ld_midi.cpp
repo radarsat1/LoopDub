@@ -11,8 +11,8 @@ static char *configfile = ".loopdub.midi.conf";
 MidiControl::MidiControl()
 {
 	 m_bInitialized = false;
-	 //m_pmListen = NULL;
-	 //m_pmOutput = NULL;
+	 m_pMidiIn = NULL;
+	 m_pMidiOut = NULL;
 
 	 int ch, t;
 	 for (ch=0; ch<N_LOOPS; ch++)
@@ -85,10 +85,10 @@ MidiControl::MidiControl()
 
 MidiControl::~MidiControl()
 {
-	 /*
-	 if (m_bInitialized && m_pmListen)
-		  Pm_Terminate();
-	 */
+	 if (m_bInitialized && m_pMidiIn) {
+		  delete m_pMidiIn;
+		  m_pMidiIn = NULL;
+	 }
 
 	 if (m_bMidiCodesHaveChanged) {
 		  FILE *file = fopen(configfile, "w");
@@ -107,12 +107,16 @@ MidiControl::~MidiControl()
 bool MidiControl::Initialize()
 {
 	 if (!m_bInitialized) {
-		  /*
-		  if (Pm_Initialize()==pmNoError)
-			   m_bInitialized = true;
-		  else
-		  */
-			   printf("Couldn't initialize PortMidi.\n");
+		  try {
+			   m_pMidiIn = new RtMidiIn();
+			   if (m_pMidiIn)
+					m_bInitialized = true;
+			   else
+					printf("Couldn't initialize RtMidi.\n");
+		  }
+		  catch (RtError &e) {
+			   e.printMessage();
+		  }
 	 }
 
 	 return m_bInitialized;
@@ -120,31 +124,22 @@ bool MidiControl::Initialize()
 
 int MidiControl::GetMidiNum()
 {
-	 if (!m_bInitialized)
+	 if (!(m_bInitialized && m_pMidiIn))
 		  return 0;
-	 
-/*
-	 int n = Pm_CountDevices();
 
-	 if (n==pmNoDevice) n = 0;
+	 int n = m_pMidiIn->getPortCount();
+
 	 return n;
-*/
-	 return 0;
 }
 	 
-char* MidiControl::GetMidiName(int n)
+const char* MidiControl::GetMidiName(int n)
 {
-	 if (!m_bInitialized)
+	 if (!(m_bInitialized && m_pMidiIn))
 		  return "";
 
-	 /*
-	 const PmDeviceInfo *pdi = Pm_GetDeviceInfo(n);
-	 if (!pdi) return "";
-
-	 // Note: portmidi.h says that this is safe
-	 return (char*)pdi->name;
-	 */
-	 return "";
+	 const char *s = m_pMidiIn->getPortName(n).c_str();
+	 if (!s) s = "";
+	 return s;
 }
 
 MidiType MidiControl::GetMidiType(int n)
@@ -160,7 +155,7 @@ MidiType MidiControl::GetMidiType(int n)
 		  return MidiInput;
 	 else
 	 */
-		  return MidiOutput;
+	 return MidiInput;
 }
 
 /*
@@ -172,24 +167,19 @@ PmTimestamp MidiControl::timeProc(void* time_info)
 
 void MidiControl::SelectDevice(int n)
 {
-	 if (!m_bInitialized)
+	 if (!(m_bInitialized && m_pMidiIn))
 		  return;
 
 	 char *stype=NULL;
-	 //PmError err;
 
 	 switch (GetMidiType(n)) {
 	 case MidiInput:
 		  stype = "input";
-		  /*
-		  if (m_pmListen)
-			   Pm_Close(m_pmListen);
-
-		  err = Pm_OpenInput( &m_pmListen, n, NULL, 10, NULL, NULL);
-		  //err = (PmError)-pmNoError;
-		  if (err != pmNoError)
-			   m_pmListen = NULL;
-		  */
+		  try {
+			   m_pMidiIn->openPort(n);
+		  } catch (RtError &e) {
+			   e.printMessage();
+		  }
 		  break;
 	 case MidiOutput:
 		  stype = "output";
@@ -206,13 +196,6 @@ void MidiControl::SelectDevice(int n)
 	 default:
 		  return;
 	 }
-
-	 /*
-	 if (err != pmNoError)
-		  printf("Error selecting MIDI %s device %d.\n", stype, n);
-	 else
-		  printf("Selected MIDI %s device %d\n", stype, n);
-	 */
 }
 
 void MidiControl::SetLearningMode(bool bLearnMode)
@@ -247,8 +230,8 @@ void MidiControl::SetLearningMode(bool bLearnMode)
 
 void MidiControl::CheckMsg()
 {
-	 //if (!m_pmListen)
-	                   return;
+	 if (!m_pMidiIn)
+		  return;
 
 #if 0
 	 // Don't block

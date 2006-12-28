@@ -9,6 +9,10 @@
 #define MAX_KEYS  10
 #define MAX_PARTS 16
 
+// Screen size
+#define WIDTH  800
+#define HEIGHT 600
+
 // Commands
 enum
 {
@@ -20,9 +24,11 @@ enum
 	 CMD_SPLIT,
 	 CMD_HOLD,
 	 CMD_SWITCH,
+	 CMD_PROGRAMCHANGE,
+	 CMD_LOOPDIR,
+	 CMD_LOOPDIRSEL,
 	 CMD_DIRCLICK, // all file browsers call this
 	 CMD_FILECLICK,
-	 CMD_PROGRAMCHANGE,
 	 CMD_CLOSE=CMD_FILECLICK+N_LOOPS,
 	 N_CMD=CMD_CLOSE+N_LOOPS
 };

@@ -246,7 +246,7 @@ Label::Label() : Scrob()
 	m_nBkColor = 0;
 }
 
-Label::Label(Scrob *pParent, const Rect& r, char *strText, int color, int bkcolor)
+Label::Label(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor)
 	: Scrob(pParent, r)
 {
 	m_strText = NULL;
@@ -262,7 +262,7 @@ Label::~Label()
 		delete m_strText;
 }
 
-bool Label::Create(Scrob *pParent, const Rect& r, char *strText, int color, int bkcolor)
+bool Label::Create(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor)
 {
 	Scrob::Create(pParent, r);
 
@@ -296,7 +296,7 @@ void Label::Draw()
 		 dt.TextOut(Point(0,(m_Rect.Height()-dt.GetFontHeight())/2), m_strText, m_nColor);
 }
 
-void Label::SetText(char *strText)
+void Label::SetText(const char *strText)
 {
 	int len = strlen(strText);
 	if (len > m_nAllocated)
@@ -351,7 +351,7 @@ Image::Image()
 	 m_pData = NULL;
 }
 
-Image::Image(Scrob *pParent, const Rect& r, int width, int height, char* data)
+Image::Image(Scrob *pParent, const Rect& r, int width, int height, const char *data)
 {	 
 	 m_nWidth = 0;
 	 m_nHeight = 0;
@@ -359,7 +359,7 @@ Image::Image(Scrob *pParent, const Rect& r, int width, int height, char* data)
 	 Create(pParent, r, width, height, data);
 }
 
-bool Image::Create(Scrob *pParent, const Rect& r, int width, int height, char* data)
+bool Image::Create(Scrob *pParent, const Rect& r, int width, int height, const char *data)
 {
 	 Scrob::Create(pParent, r);
 
@@ -403,7 +403,7 @@ Button::Button()
   m_nCommandValue = NULL;
 }
 
-Button::Button(Scrob *pParent, const Rect& r, char *strText, int color, int bkcolor,
+Button::Button(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor,
 			   int command, void* command_value, bool bToggle)
   : Label(pParent, r, strText, color, bkcolor)
 {
@@ -418,7 +418,7 @@ Button::~Button()
 {
 }
 
-bool Button::Create(Scrob *pParent, const Rect& r, char *strText, int color, int bkcolor,
+bool Button::Create(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor,
 					int command, void* command_value, bool bToggle)
 {
   Label::Create(pParent, r, strText, color, bkcolor);
@@ -513,7 +513,7 @@ Field::Field() : Scrob()
 	m_nViewPos = 0;
 }
 
-Field::Field(Scrob *pParent, const Rect& r, char *strText, int nMaxChars, int color, int bkcolor)
+Field::Field(Scrob *pParent, const Rect& r, const char *strText, int nMaxChars, int color, int bkcolor)
 	: Scrob(pParent, r)
 {
 	m_nMaxChars = 0;
@@ -531,7 +531,7 @@ Field::~Field()
 		delete m_strText;
 }
 
-bool Field::Create(Scrob *pParent, const Rect& r, char *strText, int nMaxChars, int color, int bkcolor)
+bool Field::Create(Scrob *pParent, const Rect& r, const char *strText, int nMaxChars, int color, int bkcolor)
 {
 	Scrob::Create(pParent, r);
 	m_nMaxChars = nMaxChars;
@@ -589,7 +589,7 @@ void Field::SetBkColor(int bkcolor)
 	SetDirty();
 }
 
-void Field::SetText(char *strText)
+void Field::SetText(const char *strText)
 {
 	if (!m_strText)
 		return;
@@ -684,7 +684,7 @@ FileBrowser::FileBrowser() : Scrob()
 	m_nDrawFileOffset = 0;
 }
 
-FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, char *strDir, int filecommand, int dircommand, bool showDir)
+FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, const char *strDir, int filecommand, int dircommand, bool showDir)
 	: Scrob(pParent, r)
 {
 	m_nRows = 0;
@@ -703,7 +703,7 @@ FileBrowser::~FileBrowser()
 {
 }
 
-bool FileBrowser::Create(Scrob *pParent, const Rect& r, char *strDir, int filecommand, int dircommand, bool showDir)
+bool FileBrowser::Create(Scrob *pParent, const Rect& r, const char *strDir, int filecommand, int dircommand, bool showDir)
 {
 	Scrob::Create(pParent, r);
 
@@ -876,7 +876,7 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 
 		 while ((de = readdir(dir)) && fb->m_nNames<MAX_FB_NAMES)
 		 {
-		   bool is_dir = false;
+			  bool is_dir = false;
 			  strcpy(pathstr, fb->m_strDir);
 			  strcat(pathstr, DIR_SEPARATOR);
 			  strcat(pathstr, de->d_name);
@@ -884,7 +884,10 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 			  if ((stat(pathstr, &st)==0) && S_ISDIR(st.st_mode))
 			    is_dir = true;
 
-			  if (is_dir || (fb->m_bExt ? (strcasecmp(de->d_name+strlen(de->d_name)-extlen, fb->m_strExt)==0) : true))
+			  if (is_dir || (fb->m_bExt ?
+							 (strcasecmp(de->d_name+strlen(de->d_name)-extlen,
+										 fb->m_strExt)==0)
+							 : true))
 			  {
 				   if (strcmp(de->d_name, ".")==0) continue;
 				   if (bBaseDir && strcmp(de->d_name, "..")==0) continue;
@@ -905,7 +908,7 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 	return NULL;
 }
 
-void FileBrowser::SetDirectory(char *strDir)
+void FileBrowser::SetDirectory(const char *strDir)
 {
 	 if (m_bLoading) return;
 	 m_bLoading = true;
@@ -920,7 +923,7 @@ void FileBrowser::SetDirectory(char *strDir)
 		  m_bLoading = false;
 }
 
-void FileBrowser::SetDirectoryFromBase(char *strDir)
+void FileBrowser::SetDirectoryFromBase(const char *strDir)
 {
 	 char path[MAX_PATH];
 	 strcpy(path, m_strBase);
@@ -929,7 +932,7 @@ void FileBrowser::SetDirectoryFromBase(char *strDir)
 	 SetDirectory(path);
 }
 
-void FileBrowser::SetExtension(char *strExt)
+void FileBrowser::SetExtension(const char *strExt)
 {
 	 if (strExt) {
 		  int len = strlen(strExt);
@@ -943,7 +946,7 @@ void FileBrowser::SetExtension(char *strExt)
 	 }
 }
 
-void FileBrowser::SetBase(char *strBase)
+void FileBrowser::SetBase(const char *strBase)
 {
 	 if (strBase) {
 		  if (realpath(strBase, m_strBase))
@@ -951,6 +954,10 @@ void FileBrowser::SetBase(char *strBase)
 	 }
 	 else {
 		  m_bBase = false;
+	 }
+
+	 if (m_bBase) {
+		  SetDirectoryFromBase(".");
 	 }
 }
 

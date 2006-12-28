@@ -27,7 +27,7 @@ public:
 	bool IsPlaying() { return m_bPlaying; }
 
 protected:
-	RtAudio rtaudio;
+	RtAudio *m_pRtAudio;
 
 	int m_nBufferLengthBytes;
 	short *m_pLeftBuffer;

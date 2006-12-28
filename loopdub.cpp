@@ -179,6 +179,7 @@ timer[1].elapsed();
 //		*(pBufferL++) = value[1];
 
 		*(pBufferR++) = *(pBufferL++) = value[0];
+		fwrite(&value[0], sizeof(value[0]), 1, stderr);
 
 		if (++app.m_nPos > app.m_nLength)
 			 app.m_nPos = 0;
@@ -392,7 +393,7 @@ int LoopDub::Run()
 
 	if (!m_Player.Initialize(FillBuffers, this))
 	{
-		printf("Couldn't initialize player.\n");
+		printf("Couldn't initialize audio player.\n");
 		return 1;
 	}
 

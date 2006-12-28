@@ -10,11 +10,21 @@ Player::Player()
 	
 	m_pFillBuffers = NULL;
 	m_Param = NULL;
+
+	try {
+		 m_pRtAudio = new RtAudio();
+	}
+	catch (RtError &e) {
+		 if (m_pRtAudio) delete m_pRtAudio;
+		 m_pRtAudio = NULL;
+		 printf("RtError in Player::Player(): %s\n", e.getMessage().c_str());
+	}
 }
 
 Player::~Player()
 {
-	 rtaudio.closeStream();
+	 if (m_pRtAudio)
+		  m_pRtAudio->closeStream();
 }
 
 int callback( char* buffer, int bufferSize, void* userData)
@@ -51,17 +61,18 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param)
 
 	// Initialize sound
 	// RtAudio was initialized in contructor
+	if (!m_pRtAudio) return false;
 
 	// Open stream.
 	try {
 		int bufferSize = BUFFER_SAMPLES;
-		rtaudio.openStream(0, 2, 0, 0,
-						   RTAUDIO_SINT16, 48000,//SAMPLE_RATE,
-			&bufferSize, 3);
-
-		rtaudio.setStreamCallback(callback, this);
+		m_pRtAudio->openStream(0, 2, 0, 0,
+							   RTAUDIO_SINT16, SAMPLE_RATE,
+							   &bufferSize, 3);
+		
+		m_pRtAudio->setStreamCallback(callback, this);
 	}
-	catch (RtError e)
+	catch (RtError& e)
 	{
 		printf("RtError in Player::Initialize(): %s\n", e.getMessage().c_str());
 		return false;
@@ -112,10 +123,10 @@ void Player::Mix(short *outputBuffer, unsigned long framesPerBuffer, int outTime
 void Player::Play()
 {
 	try {
-		rtaudio.startStream();
-		m_bPlaying=true;
+		 m_pRtAudio->startStream();
+		 m_bPlaying=true;
 	}
-	catch (RtError e)
+	catch (RtError& e)
 	{
 		printf("RtError in Player::Play(): %s\n", e.getMessage().c_str());
 		m_bPlaying=false;
@@ -125,12 +136,12 @@ void Player::Play()
 void Player::Stop()
 {
 	try {
-		rtaudio.stopStream();
-		m_bPlaying=false;
+		 m_pRtAudio->stopStream();
+		 m_bPlaying=false;
 	}
-	catch (RtError e)
+	catch (RtError& e)
 	{
-		printf("RtError in Player::Stop(): %s\n", e.getMessage().c_str());
+		 printf("RtError in Player::Stop(): %s\n", e.getMessage().c_str());
 	}
 }
 

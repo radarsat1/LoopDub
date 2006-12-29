@@ -23,8 +23,11 @@ Player::Player()
 
 Player::~Player()
 {
-	 if (m_pRtAudio)
+	 if (m_pRtAudio) {
 		  m_pRtAudio->closeStream();
+		  delete m_pRtAudio;
+		  m_pRtAudio = NULL;
+	 }
 }
 
 int callback( char* buffer, int bufferSize, void* userData)

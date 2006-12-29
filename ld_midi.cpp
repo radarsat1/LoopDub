@@ -116,6 +116,8 @@ bool MidiControl::Initialize()
 		  }
 		  catch (RtError &e) {
 			   e.printMessage();
+			   if (m_pMidiIn) delete m_pMidiIn;
+			   m_pMidiIn = NULL;
 		  }
 	 }
 

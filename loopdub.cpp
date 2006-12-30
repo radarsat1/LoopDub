@@ -179,7 +179,8 @@ timer[1].elapsed();
 //		*(pBufferL++) = value[1];
 
 		*(pBufferR++) = *(pBufferL++) = value[0];
-		fwrite(&value[0], sizeof(value[0]), 1, stderr);
+
+		//fwrite(&value[0], sizeof(value[0]), 1, stderr);
 
 		if (++app.m_nPos > app.m_nLength)
 			 app.m_nPos = 0;
@@ -380,6 +381,7 @@ int LoopDub::Run()
 		 pMainScrob->AddChild(m_pMidiClock);
 
 		 int n = m_Midi.GetMidiNum();
+		 if (n>0)
 		 for (int i=0; i<n; i++)
 		 {
 			  pMainScrob->AddChild(new Button(pMainScrob, Rect(350 + 50*i, 5, 400 + 50*i, 20),
@@ -387,6 +389,8 @@ int LoopDub::Run()
 											  (m_Midi.GetMidiType(i) == MidiInput) ? 0 : 7,
 											  2, CMD_SELECT, (void*)i, true));
 		 }
+		 else
+			  printf("No MIDI ports found.\n");
 	}
 
 	/* Initialize player */

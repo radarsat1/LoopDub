@@ -3,7 +3,6 @@
 
 Planned for v0.3:
   Output MIDI clock
-  Windows & OSX binaries -- need GUI launcher or something to choose directory
   Filenames in alphabetical order
   Resampling / how to deal with differing loop sizes (Likely just retrig on beat)
   MIDI "pick-up" - don't change slider value under MIDI knob passes current value

@@ -5,7 +5,8 @@
 #include "loopdub.h"
 #include "ld_midi.h"
 
-static char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3", "Effect4", "Button", "Select" };
+static char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3",
+							 "Effect4", "Button", "Select" };
 static char *configfile = ".loopdub.midi.conf";
 
 MidiControl::MidiControl()
@@ -23,6 +24,12 @@ MidiControl::MidiControl()
 	 m_bMidiClockActive = false;
 	 m_bMidiClockWaiting = false;
 
+	 LoadConfiguration();
+}
+
+void MidiControl::LoadConfiguration()
+{
+	 int ch, t;
 	 char configfilename[MAX_PATH];
 //#ifndef WIN32
 #if 1

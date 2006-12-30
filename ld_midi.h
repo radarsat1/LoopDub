@@ -83,6 +83,8 @@ class MidiControl
 
 	 void UpdateClockTicks();
 
+	 void LoadConfiguration();
+
  protected:
 	 // MIDI control codes, one for each control type
 	 char m_ctrlcode[CONTROLS][N_CT];

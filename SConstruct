@@ -51,7 +51,7 @@ if OS=='Cygwin' or OS=='Darwin':
 
 if OS=='Linux':
 	print 'Linux detected.'
-	LIBS += ['asound']
+	LIBS += ['asound','jack']
 	LIBPATH += ['libdeps/rtaudio-3.0.3',
 				'libdeps/rtmidi-1.0.6']
 	CPPPATH += ['libdeps/rtaudio-3.0.3/',

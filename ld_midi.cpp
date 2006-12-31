@@ -30,7 +30,7 @@ MidiControl::MidiControl()
 
 void MidiControl::LoadConfiguration()
 {
-	 int ch, t;
+	 int ch, t, linenumber=0, error=0;
 	 char configfilename[MAX_PATH];
 //#ifndef WIN32
 #if 1
@@ -40,49 +40,28 @@ void MidiControl::LoadConfiguration()
 	 strcpy(configfilename, configfile);
 #endif
 
-	 FILE *file = fopen(configfilename, "r");
-	 if (!file) {
-		  printf("Couldn't open %s\n", configfile);
-		  return;
-	 }
-
 	 // Read MIDI configuration
 	 SettingsFile f(configfilename);
-	 char param[256];
-	 char subparam[10];
-	 char value[1024];
-	 while (f.ReadSetting(0,0,param,256,subparam,10,value,1024)) {
+	 while (f.ReadSetting()) {
 		  t = -1;
-		  ch = -1;
-		  while (str) {
-			   switch (i) {
-			   case 0:
-					for (t=0; t<N_CT; t++)
-						 if (strcmp(str, Types[t])==0)
-							  break;
-					if (t >= N_CT) t = -1;
-					i++;
-					break;
-			   case 1:
-					ch = atoi(str);
-					if (ch < 0) ch = -1;
-					if (ch >= N_LOOPS) ch = -1;
-					i++;
-					break;
-			   case 2:
-					if ((ch!=-1) && (t!=-1)) {
-						 m_ctrlcode[ch][t] = atoi(str);
-					} else {
-						 printf("Error on line %d of %s\n", linenumber, configfile);
-					}
-					i++;
-					break;
-			   }
-			   str = strtok(NULL, delim);
+          
+          ch = atoi(f.m_strSubParam);
+          if (ch < 0) ch = -1;
+		  if (ch >= N_LOOPS) ch = -1;
+			
+          for (t=0; t<N_CT; t++)
+            if (strcmp(f.m_strParam, Types[t])==0)
+    			break;
+		  if (t >= N_CT) t = -1;
+		 		
+          if ((ch!=-1) && (t!=-1)) {
+		    m_ctrlcode[ch][t] = atoi(f.m_strValue);
+          } else {
+            printf("Error on line %d of %s\n", linenumber, configfile);
+            error = 1;
 		  }
 		  linenumber++;
 	 }
-	 fclose(file);
 
 	 printf(error ? "There were errors reading the MIDI configuration.\n"
 			: "MIDI configuration read successfully.\n");

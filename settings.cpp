@@ -16,19 +16,15 @@ int main(int argc, char *argv[])
 		}
 		printf("File opened.\n");
 	
-		char param[256];
-		char subparam[256];
-		char section[256];
-		char value[1024];
-		while (f.ReadSetting(section,256,param,256,subparam,256,value,1024))
+    	while (f.ReadSetting())
 		{
 			printf("%s%s%s%s%s = %s\n",
-				section[0]?section:"",
-				section[0]?".":"",
-				param,
-				subparam[0]?".":"",
-				subparam[0]?subparam:"",
-				value);
+				f.m_strSection[0]?f.m_strSection:"",
+				f.m_strSection[0]?".":"",
+				f.m_strParam,
+				f.m_strSubParam[0]?".":"",
+				f.m_strSubParam[0]?f.m_strSubParam:"",
+				f.m_strValue);
 		}
 	}
 	else
@@ -56,16 +52,25 @@ int main(int argc, char *argv[])
 }
 */
 
+
 SettingsFile::SettingsFile()
 {
 	m_file = 0;
 	m_bWrite = false;
+    m_strSection[0] = 0;
+    m_strParam[0] = 0;
+    m_strSubParam[0] = 0;
+    m_strValue[0] = 0;
 }
 
 SettingsFile::SettingsFile(char *filename)
 {
-	m_file = 0;
+    m_file = 0;
 	m_bWrite = false;
+    m_strSection[0] = 0;
+    m_strParam[0] = 0;
+    m_strSubParam[0] = 0;
+    m_strValue[0] = 0;
 	OpenForRead(filename);
 }
 
@@ -82,8 +87,10 @@ bool SettingsFile::OpenForRead(char *filename)
 	if (!m_file) return false;
 
 	m_bWrite = false;
-
-	return true;
+    m_strLastSection[0] = 0;
+    m_bSectionChanged = false;
+	
+    return true;
 }
 
 bool SettingsFile::OpenForWrite(char *filename)
@@ -109,9 +116,21 @@ void SettingsFile::Close()
 }
 
 bool SettingsFile::ReadSetting(	char *section,  int sectionSize,
-				char *param,    int paramSize,
-				char *subparam, int subparamSize,
-				char *value,    int valueSize )
+                                char *param,    int paramSize,
+                				char *subparam, int subparamSize,
+			                	char *value,    int valueSize )
+{
+        bool rc = ReadSetting();
+        if (rc) {
+                strncpy(section,  m_strSection,  sectionSize);
+                strncpy(param,    m_strParam,    paramSize);
+                strncpy(subparam, m_strSubParam, subparamSize);
+                strncpy(value,    m_strValue,    valueSize);
+        }
+        return rc;
+}
+
+bool SettingsFile::ReadSetting()
 {
 	if (!IsOpenForRead())
 		return false;
@@ -120,10 +139,11 @@ bool SettingsFile::ReadSetting(	char *section,  int sectionSize,
 	bool done=false;
 	char *s;
 
-	section[0]  = 0;
-	param[0]    = 0;
-	subparam[0] = 0;
-	value[0]    = 0;
+	m_strSection[0]  = 0;
+	m_strParam[0]    = 0;
+	m_strSubParam[0] = 0;
+	m_strValue[0]    = 0;
+    m_bSectionChanged = false;
 
 	while (!done) {
 		if (!fgets(line, 4096, m_file))
@@ -137,21 +157,22 @@ bool SettingsFile::ReadSetting(	char *section,  int sectionSize,
 				break;
 			case '[':
 				s = strtok(line, "[]\r\n");
-				strncpy(m_strSection, s, 256);
+				strncpy(m_strLastSection, s, m_nSectionSize);
+                m_bSectionChanged = true;
 				break;
 			default:
 				s = strtok(line, "=");
-				strncpy(param, s, 256);
+				strncpy(m_strParam, s, m_nParamSize);
 				s = strtok(NULL, " =\r\n");
-				strncpy(value, s, 256);
-				s = strtok(param, ".");
+				strncpy(m_strValue, s, m_nValueSize);
+				s = strtok(m_strParam, ".");
 				s = strtok(NULL, ".");
-				if (s) strncpy(subparam, s, 256);
+				if (s) strncpy(m_strSubParam, s, m_nSubParamSize);
 				done = true;
 				break;
 		}
 
-		strncpy(section, m_strSection, (sectionSize<256)?sectionSize:256);
+		strncpy(m_strSection, m_strLastSection, m_nSectionSize);
 	}
 	
 	return true;
@@ -166,9 +187,9 @@ bool SettingsFile::WriteSetting(const char* section,
 		return false;
 
 	if (section && section[0] &&
-		strcasecmp(section, m_strSection)!=0)
+		strcasecmp(section, m_strLastSection)!=0)
 	{
-		strncpy(m_strSection, section, 256);
+		strncpy(m_strLastSection, section, m_nSectionSize);
 		fprintf(m_file, "\n[%s]\n", section);
 	}
 	

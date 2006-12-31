@@ -10,10 +10,13 @@ class Program
 {
   public:
 	Program();
-	char m_strName[64];
-	char m_strDir[128];
+    static const int m_nNameSize = 64;
+	char m_strName[m_nNameSize];
+    static const int m_nDirSize = 256;
+	char m_strDir[m_nDirSize];
 	int m_nProgramNumber;
-	char m_strFile[N_LOOPS][MAX_PATH];
+    static const int m_nFileNameSize = MAX_PATH;
+	char m_strFile[N_LOOPS][m_nFileNameSize];
 };
 
 class ProgramChanger

@@ -4,6 +4,7 @@
 #include <string.h>
 #include "loopdub.h"
 #include "ld_midi.h"
+#include "settings.h"
 
 static char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3",
 							 "Effect4", "Button", "Select" };

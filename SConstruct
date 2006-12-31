@@ -61,7 +61,7 @@ SConscript(['gui/SConstruct'], 'CCFLAGS')
 
 Program('loopdub',
 	['loopdub.cpp', 'filter.cpp', 'ld_midi.cpp', 'loopob.cpp', 'player.cpp',
-	 'program.cpp', 'sample.cpp', 'vumeter.cpp', 'platform.cpp'],
+	 'program.cpp', 'sample.cpp', 'vumeter.cpp', 'platform.cpp', 'settings.cpp'],
 	CPPPATH=CPPPATH,
 	CCFLAGS=CCFLAGS,
 	LIBS=LIBS,

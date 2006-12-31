@@ -47,16 +47,13 @@ void MidiControl::LoadConfiguration()
 	 }
 
 	 // Read MIDI configuration
-	 char line[1024], *str;
-	 char delim[] = "\r\n\t =.";
-	 int i, linenumber=0;
-	 bool error=false;
-	 while (fgets(line, 1024, file)) {
-		  i=0;
+	 SettingsFile f(configfilename);
+	 char param[256];
+	 char subparam[10];
+	 char value[1024];
+	 while (f.ReadSetting(0,0,param,256,subparam,10,value,1024)) {
 		  t = -1;
 		  ch = -1;
-		  if (line[0]==';') continue;
-		  str = strtok(line, delim);
 		  while (str) {
 			   switch (i) {
 			   case 0:

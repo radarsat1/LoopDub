@@ -70,7 +70,7 @@ LoopDub app;
 ** LoopDub
 */
 
-#define APP_VERSION "0.1"
+#define APP_VERSION "0.3"
 #define LOOPTOP    50
 #define LOOPHEIGHT 60
 
@@ -93,7 +93,7 @@ timer[1].init();
 
 	 CREATEMUTEX(mutex);
 
-	 /*
+	 /* this was a hack for windows/cygwin - should be safely removed
 	 if (count==0) {
 	   count++;
 	   Run();
@@ -117,7 +117,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 		 priority = true;
 	}
 
-	// TODO: Is mutex necessary?
+	// TODO: Is mutex necessary?  seems not, but requires proof
 	//LOCKMUTEX(app.mutex);
 
 	// MIDI clock
@@ -416,6 +416,7 @@ int LoopDub::Run()
 
 		LOCKMUTEX(mutex);
 
+		/* Hit return to start or stop playback (disabled for now) */
 		if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 			&& pEvent->key.keysym.sym == SDLK_RETURN
 			&& pEvent->key.keysym.mod == KMOD_NONE)
@@ -427,6 +428,8 @@ int LoopDub::Run()
 				m_Player.Play();
 */
 		}
+
+		/* In key mode, hit spacebar to retrig this sample */
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 			&& pEvent->key.keysym.sym == SDLK_SPACE
 			&& pEvent->key.keysym.mod == KMOD_NONE)
@@ -440,18 +443,16 @@ int LoopDub::Run()
 				  m_Keys[i].on = true;
 			 }
 		}
-/*
-		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
-				 && pEvent->key.keysym.sym == '1') {
-			 m_ProgramChanger.ProgramChange(1, m_pLoopOb);
-		}
-*/
+
+		/* Press P to show program listing */
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 				 && pEvent->key.keysym.sym == 'p') {
 			 m_pLoopArea->SetVisible(!m_pLoopArea->IsVisible());
 			 m_pProgramArea->SetVisible(!m_pProgramArea->IsVisible());
 			 m_pBlankArea->SetDirty();
 		}
+
+		/* Type two digits to load a specified program */
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 			&& pEvent->key.keysym.sym >= '0'
 			&& pEvent->key.keysym.sym <= '9'

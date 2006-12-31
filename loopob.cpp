@@ -438,7 +438,7 @@ short LoopOb::GetSampleValue(int pos)
 			   if (m_bSwitching && m_pBackgroundSample) {
 					// switch to background sample
 					Sample *pOldSample = SetSample(m_pBackgroundSample);
-					if (pOldSample)
+					if (pOldSample) 	//TODO: defer this!!
 						 delete pOldSample;
 					m_pBackgroundSample = NULL;
 			   }

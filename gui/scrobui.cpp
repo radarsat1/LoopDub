@@ -320,6 +320,7 @@ bool GUI::ProcessEvent()
 	}
 
 	// update GUI
+	// TODO: make sure this isn't called more than 30 times per second or so
 	UpdateScreen();
 
 	return true;

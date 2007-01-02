@@ -17,7 +17,7 @@ rtaudio: $(PKG_RTAUDIO_LIB)
 $(PKG_RTAUDIO_LIB): rtaudio.unpacked
 #	Replace the RtAudio build system with Scons.
 #	This script can be pointed to the dsound header.
-	echo "StaticLibrary('rtaudio', ['RtAudio.cpp'], LIBS=['dsound'], LIBPATH=[ARGUMENTS['DXDIR']])" >$(PKG_RTAUDIO_DIR)/SConstruct
+	echo "StaticLibrary('rtaudio', ['RtAudio.cpp'], LIBS=['dsound'], CPPPATH=[ARGUMENTS['DXDIR']+'/Include'], LIBPATH=[ARGUMENTS['DXDIR']+'/Lib'],CXXFLAGS='-D__WINDOWS_DS__ -mno-cygwin')" >$(PKG_RTAUDIO_DIR)/SConstruct
 	cd $(PKG_RTAUDIO_DIR); ../scons.py DXDIR="$(DXDIR)"
 
 rtaudio.unpacked: rtaudio.verified
@@ -27,7 +27,7 @@ rtaudio.unpacked: rtaudio.verified
 
 rtaudio.verified:
 	@echo "Getting RtAudio..."
-	wget $(PKG_RTAUDIO_URL) -O $(PKG_RTAUDIO_TAR)
+	if [ `md5sum $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x != $(PKG_RTAUDIO_MD5)x ]; then wget $(PKG_RTAUDIO_URL) -O $(PKG_RTAUDIO_TAR); fi
 	if [ `md5sum $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x == $(PKG_RTAUDIO_MD5)x ]; then touch rtaudio.verified; else echo "MD5SUM error on $(PKG_RTAUDIO_TAR)"; false; fi
 
 
@@ -37,7 +37,7 @@ rtmidi: $(PKG_RTMIDI_LIB)
 
 $(PKG_RTMIDI_LIB): rtmidi.unpacked
 #	Replace the RtMidi build system with Scons.
-	echo "StaticLibrary('rtmidi', ['RtMidi.cpp'])" >$(PKG_RTMIDI_DIR)/SConstruct
+	echo "StaticLibrary('rtmidi', ['RtMidi.cpp'],CXXFLAGS='-D__WINDOWS_MM__ -mno-cygwin')" >$(PKG_RTMIDI_DIR)/SConstruct
 	cd $(PKG_RTMIDI_DIR); ../scons.py DXDIR="$(DXDIR)"
 
 rtmidi.unpacked: rtmidi.verified
@@ -47,7 +47,7 @@ rtmidi.unpacked: rtmidi.verified
 
 rtmidi.verified:
 	@echo "Getting RtMidi..."
-	wget $(PKG_RTMIDI_URL) -O $(PKG_RTMIDI_TAR)
+	if [ `md5sum $(PKG_RTMIDI_TAR) | cut -d" " -f1`x != $(PKG_RTMIDI_MD5)x ]; then wget $(PKG_RTMIDI_URL) -O $(PKG_RTMIDI_TAR); fi
 	if [ `md5sum $(PKG_RTMIDI_TAR) | cut -d" " -f1`x == $(PKG_RTMIDI_MD5)x ]; then touch rtmidi.verified; else echo "MD5SUM error on $(PKG_RTMIDI_TAR)"; false; fi
 
 
@@ -59,7 +59,7 @@ scons.py: scons.verified
 	@echo "Unpacking Scons..."
 	tar -xzf $(PKG_SCONS_TAR)
 	chmod +x scons.py
-	if ! [ -h ../scons ]; then ln -s "$(shell pwd)/scons.py" ../scons; fi
+	if ! [ -h ../scons ]; then ln -s "$(shell cygpath -u $(shell pwd))/scons.py" ../scons; fi
 
 scons.verified:
 	@echo "Getting Scons..."
@@ -92,7 +92,7 @@ libsndfile.verified:
 
 # SDL
 sdl: $(PKG_SDL_LIB)
-	if [ -f $(PKG_SDL_LIB) ]; then echo "SDL verified."; else echo "Error processing SDL."; false; fi
+	@if [ -f $(PKG_SDL_LIB) ]; then echo "SDL verified."; else echo "Error processing SDL."; false; fi
 
 $(PKG_SDL_LIB): $(PKG_SDL_DIR)/Makefile sdldx
 	cd $(PKG_SDL_DIR); make
@@ -113,7 +113,7 @@ sdl.verified:
 
 # SDL DirectX includes
 sdldx: sdldx.unpacked
-	if [ -f $(PKG_SDLDX_LIB) ]; then echo "SDL DirectX verified."; else echo "Error processing SDL DirectX."; false; fi
+	@if [ -f $(PKG_SDLDX_LIB) ]; then echo "SDL DirectX verified."; else echo "Error processing SDL DirectX."; false; fi
 
 sdldx.unpacked: sdldx.verified sdl.unpacked
 	@echo "Unpacking SDL DirectX..."

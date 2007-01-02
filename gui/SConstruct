@@ -1,6 +1,7 @@
 
 import commands
 OS = commands.getoutput('uname')
+if ('CYGWIN' in OS): OS='Cygwin'
 
 CCFLAGS = '-DFLAT_GUI '
 LIBS=['SDL'],

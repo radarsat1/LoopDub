@@ -36,8 +36,8 @@ PKG_SDLDX_URL="http://www.libsdl.org/extras/win32/cygwin/directx-devel.tar.gz"
 
 
 
-case `uname` in
-	Cygwin*)
+case $(uname) in
+	CYGWIN*)
 		echo "Bootstrapping for Cygwin..."
 
 DXDIR="$1"
@@ -136,6 +136,10 @@ make -C libdeps -f ./bootstrap_darwin.mk \
  PKG_RTMIDI_TAR="$PKG_RTMIDI_TAR" PKG_RTMIDI_DIR="$PKG_RTMIDI_DIR" PKG_RTMIDI_URL="$PKG_RTMIDI_URL" PKG_RTMIDI_MD5="$PKG_RTMIDI_MD5" PKG_RTMIDI_LIB="$PKG_RTMIDI_LIB" \
  PKG_LIBSNDFILE_TAR="$PKG_LIBSNDFILE_TAR" PKG_LIBSNDFILE_DIR="$PKG_LIBSNDFILE_DIR" PKG_LIBSNDFILE_URL="$PKG_LIBSNDFILE_URL" PKG_LIBSNDFILE_MD5="$PKG_LIBSNDFILE_MD5" PKG_LIBSNDFILE_LIB="$PKG_LIBSNDFILE_LIB" \
  PKG_SDL_TAR="$PKG_SDL_TAR" PKG_SDL_DIR="$PKG_SDL_DIR" PKG_SDL_URL="$PKG_SDL_URL" PKG_SDL_MD5="$PKG_SDL_MD5" PKG_SDL_LIB="$PKG_SDL_LIB"
+    ;;
 
+	*)
+		echo "Could not identify platform" $(uname)
+	;;
 
 esac

@@ -7,6 +7,8 @@
 #include <iostream>
 #include <fstream>
 
+#undef TextOut
+
 using namespace std;
 
 //using namespace ScrobUI;

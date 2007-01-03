@@ -12,7 +12,7 @@ if 'debug' in ARGUMENTS:
 	CCFLAGS += '-g -ggdb '
 
 if OS=='Cygwin':
-	CCFLAGS += '-DCYGWIN '
+	CCFLAGS += '-DCYGWIN -DWIN32 -mno-cygwin '
 if OS=='Darwin' or OS=='Cygwin':
 	LIBPATH += ['../libdeps/SDL-1.2.11/build/.libs']
 	CPPPATH += ['../libdeps/SDL-1.2.11/include']

@@ -1,6 +1,9 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
+#ifdef WIN32
+#define __WINDOWS_DS__
+#endif
 #include <RtAudio.h>
 
 #define SAMPLE_RATE 44100

@@ -6,6 +6,8 @@
 #include <limits.h>
 #include "../platform.h"
 
+#undef TextOut
+
 /*
 ** Toolkit for SDL Screen Object User Interface
 */

@@ -31,6 +31,7 @@ CPPPATH=['gui','.']
 if OS=='Cygwin':
 	print 'Cygwin detected.'
 	CCFLAGS += '-DWIN32 -DCYGWIN -mno-cygwin '
+	LINKFLAGS += '-mno-cygwin '
 	LIBS += ['winmm','user32','gdi32','ntoskrnl','dsound','ole32']
 
 if OS=='Darwin':

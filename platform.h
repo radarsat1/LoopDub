@@ -2,6 +2,7 @@
 #ifdef WIN32
 #include <windows.h>
 //#include <direct.h>
+#include <io.h>
 
 #ifndef MAX_PATH
 #define MAX_PATH _MAX_PATH
@@ -23,7 +24,7 @@
 
 #define USLEEP(n) Sleep(n);
 
-#define chdir _chdir
+//#define chdir _chdir
 #define _snprintf snprintf
 
 #else				/* Linux / OSX */

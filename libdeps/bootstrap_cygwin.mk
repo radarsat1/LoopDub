@@ -77,7 +77,7 @@ $(PKG_LIBSNDFILE_LIB): $(PKG_LIBSNDFILE_DIR)/Makefile
 	cd $(shell cygpath -u '$(shell cygpath -asw "$(PKG_LIBSNDFILE_DIR)")'); make
 
 $(PKG_LIBSNDFILE_DIR)/Makefile: libsndfile.unpacked
-	cd $(PKG_LIBSNDFILE_DIR); ./configure --disable-shared
+	cd $(PKG_LIBSNDFILE_DIR); CFLAGS='-mno-cygwin -D__CYGWIN__ -DS_ISSOCK\(m\) -DNDEBUG' CXXFLAGS="$CFLAGS" ./configure --disable-shared
 
 libsndfile.unpacked: libsndfile.verified
 	@echo "Unpacking libsndfile..."

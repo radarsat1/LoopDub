@@ -11,9 +11,7 @@
 #ifdef WIN32
   #include <io.h>
   #define snprintf _snprintf
-  #ifndef CYGWIN
-    #define realpath(srcpath, destpath) fullpath(destpath, srcpath, MAX_PATH)
-  #endif
+  #define realpath(srcpath, destpath) _fullpath(destpath, srcpath, MAX_PATH)
   #define DIR_SEPARATOR "\\"
 #else
   #include <dirent.h>
@@ -823,13 +821,13 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 	_finddata_t fd;
 	long lSearch = _findfirst(realdir, &fd);
 	if (lSearch==-1)
-		return;
+		return NULL;
 
-	m_nNames=0;
+	fb->m_nNames=0;
 	char pathstr[MAX_PATH];
 
 	int extlen=0;
-	if (m_bExt)
+	if (fb->m_bExt)
 		extlen = strlen(fb->m_strExt);
 
 	do {

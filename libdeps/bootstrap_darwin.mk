@@ -1,5 +1,6 @@
 
 PACKAGES = scons rtaudio rtmidi libsndfile sdl
+MD5 = md5
 
 all: loopdub
 
@@ -28,7 +29,7 @@ rtaudio.unpacked: rtaudio.verified
 rtaudio.verified:
 	@echo "Getting RtAudio..."
 	curl $(PKG_RTAUDIO_URL) -o $(PKG_RTAUDIO_TAR)
-	if [ `md5sum $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x == $(PKG_RTAUDIO_MD5)x ]; then touch rtaudio.verified; else echo "MD5SUM error on $(PKG_RTAUDIO_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_RTAUDIO_TAR) | cut -d" " -f4`x == $(PKG_RTAUDIO_MD5)x ]; then touch rtaudio.verified; else echo "MD5 error on $(PKG_RTAUDIO_TAR)"; false; fi
 
 
 # RtMidi
@@ -48,7 +49,7 @@ rtmidi.unpacked: rtmidi.verified
 rtmidi.verified:
 	@echo "Getting RtMidi..."
 	curl $(PKG_RTMIDI_URL) -o $(PKG_RTMIDI_TAR)
-	if [ `md5sum $(PKG_RTMIDI_TAR) | cut -d" " -f1`x == $(PKG_RTMIDI_MD5)x ]; then touch rtmidi.verified; else echo "MD5SUM error on $(PKG_RTMIDI_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_RTMIDI_TAR) | cut -d" " -f4`x == $(PKG_RTMIDI_MD5)x ]; then touch rtmidi.verified; else echo "MD5 error on $(PKG_RTMIDI_TAR)"; false; fi
 
 
 # Scons - local version
@@ -64,7 +65,7 @@ scons.py: scons.verified
 scons.verified:
 	@echo "Getting Scons..."
 	curl $(PKG_SCONS_URL) -o $(PKG_SCONS_TAR)
-	if [ `md5sum $(PKG_SCONS_TAR) | cut -d" " -f1`x == $(PKG_SCONS_MD5)x ]; then touch scons.verified; else echo "MD5SUM error on $(PKG_SCONS_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_SCONS_TAR) | cut -d" " -f4`x == $(PKG_SCONS_MD5)x ]; then touch scons.verified; else echo "MD5 error on $(PKG_SCONS_TAR)"; false; fi
 
 
 # libsndfile
@@ -87,7 +88,7 @@ libsndfile.unpacked: libsndfile.verified
 libsndfile.verified:
 	@echo "Getting libsndfile..."
 	curl $(PKG_LIBSNDFILE_URL) -o $(PKG_LIBSNDFILE_TAR)
-	if [ `md5sum $(PKG_LIBSNDFILE_TAR) | cut -d" " -f1`x == $(PKG_LIBSNDFILE_MD5)x ]; then touch libsndfile.verified; else echo "MD5SUM error on $(PKG_LIBSNDFILE_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_LIBSNDFILE_TAR) | cut -d" " -f4`x == $(PKG_LIBSNDFILE_MD5)x ]; then touch libsndfile.verified; else echo "MD5 error on $(PKG_LIBSNDFILE_TAR)"; false; fi
 
 
 # SDL
@@ -109,5 +110,5 @@ sdl.unpacked: sdl.verified
 sdl.verified:
 	@echo "Getting SDL..."
 	curl $(PKG_SDL_URL) -o $(PKG_SDL_TAR)
-	if [ `md5sum $(PKG_SDL_TAR) | cut -d" " -f1`x == $(PKG_SDL_MD5)x ]; then touch sdl.verified; else echo "MD5SUM error on $(PKG_SDL_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_SDL_TAR) | cut -d" " -f4`x == $(PKG_SDL_MD5)x ]; then touch sdl.verified; else echo "MD5 error on $(PKG_SDL_TAR)"; false; fi
 

@@ -1,5 +1,6 @@
 
 PACKAGES = scons rtaudio rtmidi libsndfile sdl sdldx
+MD5 = md5sum
 
 all: loopdub
 
@@ -27,8 +28,8 @@ rtaudio.unpacked: rtaudio.verified
 
 rtaudio.verified:
 	@echo "Getting RtAudio..."
-	if [ `md5sum $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x != $(PKG_RTAUDIO_MD5)x ]; then wget $(PKG_RTAUDIO_URL) -O $(PKG_RTAUDIO_TAR); fi
-	if [ `md5sum $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x == $(PKG_RTAUDIO_MD5)x ]; then touch rtaudio.verified; else echo "MD5SUM error on $(PKG_RTAUDIO_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x != $(PKG_RTAUDIO_MD5)x ]; then wget $(PKG_RTAUDIO_URL) -O $(PKG_RTAUDIO_TAR); fi
+	if [ `$(MD5) $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x == $(PKG_RTAUDIO_MD5)x ]; then touch rtaudio.verified; else echo "MD5 error on $(PKG_RTAUDIO_TAR)"; false; fi
 
 
 # RtMidi
@@ -47,8 +48,8 @@ rtmidi.unpacked: rtmidi.verified
 
 rtmidi.verified:
 	@echo "Getting RtMidi..."
-	if [ `md5sum $(PKG_RTMIDI_TAR) | cut -d" " -f1`x != $(PKG_RTMIDI_MD5)x ]; then wget $(PKG_RTMIDI_URL) -O $(PKG_RTMIDI_TAR); fi
-	if [ `md5sum $(PKG_RTMIDI_TAR) | cut -d" " -f1`x == $(PKG_RTMIDI_MD5)x ]; then touch rtmidi.verified; else echo "MD5SUM error on $(PKG_RTMIDI_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_RTMIDI_TAR) | cut -d" " -f1`x != $(PKG_RTMIDI_MD5)x ]; then wget $(PKG_RTMIDI_URL) -O $(PKG_RTMIDI_TAR); fi
+	if [ `$(MD5) $(PKG_RTMIDI_TAR) | cut -d" " -f1`x == $(PKG_RTMIDI_MD5)x ]; then touch rtmidi.verified; else echo "MD5 error on $(PKG_RTMIDI_TAR)"; false; fi
 
 
 # Scons - local version
@@ -64,7 +65,7 @@ scons.py: scons.verified
 scons.verified:
 	@echo "Getting Scons..."
 	wget $(PKG_SCONS_URL) -O $(PKG_SCONS_TAR)
-	if [ `md5sum $(PKG_SCONS_TAR) | cut -d" " -f1`x == $(PKG_SCONS_MD5)x ]; then touch scons.verified; else echo "MD5SUM error on $(PKG_SCONS_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_SCONS_TAR) | cut -d" " -f1`x == $(PKG_SCONS_MD5)x ]; then touch scons.verified; else echo "MD5 error on $(PKG_SCONS_TAR)"; false; fi
 
 
 # libsndfile
@@ -87,7 +88,7 @@ libsndfile.unpacked: libsndfile.verified
 libsndfile.verified:
 	@echo "Getting libsndfile..."
 	wget $(PKG_LIBSNDFILE_URL) -O $(PKG_LIBSNDFILE_TAR)
-	if [ `md5sum $(PKG_LIBSNDFILE_TAR) | cut -d" " -f1`x == $(PKG_LIBSNDFILE_MD5)x ]; then touch libsndfile.verified; else echo "MD5SUM error on $(PKG_LIBSNDFILE_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_LIBSNDFILE_TAR) | cut -d" " -f1`x == $(PKG_LIBSNDFILE_MD5)x ]; then touch libsndfile.verified; else echo "MD5 error on $(PKG_LIBSNDFILE_TAR)"; false; fi
 
 
 # SDL
@@ -109,7 +110,7 @@ sdl.unpacked: sdl.verified
 sdl.verified:
 	@echo "Getting SDL..."
 	wget $(PKG_SDL_URL) -O $(PKG_SDL_TAR)
-	if [ `md5sum $(PKG_SDL_TAR) | cut -d" " -f1`x == $(PKG_SDL_MD5)x ]; then touch sdl.verified; else echo "MD5SUM error on $(PKG_SDL_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_SDL_TAR) | cut -d" " -f1`x == $(PKG_SDL_MD5)x ]; then touch sdl.verified; else echo "MD5 error on $(PKG_SDL_TAR)"; false; fi
 
 # SDL DirectX includes
 sdldx: sdldx.unpacked
@@ -123,4 +124,4 @@ sdldx.unpacked: sdldx.verified sdl.unpacked
 sdldx.verified:
 	@echo "Getting SDL DirectX..."
 	wget $(PKG_SDLDX_URL) -O $(PKG_SDLDX_TAR)
-	if [ `md5sum $(PKG_SDLDX_TAR) | cut -d" " -f1`x == $(PKG_SDLDX_MD5)x ]; then touch sdldx.verified; else echo "MD5SUM error on $(PKG_SDLDX_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_SDLDX_TAR) | cut -d" " -f1`x == $(PKG_SDLDX_MD5)x ]; then touch sdldx.verified; else echo "MD5 error on $(PKG_SDLDX_TAR)"; false; fi

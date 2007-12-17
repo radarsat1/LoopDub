@@ -29,7 +29,7 @@ rtaudio.unpacked: rtaudio.verified
 rtaudio.verified:
 	@echo "Getting RtAudio..."
 	wget $(PKG_RTAUDIO_URL) -O $(PKG_RTAUDIO_TAR)
-	if [ `$(MD5) $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x == $(PKG_RTAUDIO_MD5)x ]; then touch rtaudio.verified; else echo "MD5 error on $(PKG_RTAUDIO_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x = $(PKG_RTAUDIO_MD5)x ]; then touch rtaudio.verified; else echo "MD5 error on $(PKG_RTAUDIO_TAR)"; false; fi
 
 
 # RtMidi
@@ -49,4 +49,4 @@ rtmidi.unpacked: rtmidi.verified
 rtmidi.verified:
 	@echo "Getting RtMidi..."
 	wget $(PKG_RTMIDI_URL) -O $(PKG_RTMIDI_TAR)
-	if [ `$(MD5) $(PKG_RTMIDI_TAR) | cut -d" " -f1`x == $(PKG_RTMIDI_MD5)x ]; then touch rtmidi.verified; else echo "MD5 error on $(PKG_RTMIDI_TAR)"; false; fi
+	if [ `$(MD5) $(PKG_RTMIDI_TAR) | cut -d" " -f1`x = $(PKG_RTMIDI_MD5)x ]; then touch rtmidi.verified; else echo "MD5 error on $(PKG_RTMIDI_TAR)"; false; fi

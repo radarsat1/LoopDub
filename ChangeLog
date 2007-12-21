@@ -1,4 +1,13 @@
-
+* Dec. 21, 2007:
+Release 0.3. Various changes have occurred warranting a release (last
+year, see below), even though some planned features have not been
+added.  Therefore pushing some of these to version 0.4, and bumping
+successive versions in the roadmap.
+- Fixed bug with program loading code.
+- Program change be changed by typing number keys.
+- Switched to git repository, can be tracked at
+  http://loopdub.sourceforge.net/git/loopdub.git
+	
 * Dec. 29, 2006
 Some recent changes:
 - Switch back-end to RtAudio/RtMidi.

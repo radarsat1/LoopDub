@@ -1,20 +1,20 @@
 
 -- Roadmap --
 
-Planned for v0.3:
+Planned for v0.4:
   Output MIDI clock
   Filenames in alphabetical order
   Resampling / how to deal with differing loop sizes (Likely just retrig on beat)
   MIDI "pick-up" - don't change slider value under MIDI knob passes current value
   Optional stereo support
 
-Planned for v0.4:
+Planned for v0.5:
   Ability to render or mixdown to another sample
   Retrigger loops on demand, keep it on beat (quantized)  
   Output MIDI loops loaded from disk
   Clean up loopdub.cpp: Too large and complex!
 
-Planned for v0.5:
+Planned for v0.6:
   Record loops from a microphone or external equipment
   Record MIDI loops
 

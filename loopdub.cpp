@@ -421,12 +421,10 @@ int LoopDub::Run()
 			&& pEvent->key.keysym.sym == SDLK_RETURN
 			&& pEvent->key.keysym.mod == KMOD_NONE)
 		{
-/*
 			if (m_Player.IsPlaying())
 				m_Player.Stop();
 			else
 				m_Player.Play();
-*/
 		}
 
 		/* In key mode, hit spacebar to retrig this sample */

@@ -73,15 +73,16 @@ void ProgramChanger::LoadPrograms()
     while (f.ReadSetting())
     {
         if (f.m_bSectionChanged) {
-			m_Program[++n].m_nProgramNumber = n+1;
+            n++;
+			m_Program[n].m_nProgramNumber = n+1;
             strncpy(m_Program[n].m_strName, f.m_strSection, Program::m_nNameSize);
             loop = 1;
         }
         
-		if (strcasecmp(f.m_strParam, "Dir")==0 && n>=0 && n<N_LOOPS) {
+		if (strcasecmp(f.m_strParam, "Dir")==0 && n>=0 && n<m_nPrograms) {
 		    strncpy(m_Program[n].m_strDir, f.m_strValue, Program::m_nDirSize);
 		}
-	    else if (strcasecmp(f.m_strParam, "Loop")==0 && n>=0 && n<N_LOOPS) {
+	    else if (strcasecmp(f.m_strParam, "Loop")==0 && n>=0 && n<m_nPrograms) {
 			pos = loop++;
 			if (pos >= 1 && pos <= N_LOOPS)
 				 strncpy(m_Program[n].m_strFile[pos-1], f.m_strValue, Program::m_nFileNameSize);
@@ -222,8 +223,10 @@ void ProgramChanger::ProgramChange(int program, LoopOb* m_pLoopOb[N_LOOPS])
 	 int i;
 	 for (i=0; i<m_nPrograms; i++)
 		  if (m_Program[i].m_nProgramNumber == program) break;
-	 if (i>=m_nPrograms)
-		  return;
+	 if (i>=m_nPrograms) {
+         printf("Program %d not found.\n", program);
+         return;
+     }
 
 	 // If we are already loading something, clear the queue.
 	 m_nLoadingQueueR = m_nLoadingQueueW;

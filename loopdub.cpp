@@ -466,12 +466,13 @@ int LoopDub::Run()
 			 }
 			 else if (inputchars==1) {
 			   inputprog = inputprog*10 + ch;
-			   printf("%d\n", inputprog);
+			   printf("Program entered: %d\n", inputprog);
 			   m_ProgramChanger.ProgramChange(inputprog, m_pLoopOb);
 			   inputchars = 0;
 			 }
 
-			 //m_pLoopOb[ch]->SetSelected(!m_pLoopOb[ch]->IsSelected());
+             // NOTE: previously, number keys were used to select a loop
+             //m_pLoopOb[ch]->SetSelected(!m_pLoopOb[ch]->IsSelected());
 		}
 		else
 			bQuit = !gui.ProcessEvent();

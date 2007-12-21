@@ -1,40 +1,45 @@
 
-** Installing LoopDub **
+== Installing LoopDub ==
 
-** REQUIRED LIBRAIRIES:  PortAudio v.18, libSDL
+In this version, I have switched to the SCons system for building
+LoopDub.  I have also switch to a different multiplatform audio/midi
+system, called RtAudio/RtMidi.  The bootstrap.sh script is made to
+conveniently download and compile these for you.  So, when connected
+to the internet, the first step is to execute it:
 
-On this version, I have switched to the autotools system for Unix-like
-operating systems.  You will noticed that PortMidi is included in a zip
-file in the source folder.  I did this because I use the Debian distro,
-and it seems that although PortAudio and SDL are available through apt-get,
-PortMidi is not.  However, the configure script is made to conveniently unzip
-and compile PortMidi for you.
+  # ./bootstrap.sh
 
-So, to compile LoopDub:
+Now, to compile LoopDub:
 
-# ./configure
-# make
-
-And to install:
-
-# make install
-
-For extra options, try
-# ./configure --help
-
-If you wish to try it without installing it to your system, LoopDub is
-pretty-much self-contained and can run from the source directory after
-calling make.
-
-# ./loopdub /path/to/loops
+  # scons
 
 
-** Running LoopDub **
+LoopDub is pretty-much self-contained and can run from the source
+directory after compiling.
+
+  # ./loopdub /path/to/loops
+
+
+== Running LoopDub ==
 
 The program takes one optional argument, which is the folder where your loops
 are stored.  For quick access, I keep mine right in the root folder, at /loops/
 This is probably bad practise.. ;-)   But I execute it like this:
 
-# loopdub /loops
+  # loopdub /loops
 
-If you keep your loops elsewhere, run it with a different path argument.
+If you keep your loops elsewhere, run it with a different path argument.  The
+path may contain an optional file called "programs.ini" which informs LoopDub
+about how you want to respond to program-change MIDI messages.  It gives each
+program a name, a folder (which should be relative to the loops folder), and
+a list of loops associated with that program.  (For now, up to 8 loops per
+program.)
+
+See the included file, programs.ini.example for details.
+
+There is also a configuration file called ".loopdub.midi.conf" which should
+go into your home folder.  It contains mapping information between MIDI controls
+and what GUI control they modify.  In fact, this can easily be generated at
+runtime by clicking on "Learn", however the mode buttons cannot be configured
+automatically.  See the included example file.  (It is a dot-file so if you
+don't see it, try "ls -a".)

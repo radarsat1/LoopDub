@@ -1,14 +1,15 @@
-** Welcome to LoopDub **
+== Welcome to LoopDub ==
 
-** For instructions on usage, see docs/index.html
-** Please read INSTALL for instructions on compiling, installing and running.
+NOTE: For instructions on usage, see docs/index.html
+      Please read INSTALL for instructions on compiling, installing and running.
 
 LoopDub is a program for turning your computer into a live sampler
 for performing electronic music.  It has been developed with three
 ideas in mind:
-- simplicity
-- directness
-- transparency
+
+* simplicity
+* directness
+* transparency
 
   For usual software applications like writing documents or programming, it
 is very convenient to have a lot of functionality enabled through menus

@@ -162,7 +162,7 @@ void MidiControl::SelectDevice(int n)
 	 case MidiInput:
 		  stype = "input";
 		  try {
-			   m_pMidiIn->openPort(n);
+              m_pMidiIn->openPort(n);
 		  } catch (RtError &e) {
 			   e.printMessage();
 		  }
@@ -214,27 +214,29 @@ void MidiControl::SetLearningMode(bool bLearnMode)
 	 }
 }
 
-void MidiControl::CheckMsg()
+bool MidiControl::PollMidi(int *code, int *val, int *status, int *channel)
 {
-	 if (!m_pMidiIn)
-		  return;
-
-#if 0
-	 // Don't block
-	 PmEvent event;
-	 PmError rc;
-  	 while (Pm_Poll(m_pmListen)==TRUE
+    /*
+  	 while (PollMidi(m_pmListen)==TRUE
 			&& (rc=Pm_Read(m_pmListen, &event, 1))>=pmNoError)
-	 {
 		  int code = Pm_MessageData1(event.message);
 		  int val = Pm_MessageData2(event.message);
 		  int status = Pm_MessageStatus(event.message);
 		  int channel = status & 0x0F;
 		  status &= 0xF0;
-//		  status = status & Pm_MessageStatus(event.message);
-//		  if (channel != /*this channel*/0)
-//			   continue;
+    */
+    return false;
+}
 
+void MidiControl::CheckMsg()
+{
+	 if (!m_pMidiIn)
+		  return;
+
+	 // Don't block
+     int code, val, status, channel;
+  	 while (PollMidi(&code, &val, &status, &channel))
+	 {
 		  printf("MIDI Message: status=%d, code=%d, val=%d\n", status, code, val);
 
 		  if (m_bLearning) {
@@ -398,10 +400,6 @@ void MidiControl::CheckMsg()
 		  }
 	 }
 	 
-	 if (rc < 0)
-		  printf("rc: %d\n", rc);
-
-#endif
 	 return;
 }
 

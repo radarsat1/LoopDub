@@ -74,6 +74,9 @@ class MidiControl
 	 // Select a MIDI device
 	 void SelectDevice(int n);
 
+     // Poll for a MIDI message from the hardware
+     bool PollMidi(int *code, int *val, int *status, int *channel);
+
 	 // Mode
 	 void SetLearningMode(bool bLearnMode);
 

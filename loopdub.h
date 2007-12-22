@@ -60,6 +60,7 @@ public:
 
 	LoopOb *m_pLoopOb[N_LOOPS];
 	Button *m_pMidiLearning;
+    Label *m_pButtonModeLabel;
 	Button *m_pMidiClock;
 	VUMeter *m_pVUMeter;
 	Slider *m_pVolumeSlider;

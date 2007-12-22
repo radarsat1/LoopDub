@@ -311,6 +311,9 @@ int LoopDub::Run()
 	m_pAutoCueButton = new Button(pMainScrob, Rect(5, 22, 55, 37), "AutoCue", 0, 2, -1, 0, true);
 	pMainScrob->AddChild(m_pAutoCueButton);
 
+    m_pButtonModeLabel = new Label(pMainScrob, Rect(68, 22, 128, 37), "<Cue>", 3, 0);
+    pMainScrob->AddChild(m_pButtonModeLabel);
+
 	Label *pTempo = new Label(pMainScrob, Rect(60, 5, 120, 20), NULL, 3, 0);
 	pMainScrob->AddChild(pTempo);
 

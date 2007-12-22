@@ -8,6 +8,7 @@
 
 static char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3",
 							 "Effect4", "Button", "Select" };
+static char *ButtonModes[N_BT] = { "<Cue>", "<Split>", "<Hold>", "<Keys>", "<Norm>", "<Switch>" };
 static char *configfile = ".loopdub.midi.conf";
 
 void MidiControl::callbackRtMidi( double timeStamp, std::vector<unsigned char> *message, void *userData)
@@ -368,6 +369,7 @@ void MidiControl::CheckMsg()
 						 }
 						 else if (m_ctrlcode[ch][CT_SELECT]==code) {
 							  m_nButtonMode = ch;
+                              app.m_pButtonModeLabel->SetText(ButtonModes[m_nButtonMode]);
 							  if (ch >= N_BT) ch = 0;
 						 }
 					}

@@ -10,6 +10,20 @@ static char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3",
 							 "Effect4", "Button", "Select" };
 static char *configfile = ".loopdub.midi.conf";
 
+void MidiControl::callbackRtMidi( double timeStamp, std::vector<unsigned char> *message, void *userData)
+{
+    MidiControl *pMidi = (MidiControl*)userData;
+    
+    if (pMidi->m_nMidiBufferR == ((pMidi->m_nMidiBufferW+1)%LDMIDI_BUFFER_SIZE))
+        return; // circular buffer is full
+
+    pMidi->m_MidiBuffer[pMidi->m_nMidiBufferW*3+0] = (*message)[0];
+    pMidi->m_MidiBuffer[pMidi->m_nMidiBufferW*3+1] = (*message)[1];
+    pMidi->m_MidiBuffer[pMidi->m_nMidiBufferW*3+2] = (*message)[2];
+
+    pMidi->m_nMidiBufferW = (pMidi->m_nMidiBufferW+1) % LDMIDI_BUFFER_SIZE;
+}
+
 MidiControl::MidiControl()
 {
 	 m_bInitialized = false;
@@ -24,6 +38,8 @@ MidiControl::MidiControl()
 	 m_bLearning = false;
 	 m_bMidiClockActive = false;
 	 m_bMidiClockWaiting = false;
+
+     m_nMidiBufferR = m_nMidiBufferW = 0;
 
 	 LoadConfiguration();
 }
@@ -93,8 +109,10 @@ bool MidiControl::Initialize()
 	 if (!m_bInitialized) {
 		  try {
 			   m_pMidiIn = new RtMidiIn();
-			   if (m_pMidiIn)
+			   if (m_pMidiIn) {
+                   m_pMidiIn->setCallback(callbackRtMidi, this);
 					m_bInitialized = true;
+               }
 			   else
 					printf("Couldn't initialize RtMidi.\n");
 		  }
@@ -216,16 +234,21 @@ void MidiControl::SetLearningMode(bool bLearnMode)
 
 bool MidiControl::PollMidi(int *code, int *val, int *status, int *channel)
 {
-    /*
-  	 while (PollMidi(m_pmListen)==TRUE
-			&& (rc=Pm_Read(m_pmListen, &event, 1))>=pmNoError)
-		  int code = Pm_MessageData1(event.message);
-		  int val = Pm_MessageData2(event.message);
-		  int status = Pm_MessageStatus(event.message);
-		  int channel = status & 0x0F;
-		  status &= 0xF0;
-    */
-    return false;
+    // Check whether there are any MIDI messages waiting in the
+    // circular buffer which was written to by the RtMidi callback.
+
+    if (m_nMidiBufferR == m_nMidiBufferW)
+        return false;
+
+    *status  = m_MidiBuffer[m_nMidiBufferR*3+0];
+    *code    = m_MidiBuffer[m_nMidiBufferR*3+1];
+    *val     = m_MidiBuffer[m_nMidiBufferR*3+2];
+    *channel = *status & 0x0F;
+    *status &= 0xF0;
+
+    m_nMidiBufferR = (m_nMidiBufferR+1) % LDMIDI_BUFFER_SIZE;
+
+    return true;
 }
 
 void MidiControl::CheckMsg()
@@ -237,8 +260,6 @@ void MidiControl::CheckMsg()
      int code, val, status, channel;
   	 while (PollMidi(&code, &val, &status, &channel))
 	 {
-		  printf("MIDI Message: status=%d, code=%d, val=%d\n", status, code, val);
-
 		  if (m_bLearning) {
 			   if (code==m_nLastCode) continue;
 			   m_nLastCode = code;
@@ -353,8 +374,7 @@ void MidiControl::CheckMsg()
 			   }
 			   else if (status==0x90) // Key On
 			   {
-					// TODO: why the hell does my midi keyboard send the NOTE ON
-					//       message when i release a key, with velocity of zero?
+                   // velocity zero means key off
 					if (val==0) {
 						 // note off:
 						 // find key for this note

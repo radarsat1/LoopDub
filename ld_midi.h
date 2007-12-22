@@ -110,6 +110,16 @@ class MidiControl
 	 RtMidiOut *m_pMidiOut;
 
 	 bool m_bInitialized;
+
+#define LDMIDI_BUFFER_SIZE 4096
+     unsigned char m_MidiBuffer[LDMIDI_BUFFER_SIZE*3];
+     unsigned int m_nMidiBufferR;
+     unsigned int m_nMidiBufferW;
+
+     // RtMidi callback
+     static void callbackRtMidi( double timeStamp,
+                                 std::vector<unsigned char> *message,
+                                 void *userData );
 };
 
 #endif // _LD_MIDI_H_

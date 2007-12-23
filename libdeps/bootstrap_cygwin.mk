@@ -1,5 +1,5 @@
 
-PACKAGES = scons rtaudio rtmidi libsndfile sdl sdldx
+PACKAGES = scons rtaudio rtmidi libsndfile libsamplerate sdl sdldx
 MD5 = md5sum
 
 all: loopdub

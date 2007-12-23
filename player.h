@@ -5,6 +5,7 @@
 #define __WINDOWS_DS__
 #endif
 #include <RtAudio.h>
+#include <samplerate.h>
 
 #define SAMPLE_RATE 44100
 #define BUFFER_SAMPLES 1024	// in samples
@@ -16,7 +17,7 @@ public:
 	Player();
 	~Player();
 
-	bool Initialize(void (FillBuffers)(void*, int), void* param);
+	bool Initialize(void (FillBuffers)(void*, int), void* param, int hw_samplerate=44100);
 
 	short* LeftBuffer() { return m_pLeftBuffer; }
 	short* RightBuffer() { return m_pRightBuffer; }
@@ -37,6 +38,10 @@ protected:
 	short *m_pRightBuffer;
 	bool m_bPlaying;
 	int m_nSide;	// side of buffer to write next (1 or 2)
+
+    int m_nHwSampleRate;
+    SRC_STATE* m_pSRC;
+    SRC_DATA m_SRC_data;
 
 	void (*m_pFillBuffers)(void* param, int outTimeSample);
 	void* m_Param;

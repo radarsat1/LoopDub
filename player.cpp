@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sndfile.h>
 #include "player.h"
 
 Player::Player()
@@ -10,6 +11,8 @@ Player::Player()
 	
 	m_pFillBuffers = NULL;
 	m_Param = NULL;
+
+    m_pSRC = NULL;
 
 	try {
 		 m_pRtAudio = new RtAudio();
@@ -28,6 +31,9 @@ Player::~Player()
 		  delete m_pRtAudio;
 		  m_pRtAudio = NULL;
 	 }
+
+     if (m_pSRC)
+         src_delete(m_pSRC);
 }
 
 int callback( char* buffer, int bufferSize, void* userData)
@@ -38,12 +44,11 @@ int callback( char* buffer, int bufferSize, void* userData)
 	 return false;
 }
 
-bool Player::Initialize(void (FillBuffers)(void*, int), void* param)
+bool Player::Initialize(void (FillBuffers)(void*, int), void* param, int hw_samplerate)
 {
-	/* Initialize sound player (PortAudio) & buffers */
-	m_pLeftBuffer=NULL;
-	m_pRightBuffer=NULL;
-	
+    m_nHwSampleRate = hw_samplerate;
+
+    /* Initialize callback. */
 	m_pFillBuffers = FillBuffers;
 	m_Param = param;
 	if (!m_pFillBuffers)
@@ -60,7 +65,7 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param)
 	try {
 		int bufferSize = BUFFER_SAMPLES;
 		m_pRtAudio->openStream(0, 2, 0, 0,
-				       RTAUDIO_SINT16, 48000,//SAMPLE_RATE,
+                               RTAUDIO_SINT16, m_nHwSampleRate,
 							   &bufferSize, 3);
 		
 		m_pRtAudio->setStreamCallback(callback, this);
@@ -83,6 +88,16 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param)
 	memset(m_pRightBuffer, 0, sizeof(short)*BUFFER_SAMPLES);
 
 	m_nSide = 1;
+
+    /* Set up sample rate converter, if necessary. */
+    m_nHwSampleRate = hw_samplerate;
+
+    if (m_nHwSampleRate != SAMPLE_RATE) {
+        int error;
+        m_pSRC = src_new(SRC_SINC_FASTEST, 2, &error);
+        if (!m_pSRC)
+            printf("Error initializing libsamplerate.\n");
+    }
 
 	return true;
 }

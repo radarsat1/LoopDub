@@ -25,7 +25,7 @@ if 'debug' in ARGUMENTS:
 else:
 	CCFLAGS += '-O3 '
 
-LIBS=['scrobui','SDL','sndfile','rtaudio','rtmidi']
+LIBS=['scrobui','SDL','sndfile','rtaudio','rtmidi','samplerate']
 LINKFLAGS=''
 LIBPATH=['gui']
 CPPPATH=['gui','.']

@@ -124,7 +124,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 	}
 
 	// Audio
-	short* pStereoBuffer = app.m_Player.StereoBuffer();
+	float* pStereoBuffer = app.m_Player.StereoBuffer();
 	int maxval=0;
 	int volume, volmax;
 	
@@ -166,8 +166,9 @@ timer[1].elapsed();
 		}
 
         // Mix to mono
-		*(pStereoBuffer++) = value[0];
-        *(pStereoBuffer++) = value[0];
+        float vf = value[0] / 32768.0f;
+		*(pStereoBuffer++) = vf;
+        *(pStereoBuffer++) = vf;
 
 		if (++app.m_nPos > app.m_nLength)
 			 app.m_nPos = 0;
@@ -385,7 +386,8 @@ int LoopDub::Run()
 
 	/* Initialize player */
 
-	if (!m_Player.Initialize(FillBuffers, this))
+    // TODO: make hardware samplerate a command-line option
+	if (!m_Player.Initialize(FillBuffers, this, 48000))
 	{
 		printf("Couldn't initialize audio player.\n");
 		return 1;

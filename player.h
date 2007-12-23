@@ -7,8 +7,8 @@
 #include <RtAudio.h>
 #include <samplerate.h>
 
-#define SAMPLE_RATE 44100
-#define BUFFER_SAMPLES 1024	               // in samples
+#define SAMPLE_RATE      44100
+#define BUFFER_SAMPLES   800	           // in samples
 #define BYTES_PER_SAMPLE (sizeof(short)*2) // stereo
 
 class Player
@@ -19,11 +19,11 @@ public:
 
 	bool Initialize(void (FillBuffers)(void*, int), void* param, int hw_samplerate=44100);
 
-	short* StereoBuffer() { return m_pStereoBuffer; }
+	float* StereoBuffer() { return m_pStereoBuffer; }
 	int BufferSizeBytes() { return m_nBufferLengthBytes; }
 	int BufferSizeSamples() { return m_nBufferLengthBytes / BYTES_PER_SAMPLE; }
 	bool ReadyForData();
-	void Mix(short *outputBuffer, unsigned long framesPerBuffer, int outTimeSample=0);
+	void Mix(float *outputBuffer, unsigned long framesPerBuffer, int outTimeSample=0);
 	void Play();
 	void Stop();
 	int GetPlayPositionSamples();
@@ -33,7 +33,7 @@ protected:
 	RtAudio *m_pRtAudio;
 
 	int m_nBufferLengthBytes;
-	short *m_pStereoBuffer;
+	float *m_pStereoBuffer;
 	bool m_bPlaying;
 	int m_nSide;	// side of buffer to write next (1 or 2)
 

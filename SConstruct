@@ -22,6 +22,8 @@ if ('CYGWIN' in OS): OS='Cygwin'
 CCFLAGS = ''
 if 'debug' in ARGUMENTS:
 	CCFLAGS += '-g -ggdb '
+else:
+	CCFLAGS += '-O3 '
 
 LIBS=['scrobui','SDL','sndfile','rtaudio','rtmidi']
 LINKFLAGS=''

@@ -10,6 +10,8 @@ CPPPATH=[]
 
 if 'debug' in ARGUMENTS:
 	CCFLAGS += '-g -ggdb '
+else:
+	CCFLAGS += '-O3 '
 
 if OS=='Cygwin':
 	CCFLAGS += '-DCYGWIN -DWIN32 -mno-cygwin '

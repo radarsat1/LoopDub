@@ -90,6 +90,28 @@ libsndfile.verified:
 	curl $(PKG_LIBSNDFILE_URL) -o $(PKG_LIBSNDFILE_TAR)
 	if [ `$(MD5) $(PKG_LIBSNDFILE_TAR) | cut -d" " -f4`x = $(PKG_LIBSNDFILE_MD5)x ]; then touch libsndfile.verified; else echo "MD5 error on $(PKG_LIBSNDFILE_TAR)"; false; fi
 
+# libsamplerate
+libsamplerate: $(PKG_LIBSAMPLERATE_LIB)
+	@if [ -f "$(PKG_LIBSAMPLERATE_LIB)" ]; then echo "libsamplerate verified."; else echo "Error processing libsamplerate."; false; fi
+
+$(PKG_LIBSAMPLERATE_LIB): $(PKG_LIBSAMPLERATE_DIR)/Makefile
+# path conversion required here because the build system doesn't like paths with spaces in them
+# (thanks to cygpath)
+	cd "$(PKG_LIBSAMPLERATE_DIR)"; make
+
+$(PKG_LIBSAMPLERATE_DIR)/Makefile: libsamplerate.unpacked
+	cd $(PKG_LIBSAMPLERATE_DIR); ./configure --disable-shared
+
+libsamplerate.unpacked: libsamplerate.verified
+	@echo "Unpacking libsamplerate..."
+	tar -xzf $(PKG_LIBSAMPLERATE_TAR)
+	touch libsamplerate.unpacked
+
+libsamplerate.verified:
+	@echo "Getting libsamplerate..."
+	curl $(PKG_LIBSAMPLERATE_URL) -o $(PKG_LIBSAMPLERATE_TAR)
+	if [ `$(MD5) $(PKG_LIBSAMPLERATE_TAR) | cut -d" " -f4`x = $(PKG_LIBSAMPLERATE_MD5)x ]; then touch libsamplerate.verified; else echo "MD5 error on $(PKG_LIBSAMPLERATE_TAR)"; false; fi
+
 
 # SDL
 sdl: $(PKG_SDL_LIB)

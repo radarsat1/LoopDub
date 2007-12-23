@@ -92,14 +92,6 @@ timer[0].init();
 timer[1].init();
 
 	 CREATEMUTEX(mutex);
-
-	 /* this was a hack for windows/cygwin - should be safely removed
-	 if (count==0) {
-	   count++;
-	   Run();
-	 }
-	 else exit(0);
-	 */
 }
 
 LoopDub::~LoopDub()

@@ -49,13 +49,8 @@ void MidiControl::LoadConfiguration()
 {
 	 int ch, t, linenumber=0, error=0;
 	 char configfilename[MAX_PATH];
-//#ifndef WIN32
-#if 1
+
 	 sprintf(configfilename, "%s/%s", getenv("HOME"), configfile);
-#else
-	 // TODO fix this to User folder
-	 strcpy(configfilename, configfile);
-#endif
 
 	 // Read MIDI configuration
 	 SettingsFile f(configfilename);
@@ -152,23 +147,8 @@ MidiType MidiControl::GetMidiType(int n)
 	 if (!m_bInitialized)
 		  return MidiUnknown;
 
-	 /*
-	 const PmDeviceInfo *pdi = Pm_GetDeviceInfo(n);
-	 if (!pdi) return MidiUnknown;
-
-	 if (pdi->input)
-		  return MidiInput;
-	 else
-	 */
 	 return MidiInput;
 }
-
-/*
-PmTimestamp MidiControl::timeProc(void* time_info)
-{
-	 return app.m_Player.GetPlayPositionSamples()*1000/44100;
-}
-*/
 
 void MidiControl::SelectDevice(int n)
 {
@@ -188,15 +168,6 @@ void MidiControl::SelectDevice(int n)
 		  break;
 	 case MidiOutput:
 		  stype = "output";
-		  /*
-		  if (m_pmOutput)
-			   Pm_Close(m_pmOutput);
-
-		  // Note: 1ms latency tells PortMidi to wait 1 ms + timestamp before sending MIDI message
-		  err = Pm_OpenOutput( &m_pmOutput, n, NULL, 10, timeProc, NULL, 1);
-		  if (err != pmNoError)
-			   m_pmOutput = NULL;
-		  */
 		  break;
 	 default:
 		  return;
@@ -324,13 +295,6 @@ void MidiControl::CheckMsg()
 						 if (m_ctrlcode[ch][CT_LEVEL]==code)
 							  app.m_pLoopOb[ch]->SetVolume(val*100/0x7F);
 						 else if (m_ctrlcode[ch][CT_EFFECT1]==code) {
-							  /*
-							  for (int i=0; i<N_LOOPS; i++) {
-								   Slider *slider = app.m_pLoopOb[i]->GetEffectSlider(ch);
-								   if (slider && app.m_pLoopOb[i]->IsSelected())
-										slider->SetValue(val*slider->GetMaxValue()/0x7F);
-							  }
-							  */
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(0);
 							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
 						 }

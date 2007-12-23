@@ -149,6 +149,20 @@ void Player::Mix(float *outputBuffer, unsigned long framesPerBuffer, int outTime
             outputBuffer[(i<<1)+1] = m_pStereoBuffer[(i<<1)+1];
         }
     }
+
+    /* Clip boundaries of sample data. */
+    int i;
+    for (i=0; i<(framesPerBuffer); i++)
+    {
+        if (outputBuffer[(i<<1)+0] > 1)
+            outputBuffer[(i<<1)+0] = 1;
+        if (outputBuffer[(i<<1)+0] < -1)
+            outputBuffer[(i<<1)+0] = -1;
+        if (outputBuffer[(i<<1)+1] > 1)
+            outputBuffer[(i<<1)+1] = 1;
+        if (outputBuffer[(i<<1)+1] < -1)
+            outputBuffer[(i<<1)+1] = -1;
+    }
 }
 
 void Player::Play()

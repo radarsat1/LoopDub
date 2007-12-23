@@ -159,9 +159,6 @@ timer[1].elapsed();
 
 		for (int i=0; i<2; i++) {
 			 value[i] = value[i] * volume / volmax;
-
-			 if (value[i] > 32767)  value[i] = 32767;
-			 if (value[i] < -32767) value[i] = -32767;
 			 if (value[i] > maxval) maxval = value[i];
 		}
 

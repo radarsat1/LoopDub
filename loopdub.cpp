@@ -124,8 +124,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 	}
 
 	// Audio
-	short* pBufferL = app.m_Player.LeftBuffer();
-	short* pBufferR = app.m_Player.RightBuffer();
+	short* pStereoBuffer = app.m_Player.StereoBuffer();
 	int maxval=0;
 	int volume, volmax;
 	
@@ -138,7 +137,6 @@ timer[0].reinit();
 		 int value[2];
 		 int side=0;
 		 value[0] = value[1] = 0;
-		*pBufferR = *pBufferL = 0;
 		for (i=0; i<N_LOOPS; i++)
 		{
 timer[1].reinit();
@@ -167,12 +165,9 @@ timer[1].elapsed();
 			 if (value[i] > maxval) maxval = value[i];
 		}
 
-//		*(pBufferR++) = value[0];
-//		*(pBufferL++) = value[1];
-
-		*(pBufferR++) = *(pBufferL++) = value[0];
-
-		//fwrite(&value[0], sizeof(value[0]), 1, stderr);
+        // Mix to mono
+		*(pStereoBuffer++) = value[0];
+        *(pStereoBuffer++) = value[0];
 
 		if (++app.m_nPos > app.m_nLength)
 			 app.m_nPos = 0;

@@ -8,8 +8,8 @@
 #include <samplerate.h>
 
 #define SAMPLE_RATE 44100
-#define BUFFER_SAMPLES 1024	// in samples
-#define BYTES_PER_SAMPLE (sizeof(short)*2)
+#define BUFFER_SAMPLES 1024	               // in samples
+#define BYTES_PER_SAMPLE (sizeof(short)*2) // stereo
 
 class Player
 {
@@ -19,10 +19,9 @@ public:
 
 	bool Initialize(void (FillBuffers)(void*, int), void* param, int hw_samplerate=44100);
 
-	short* LeftBuffer() { return m_pLeftBuffer; }
-	short* RightBuffer() { return m_pRightBuffer; }
-	int BufferSizeBytes() { return m_nBufferLengthBytes>>1; }
-	int BufferSizeSamples() { return m_nBufferLengthBytes>>2; }
+	short* StereoBuffer() { return m_pStereoBuffer; }
+	int BufferSizeBytes() { return m_nBufferLengthBytes; }
+	int BufferSizeSamples() { return m_nBufferLengthBytes / BYTES_PER_SAMPLE; }
 	bool ReadyForData();
 	void Mix(short *outputBuffer, unsigned long framesPerBuffer, int outTimeSample=0);
 	void Play();
@@ -34,8 +33,7 @@ protected:
 	RtAudio *m_pRtAudio;
 
 	int m_nBufferLengthBytes;
-	short *m_pLeftBuffer;
-	short *m_pRightBuffer;
+	short *m_pStereoBuffer;
 	bool m_bPlaying;
 	int m_nSide;	// side of buffer to write next (1 or 2)
 

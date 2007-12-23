@@ -6,9 +6,7 @@
 
 Player::Player()
 {
-	m_pLeftBuffer = NULL;
-	m_pRightBuffer = NULL;
-	
+	m_pStereoBuffer = NULL;
 	m_pFillBuffers = NULL;
 	m_Param = NULL;
 
@@ -47,10 +45,9 @@ int callback( char* buffer, int bufferSize, void* userData)
 bool Player::Initialize(void (FillBuffers)(void*, int), void* param, int hw_samplerate)
 {
     m_nHwSampleRate = hw_samplerate;
-
-    /* Initialize callback. */
 	m_pFillBuffers = FillBuffers;
 	m_Param = param;
+
 	if (!m_pFillBuffers)
 	{
 		printf("No FillBuffers callback specified.\n");
@@ -81,11 +78,9 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param, int hw_samp
 	// buffer size
 	m_nBufferLengthBytes = BUFFER_SAMPLES * BYTES_PER_SAMPLE;
 
-	// left & right buffers
-	m_pLeftBuffer = new short[BUFFER_SAMPLES];
-	m_pRightBuffer = new short[BUFFER_SAMPLES];
-	memset(m_pLeftBuffer, 0, sizeof(short)*BUFFER_SAMPLES);
-	memset(m_pRightBuffer, 0, sizeof(short)*BUFFER_SAMPLES);
+	// stereo buffer
+	m_pStereoBuffer = new short[BUFFER_SAMPLES*2];
+	memset(m_pStereoBuffer, 0, BufferSizeBytes());
 
 	m_nSide = 1;
 
@@ -111,8 +106,8 @@ void Player::Mix(short *outputBuffer, unsigned long framesPerBuffer, int outTime
 	static int c=0, i=0;
 	for (i=0; i<(framesPerBuffer); i++)
 	{
-		outputBuffer[(i<<1)+0] = m_pRightBuffer[i];
-		outputBuffer[(i<<1)+1] = m_pLeftBuffer[i];
+		outputBuffer[(i<<1)+0] = m_pStereoBuffer[(i<<1)+0];
+		outputBuffer[(i<<1)+1] = m_pStereoBuffer[(i<<1)+1];
 	}
 }
 

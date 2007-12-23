@@ -36,7 +36,6 @@ void WaveOb::SetSample(Sample *pSample)
 {
 	m_pSample = pSample;
 	if (m_pSample) {
-		m_pSample->MakeMinMax(m_Rect.Width());
 		m_nParts = 1;
 		m_nLoopStart = 0;
 		m_nLoopEnd = m_pSample->m_nSamples;

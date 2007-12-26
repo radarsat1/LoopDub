@@ -896,6 +896,26 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 		 closedir(dir);
 	}
 
+    // Sort names using insertion sort
+    for (int i = 1; i < fb->m_nNames; i++)
+    {
+        char s[256];
+        int s_isdir;
+        strcpy(s, fb->m_names[i]);
+        s_isdir = fb->m_isdir[i];
+
+        int j = i - 1;
+        
+        while (j >= 0 && strcmp(fb->m_names[j], s) > 0)
+        {
+            fb->m_isdir[j+1] = fb->m_isdir[j];
+            strcpy(fb->m_names[j+1], fb->m_names[j]);
+            j--;
+        }
+
+        fb->m_isdir[j+1] = s_isdir;
+        strcpy(fb->m_names[j+1], s);
+    }
 #endif
 
 	fb->m_nDrawFileOffset = 0;

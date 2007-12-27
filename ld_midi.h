@@ -80,6 +80,8 @@ class MidiControl
 	 // Mode
 	 void SetLearningMode(bool bLearnMode);
 
+	 void SetButtonMode(int mode);
+
 	 // Send a midi clock tick (24 per beat)
 	 // in ms milliseconds from now.
 	 void SendClockTick(long ms, bool startnow);

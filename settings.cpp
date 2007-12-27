@@ -111,7 +111,7 @@ bool SettingsFile::ReadSetting()
                 m_bSectionChanged = true;
 				break;
 			default:
-				s = strtok(line, "=");
+				s = strtok(line, " =");
 				strncpy(m_strParam, s, m_nParamSize);
 				s = strtok(NULL, " =\r\n");
 				strncpy(m_strValue, s, m_nValueSize);

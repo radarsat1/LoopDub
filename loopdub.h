@@ -34,6 +34,9 @@ public:
 	// callback for play buffer mixing routine
 	static void FillBuffers(void *param, int outTimeSample=0);
 
+	// Reads .loopdub.conf.
+	void LoadConfiguration();
+
 	// variables
 	int m_nBeats;
 	int m_nPos;
@@ -78,6 +81,13 @@ public:
 	bool updated;
 
 	char* m_strChangeToFolder;
+
+	// configuration parameters
+	int m_cfgDefaultVolume;
+	int m_cfgDefaultButton;
+
+	const static int CFG_DEFAULT_DEFAULT_VOLUME = 100;
+	const static int CFG_DEFAULT_DEFAULT_BUTTON = 0;
 };
 
 /* One global LoopDub object */

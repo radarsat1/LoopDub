@@ -332,9 +332,7 @@ void MidiControl::CheckMsg()
 							  }
 						 }
 						 else if (m_ctrlcode[ch][CT_SELECT]==code) {
-							  m_nButtonMode = ch;
-                              app.m_pButtonModeLabel->SetText(ButtonModes[m_nButtonMode]);
-							  if (ch >= N_BT) ch = 0;
+						     SetButtonMode(ch);
 						 }
 					}
 			   }
@@ -387,6 +385,12 @@ void MidiControl::CheckMsg()
 	 }
 	 
 	 return;
+}
+
+void MidiControl::SetButtonMode(int mode)
+{
+	m_nButtonMode = (mode < N_BT ? mode : 0);
+	app.m_pButtonModeLabel->SetText(ButtonModes[m_nButtonMode]);
 }
 
 void MidiControl::SendClockTick(long ms, bool startnow)

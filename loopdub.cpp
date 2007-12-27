@@ -7,7 +7,9 @@
 #include "loopdub.h"
 #include "ld_logo.h"
 #include "platform.h"
+#include "settings.h"
 
+static char *configfile = ".loopdub.conf";
 
 class Timer
 {
@@ -185,6 +187,29 @@ timer[0].elapsed();
 	//UNLOCKMUTEX(app.mutex);
 }
 
+void LoopDub::LoadConfiguration()
+{
+	m_cfgDefaultVolume = CFG_DEFAULT_DEFAULT_VOLUME;
+	m_cfgDefaultButton = CFG_DEFAULT_DEFAULT_BUTTON;
+
+	bool error = false;
+	int line = 1;
+	char configfilename[MAX_PATH];
+	sprintf(configfilename, "%s/%s", getenv("HOME"), configfile);
+
+	SettingsFile f(configfilename);
+	while (f.ReadSetting()) {
+		if (!strcmp(f.m_strParam, "DefaultVolume")) {
+			m_cfgDefaultVolume = atoi(f.m_strValue);
+		} else if (!strcmp(f.m_strParam, "DefaultButton")) {
+			m_cfgDefaultButton = atoi(f.m_strValue);
+		} else {
+			printf("Error on line %d of %s\n", line, configfile);
+		}
+		line++;
+	}
+}
+
 THREADFUNC loadSampleThread(void* pApp)
 {
 #ifndef WIN32
@@ -221,6 +246,9 @@ int LoopDub::Run()
 	 int inputchars=0;
 	 int inputprog=0;
 	printf("LoopDub started...\n");
+
+	/* Load configuration file */
+	LoadConfiguration();
 
 	if (m_Midi.Initialize())
 		 printf("MIDI initialized.\n");
@@ -260,6 +288,7 @@ int LoopDub::Run()
 										pMainScrob->GetRect().Width() - 5,
 										LOOPHEIGHT+(LOOPHEIGHT+5)*i),
 								   i);
+		m_pLoopOb[i]->SetVolume(m_cfgDefaultVolume);
 		m_pLoopArea->AddChild(m_pLoopOb[i]);
 	}
 
@@ -379,6 +408,11 @@ int LoopDub::Run()
 		 }
 		 else
 			  printf("No MIDI ports found.\n");
+	}
+
+	/* Set MIDI button mode */
+	if (m_Midi.IsInitialized()) {
+		m_Midi.SetButtonMode(m_cfgDefaultButton);
 	}
 
 	/* Initialize player */

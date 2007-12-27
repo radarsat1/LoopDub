@@ -26,21 +26,21 @@ else:
 	CCFLAGS += ['-O3']
 
 LIBS=['scrobui','SDL','sndfile','rtaudio','rtmidi','samplerate']
-LINKFLAGS=''
+LINKFLAGS=[]
 LIBPATH=['gui']
 CPPPATH=['gui','.']
 
 if OS=='Cygwin':
 	print 'Cygwin detected.'
-	CCFLAGS += '-DWIN32 -DCYGWIN -mno-cygwin '
-	LINKFLAGS += '-mno-cygwin '
+	CCFLAGS += ['-DWIN32','-DCYGWIN','-mno-cygwin']
+	LINKFLAGS += ['-mno-cygwin']
 	LIBS += ['winmm','user32','gdi32','ntoskrnl','dsound','ole32']
 
 if OS=='Darwin':
 	print 'Darwin detected.'
-	LINKFLAGS += (	'-framework CoreAudio -framework CoreMIDI -framework Carbon ' +
-			'-framework AppKit -framework AudioUnit -framework QuickTime ' +
-			'-framework IOKit -framework OpenGL'  )
+	LINKFLAGS += ['-framework CoreAudio', '-framework CoreMIDI','-framework Carbon',
+			'-framework AppKit','-framework AudioUnit','-framework QuickTime',
+			'-framework IOKit','-framework OpenGL']
 	LIBS += ['SDLmain']
 
 if OS=='Cygwin' or OS=='Darwin':

@@ -78,7 +78,11 @@ $(PKG_LIBSNDFILE_LIB): $(PKG_LIBSNDFILE_DIR)/Makefile
 	cd $(shell cygpath -u '$(shell cygpath -asw "$(PKG_LIBSNDFILE_DIR)")'); make
 
 $(PKG_LIBSNDFILE_DIR)/Makefile: libsndfile.unpacked
-	cd $(PKG_LIBSNDFILE_DIR); CFLAGS='-mno-cygwin -D__CYGWIN__ -DS_ISSOCK\(m\) -DNDEBUG' CXXFLAGS="$CFLAGS" ./configure --disable-shared
+	cd $(PKG_LIBSNDFILE_DIR); CFLAGS='-mno-cygwin -D__CYGWIN__ -DS_ISSOCK\(m\) -DNDEBUG' CXXFLAGS="$$CFLAGS" ./configure --disable-shared
+
+	# couple of patches
+	sed 's/SF_COUNT_MAX.*/SF_COUNT_MAX 0x7FFFFFFF/' --in-place $(PKG_LIBSNDFILE_DIR)/src/sndfile.h
+	sed 's/int64_t/__int64/' --in-place $(PKG_LIBSNDFILE_DIR)/tests/utils.h
 
 libsndfile.unpacked: libsndfile.verified
 	@echo "Unpacking libsndfile..."
@@ -101,7 +105,7 @@ $(PKG_LIBSAMPLERATE_LIB): $(PKG_LIBSAMPLERATE_DIR)/Makefile
 	cd $(shell cygpath -u '$(shell cygpath -asw "$(PKG_LIBSAMPLERATE_DIR)")'); make
 
 $(PKG_LIBSAMPLERATE_DIR)/Makefile: libsamplerate.unpacked
-	cd $(PKG_LIBSAMPLERATE_DIR); CFLAGS='-mno-cygwin -D__CYGWIN__ -DS_ISSOCK\(m\) -DNDEBUG' CXXFLAGS="$CFLAGS" ./configure --disable-shared
+	cd $(PKG_LIBSAMPLERATE_DIR); CFLAGS='-mno-cygwin -D__CYGWIN__ -DS_ISSOCK\(m\) -DNDEBUG' CXXFLAGS="$$CFLAGS" ./configure --disable-shared
 
 libsamplerate.unpacked: libsamplerate.verified
 	@echo "Unpacking libsamplerate..."

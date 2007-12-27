@@ -70,7 +70,7 @@ LoopDub app;
 ** LoopDub
 */
 
-#define APP_VERSION "0.3"
+#define APP_VERSION _BUILDVER
 #define LOOPTOP    50
 #define LOOPHEIGHT 60
 

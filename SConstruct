@@ -19,11 +19,11 @@ if os.environ.has_key('LDFLAGS'):
 OS=commands.getoutput('uname')
 if ('CYGWIN' in OS): OS='Cygwin'
 
-CCFLAGS = ''
+CCFLAGS = []
 if 'debug' in ARGUMENTS:
-	CCFLAGS += '-g -ggdb '
+	CCFLAGS += ['-g','-ggdb']
 else:
-	CCFLAGS += '-O3 '
+	CCFLAGS += ['-O3']
 
 LIBS=['scrobui','SDL','sndfile','rtaudio','rtmidi','samplerate']
 LINKFLAGS=''
@@ -62,6 +62,10 @@ if OS=='Linux':
 				'libdeps/rtmidi-1.0.6']
 	CPPPATH += ['libdeps/rtaudio-3.0.3/',
 				'/usr/include/SDL']
+
+VERSION=commands.getoutput('util/version.sh')
+print 'Build version:',VERSION
+CCFLAGS += ['-D_BUILDVER=\\"'+VERSION+'\\"']
 
 SConscript(['gui/SConstruct'], 'CCFLAGS')
 

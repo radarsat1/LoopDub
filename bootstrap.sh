@@ -99,13 +99,14 @@ if ! [ "$1"x == "x" ]; then
 	echo "It needs the following packages  pre-installed:"
 	echo
 	echo "scons"
-	echo "make"
-	echo "gcc"
+	echo "build-essential"
 	echo "python"
 	echo "md5sum"
 	echo "libSDL-dev"
 	echo "libsndfile-dev"
-    echo "libsamplerate-dev"
+	echo "libsamplerate-dev"
+	echo "libasound-dev"
+	echo "libjack-dev"
 	echo
 	echo "Usage: ./bootstrap_linux.sh"
 	echo

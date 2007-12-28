@@ -34,6 +34,9 @@ public:
 	// callback for play buffer mixing routine
 	static void FillBuffers(void *param, int outTimeSample=0);
 
+	// Sends all controller values to the MIDI output.
+	void SyncMidi();
+
 	// variables
 	int m_nBeats;
 	int m_nPos;

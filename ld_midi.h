@@ -88,6 +88,10 @@ class MidiControl
 
 	 void LoadConfiguration();
 
+	 // Send a CC message setting the given control to the given value
+	 // (between 0 and 127).
+	void SendControlMsg(int ctrlStrip, int ctrlType, int value);
+
  protected:
 	 // MIDI control codes, one for each control type
 	 char m_ctrlcode[CONTROLS][N_CT];

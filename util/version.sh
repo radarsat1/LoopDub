@@ -6,13 +6,13 @@
 
 BRANCH="$(git-branch | grep \* | awk '{print $2}')"
 
-LASTTAG="$(git-tag -l \?.\? | head -n 1)"
+LASTTAG="$(git-tag -l | perl -nle 'print $_  if m/\d+\.\d+(\.\d+)*/' | head -n 1)"
 if [ "$LASTTAG"x = x ]; then
     LASTTAG="0"
-    INCREMENT=".0"
+    INCREMENT="-0"
 else
-    INCREMENT=.$(git-rev-list "$LASTTAG"..HEAD | wc -l | awk '{print $1}')
-    if [ "$INCREMENT"x = .0 ]; then
+    INCREMENT=-$(git-rev-list "$LASTTAG"..HEAD | wc -l | awk '{print $1}')
+    if [ "$INCREMENT"x = "-0" ]; then
         INCREMENT=""
     fi
 fi

@@ -37,6 +37,9 @@ public:
 	// Reads .loopdub.conf.
 	void LoadConfiguration();
 
+	// Sends all controller values to the MIDI output.
+	void SyncMidi();
+
 	// variables
 	int m_nBeats;
 	int m_nPos;

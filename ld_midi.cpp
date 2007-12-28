@@ -104,18 +104,21 @@ bool MidiControl::Initialize()
 {
 	 if (!m_bInitialized) {
 		  try {
-			   m_pMidiIn = new RtMidiIn();
-			   if (m_pMidiIn) {
-                   m_pMidiIn->setCallback(callbackRtMidi, this);
-					m_bInitialized = true;
-               }
-			   else
+			m_pMidiIn = new RtMidiIn();
+			m_pMidiOut = new RtMidiOut();
+			if (m_pMidiIn && m_pMidiOut) {
+				m_pMidiIn->setCallback(callbackRtMidi, this);
+				m_bInitialized = true;
+			}
+			else
 					printf("Couldn't initialize RtMidi.\n");
 		  }
 		  catch (RtError &e) {
 			   e.printMessage();
 			   if (m_pMidiIn) delete m_pMidiIn;
 			   m_pMidiIn = NULL;
+			   if (m_pMidiOut) delete m_pMidiOut;
+			   m_pMidiOut = NULL;
 		  }
 	 }
 
@@ -124,20 +127,27 @@ bool MidiControl::Initialize()
 
 int MidiControl::GetMidiNum()
 {
-	 if (!(m_bInitialized && m_pMidiIn))
+	 if (!(m_bInitialized && m_pMidiIn && m_pMidiOut))
 		  return 0;
 
-	 int n = m_pMidiIn->getPortCount();
+	 int n = m_pMidiIn->getPortCount() + m_pMidiOut->getPortCount();
 
 	 return n;
 }
 	 
 const char* MidiControl::GetMidiName(int n)
 {
-	 if (!(m_bInitialized && m_pMidiIn))
-		  return "";
+	if (!(m_bInitialized && m_pMidiIn && m_pMidiOut))
+		return "";
 
-	 const char *s = m_pMidiIn->getPortName(n).c_str();
+	const char *s;
+
+	if (n < m_pMidiIn->getPortCount()) {
+		s = m_pMidiIn->getPortName(n).c_str();
+	} else {
+		s = m_pMidiOut->getPortName(n - m_pMidiIn->getPortCount()).c_str();
+	}
+
 	 if (!s) s = "";
 	 return s;
 }
@@ -147,7 +157,7 @@ MidiType MidiControl::GetMidiType(int n)
 	 if (!m_bInitialized)
 		  return MidiUnknown;
 
-	 return MidiInput;
+	 return n < m_pMidiIn->getPortCount() ? MidiInput : MidiOutput;
 }
 
 void MidiControl::SelectDevice(int n)
@@ -168,6 +178,11 @@ void MidiControl::SelectDevice(int n)
 		  break;
 	 case MidiOutput:
 		  stype = "output";
+		  try {
+			m_pMidiOut->openPort(n - m_pMidiIn->getPortCount());
+		  } catch (RtError &e) {
+			e.printMessage();
+		  }
 		  break;
 	 default:
 		  return;
@@ -443,4 +458,13 @@ void MidiControl::UpdateClockTicks()
 	
 	SendClockTick(beat_sample_interval);
 */
+}
+
+void MidiControl::SendControlMsg(int ctrlStrip, int ctrlType, int value)
+{
+	std::vector<unsigned char> msg(3);
+	msg[0] = 0xB0;
+	msg[1] = m_ctrlcode[ctrlStrip][ctrlType];
+	msg[2] = value;
+	m_pMidiOut->sendMessage(&msg);
 }

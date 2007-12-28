@@ -185,6 +185,26 @@ timer[0].elapsed();
 	}
 
 	//UNLOCKMUTEX(app.mutex);
+
+}
+
+void LoopDub::SyncMidi()
+{
+	for (int i = 0; i < CONTROLS; i++) {
+		LoopOb *loop = m_pLoopOb[i];
+
+		for (int j = 0; j < 5; j++) {
+			Slider *slider;
+
+			if (j == 0) {
+				slider = loop->GetVolumeSlider();
+			} else {
+				slider = loop->GetEffectSlider(j - 1);
+			}
+
+			m_Midi.SendControlMsg(i, j, slider->GetValue() * 127 / slider->GetMaxValue());
+		}
+	}
 }
 
 void LoopDub::LoadConfiguration()
@@ -465,6 +485,12 @@ int LoopDub::Run()
 			 }
 		}
 
+		/* Press S to synchronize the MIDI output. */
+		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
+				&& pEvent->key.keysym.sym == 's') {
+			SyncMidi();
+		}
+
 		/* Press P to show program listing */
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 				 && pEvent->key.keysym.sym == 'p') {
@@ -472,6 +498,7 @@ int LoopDub::Run()
 			 m_pProgramArea->SetVisible(!m_pProgramArea->IsVisible());
 			 m_pBlankArea->SetDirty();
 		}
+
 
 		/* Type two digits to load a specified program */
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN

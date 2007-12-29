@@ -331,7 +331,7 @@ int LoopDub::Run()
 		 m_pProgramArea->AddChild(new Label(m_pProgramArea,
 											Rect(x, y, x+w, y+dt.GetFontHeight()),
 											str, 3, -1));
-		 if (y > (HEIGHT-50))
+		 if (y > (m_pProgramArea->GetRect().Height()-20))
 		 {
 			  y = 20;
 			  x += mx+20;

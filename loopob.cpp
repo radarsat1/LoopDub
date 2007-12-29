@@ -457,16 +457,16 @@ short LoopOb::GetSampleValue(int pos)
 
 		  // get the sample
 		  short sample = m_pSample->m_pData[m_nPos];
-		  sample = sample * !m_bMuted * m_pVolumeSlider->GetValue() / m_pVolumeSlider->GetMaxValue();
+		  sample = sample * !m_bMuted * m_pVolumeSlider->GetValue() / m_pVolumeSlider->GetValueMax();
 		  if (m_bHolding)
 			   sample = 0;
 
 		  // set filter parameters according to sliders
-		  lowpass.SetParams(m_pCutoffSlider->GetValue() * 100.0f / m_pCutoffSlider->GetMaxValue(),
-							m_pResonanceSlider->GetValue() * 100.0f / m_pResonanceSlider->GetMaxValue());
+		  lowpass.SetParams(m_pCutoffSlider->GetValue() * 100.0f / m_pCutoffSlider->GetValueMax(),
+							m_pResonanceSlider->GetValue() * 100.0f / m_pResonanceSlider->GetValueMax());
 
-		  delay.SetParams(m_pDelayLengthSlider->GetValue() * 100 / m_pDelayLengthSlider->GetMaxValue(),
-							m_pFeedbackSlider->GetValue() * 100 / m_pFeedbackSlider->GetMaxValue());
+		  delay.SetParams(m_pDelayLengthSlider->GetValue() * 100 / m_pDelayLengthSlider->GetValueMax(),
+							m_pFeedbackSlider->GetValue() * 100 / m_pFeedbackSlider->GetValueMax());
 		  
 		  // pass it through the filter bank		
 		  for (int i=0; i<N_FILTERS; i++)
@@ -496,11 +496,11 @@ short LoopOb::GetNextSample()
 
 		  short sample = m_pSample->m_pData[m_nPos];
 
-		  sample = sample * !m_bMuted * m_pVolumeSlider->GetValue() / m_pVolumeSlider->GetMaxValue();
+		  sample = sample * !m_bMuted * m_pVolumeSlider->GetValue() / m_pVolumeSlider->GetValueMax();
 
 		  // set filter parameters according to sliders
-		  lowpass.SetParams(m_pCutoffSlider->GetValue() * 100.0f / m_pCutoffSlider->GetMaxValue(),
-							m_pResonanceSlider->GetValue() * 100.0f / m_pResonanceSlider->GetMaxValue());
+		  lowpass.SetParams(m_pCutoffSlider->GetValue() * 100.0f / m_pCutoffSlider->GetValueMax(),
+							m_pResonanceSlider->GetValue() * 100.0f / m_pResonanceSlider->GetValueMax());
 
 		  // pass it through the filter bank
 		  for (int i=0; i<N_FILTERS; i++)
@@ -519,12 +519,12 @@ short LoopOb::GetNextSample()
 
 void LoopOb::SetVolume(int vol_percent)
 {
-	 m_pVolumeSlider->SetValue(vol_percent*m_pVolumeSlider->GetMaxValue()/100);
+	 m_pVolumeSlider->SetValue(vol_percent*m_pVolumeSlider->GetValueMax()/100);
 }
 
 int LoopOb::GetVolume()
 {
-	 return m_pVolumeSlider->GetValue() * 100 / m_pVolumeSlider->GetMaxValue();
+	 return m_pVolumeSlider->GetValue() * 100 / m_pVolumeSlider->GetValueMax();
 }
 
 Slider* LoopOb::GetEffectSlider(int effect)
@@ -563,9 +563,9 @@ void LoopOb::LoseKeys()
 
 void LoopOb::ResetFxParams()
 {
-	m_pCutoffSlider->SetValue(m_pCutoffSlider->GetMaxValue());
+	m_pCutoffSlider->SetValue(m_pCutoffSlider->GetValueMax());
 	m_pResonanceSlider->SetValue(0);
-	m_pDelayLengthSlider->SetValue(m_pDelayLengthSlider->GetMaxValue()/4);
+	m_pDelayLengthSlider->SetValue(m_pDelayLengthSlider->GetValueMax()/4);
 	m_pFeedbackSlider->SetValue(0);
 }
 

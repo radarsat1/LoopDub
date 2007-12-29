@@ -311,19 +311,19 @@ void MidiControl::CheckMsg()
 							  app.m_pLoopOb[ch]->SetVolume(val*100/0x7F);
 						 else if (m_ctrlcode[ch][CT_EFFECT1]==code) {
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(0);
-							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+							  slider->SetValue(val*slider->GetValueMax()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_EFFECT2]==code) {
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(1);
-							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+							  slider->SetValue(val*slider->GetValueMax()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_EFFECT3]==code) {
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(2);
-							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+							  slider->SetValue(val*slider->GetValueMax()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_EFFECT4]==code) {
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(3);
-							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+							  slider->SetValue(val*slider->GetValueMax()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_BUTTON]==code) {
 							  switch (m_nButtonMode) {

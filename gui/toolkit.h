@@ -27,6 +27,51 @@ protected:
 	int m_nBkColor;
 };
 
+//! Base class for objects which hold textual information.
+class TextInput
+{
+  public:
+	TextInput(Scrob& owner) : m_Scrob(owner)
+		{ m_strText = NULL; m_nAllocated = 0; }
+	~TextInput() { if (m_strText) delete m_strText; }
+	virtual void SetText(const char *strText);
+	virtual char* GetText() { return m_strText; }
+	virtual void SetInteger(int value);
+	virtual int GetInteger() { return atoi(m_strText); }
+
+  protected:
+	Scrob &m_Scrob;
+	char *m_strText;
+	int m_nAllocated;
+};
+
+//! Base class for objects which hold integer values.
+class IntegerInput
+{
+  public:
+	IntegerInput(Scrob& owner) : m_Scrob(owner) {};
+	virtual void SetValue(int value) { m_nValue = value; }
+	virtual int GetValue() { return m_nValue; }
+
+  protected:
+	Scrob &m_Scrob;
+	int m_nValue;
+};
+
+//! Base class for objects which hold an integer value and have a range.
+class IntegerInputRange : public IntegerInput
+{
+  public:
+	IntegerInputRange(Scrob& owner) : IntegerInput(owner) {};
+	virtual void SetValueRange(int min, int max)
+		{ m_nMin = min; m_nMax = max; }
+	virtual int GetValueMin() { return m_nMin; }
+	virtual int GetValueMax() { return m_nMax; }
+
+  protected:
+	int m_nMin, m_nMax;
+};
+
 class Handle : public Scrob
 {
 public:
@@ -50,7 +95,7 @@ protected:
 	int m_nMinY, m_nMaxY;
 };
 
-class Slider : public Scrob
+class Slider : public Scrob, public IntegerInputRange
 {
 public:
 	Slider();
@@ -61,7 +106,6 @@ public:
 	void OnMouseDown(Point mouse);
 
 	int GetValue();
-	int GetMaxValue();
 	void SetValue(int nValue);
 
 	void SetColor(int color);
@@ -72,7 +116,7 @@ protected:
 	int m_nColor;
 };
 
-class Label : public Scrob
+class Label : public Scrob, public TextInput
 {
 public:
 	Label();
@@ -83,10 +127,6 @@ public:
 
 	void SetColor(int color);
 	void SetBkColor(int bkcolor);
-	void SetText(const char *strText);
-	char* GetText() { return m_strText; }
-	void SetInteger(int value);
-	int GetInteger() { return atoi(m_strText); }
 
 protected:
 	char *m_strText;
@@ -110,7 +150,7 @@ class Image : public Scrob
 	const char* m_pData;
 };
 
-class Button : public Label
+class Button : public Label, public IntegerInput
 {
 public:
 	Button();
@@ -125,18 +165,17 @@ public:
 	void OnMouseDown(Point mouse);
 	void OnMouseMove(Point mouse);
 
-	bool IsPressed() { return m_bPressed; }
+	bool IsPressed() { return m_nValue!=0; }
 	void SetPressed(bool bPressed);
 
 protected:
 	bool m_bToggle;
-	bool m_bPressed;
 	bool m_bGotMouse;
 	int m_nCommand;
 	void *m_nCommandValue;
 };
 
-class Field : public Scrob
+class Field : public Scrob, public TextInput
 {
 public:
 	Field();
@@ -147,9 +186,6 @@ public:
 
 	void SetColor(int color);
 	void SetBkColor(int bkcolor);
-	void SetText(const char *strText);
-	char* GetText() { return m_strText; }
-	void SetInteger(int value);
 
 	void OnKeyDown(SDL_keysym* pKeySym);
 

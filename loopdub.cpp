@@ -131,7 +131,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 	int volume, volmax;
 	
 	volume = app.m_pVolumeSlider->GetValue();
-	volmax = app.m_pVolumeSlider->GetMaxValue();
+	volmax = app.m_pVolumeSlider->GetValueMax();
 
 	while (n-- > 0)
 	{
@@ -202,7 +202,7 @@ void LoopDub::SyncMidi()
 				slider = loop->GetEffectSlider(j - 1);
 			}
 
-			m_Midi.SendControlMsg(i, j, slider->GetValue() * 127 / slider->GetMaxValue());
+			m_Midi.SendControlMsg(i, j, slider->GetValue() * 127 / slider->GetValueMax());
 		}
 	}
 }
@@ -356,7 +356,7 @@ int LoopDub::Run()
 
 	m_pVolumeSlider = new Slider(pMainScrob, Rect(130,27,230,40), false);
 	pMainScrob->AddChild(m_pVolumeSlider);
-	m_pVolumeSlider->SetValue(m_pVolumeSlider->GetMaxValue() / 2);
+	m_pVolumeSlider->SetValue(m_pVolumeSlider->GetValueMax() / 2);
 
 	pMainScrob->AddChild(
 		 new Image(pMainScrob, Rect(780-logo_width, 10, 780, 10+logo_height),
@@ -393,7 +393,7 @@ int LoopDub::Run()
 /* TODO: change tempo?
 	m_pTempoSlider = new Slider(pMainScrob, Rect(5, 5, 205, 20), false);
 	pMainScrob->AddChild(m_pTempoSlider);
-	m_pTempoSlider->SetValue((m_nTempo-MIN_TEMPO)*m_pTempoSlider->GetMaxValue()/(MAX_TEMPO-MIN_TEMPO));
+	m_pTempoSlider->SetValue((m_nTempo-MIN_TEMPO)*m_pTempoSlider->GetValueMax()/(MAX_TEMPO-MIN_TEMPO));
 
 	Label *pLabel = new Label(pMainScrob, Rect(210, 5, 250, 20), "Tempo", 3, 0);
 	pMainScrob->AddChild(pLabel);

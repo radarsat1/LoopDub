@@ -129,8 +129,6 @@ public:
 	void SetBkColor(int bkcolor);
 
 protected:
-	char *m_strText;
-	int m_nAllocated;
 	int m_nColor;
 	int m_nBkColor;
 };

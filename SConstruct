@@ -38,9 +38,9 @@ if OS=='Cygwin':
 
 if OS=='Darwin':
 	print 'Darwin detected.'
-	LINKFLAGS += ['-framework CoreAudio', '-framework CoreMIDI','-framework Carbon',
-			'-framework AppKit','-framework AudioUnit','-framework QuickTime',
-			'-framework IOKit','-framework OpenGL']
+	LINKFLAGS += ['-framework','CoreAudio', '-framework','CoreMIDI','-framework','Carbon',
+			'-framework','AppKit','-framework','AudioUnit','-framework','QuickTime',
+			'-framework','IOKit','-framework','OpenGL']
 	LIBS += ['SDLmain']
 
 if OS=='Cygwin' or OS=='Darwin':

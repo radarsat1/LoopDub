@@ -79,6 +79,8 @@ LoopDub app;
 int count=0;
 
 LoopDub::LoopDub()
+	 : m_cfgInternalSampleRate(DEFAULT_SAMPLE_RATE),
+	   m_cfgHardwareSampleRate(DEFAULT_HW_SAMPLE_RATE)
 {
 	 m_strChangeToFolder = NULL;
 	 m_nBeats = 4;

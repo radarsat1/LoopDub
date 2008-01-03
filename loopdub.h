@@ -88,6 +88,8 @@ public:
 	// configuration parameters
 	int m_cfgDefaultVolume;
 	int m_cfgDefaultButton;
+	int m_cfgInternalSampleRate;
+	int m_cfgHardwareSampleRate;
 
 	const static int CFG_DEFAULT_DEFAULT_VOLUME = 100;
 	const static int CFG_DEFAULT_DEFAULT_BUTTON = 0;

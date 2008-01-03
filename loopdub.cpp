@@ -121,7 +121,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 	int i, n=app.m_Player.BufferSizeSamples();
 
 	for (i=first; i<n; i += ticksize) {
-		 int ms = (outTimeSample + i) * 1000 / SAMPLE_RATE;
+		 int ms = (outTimeSample + i) * 1000 / Player::m_nSampleRate;
 		 app.m_Midi.SendClockTick(ms, startnow);
 	}
 
@@ -223,6 +223,10 @@ void LoopDub::LoadConfiguration()
 			m_cfgDefaultVolume = atoi(f.m_strValue);
 		} else if (!strcmp(f.m_strParam, "DefaultButton")) {
 			m_cfgDefaultButton = atoi(f.m_strValue);
+		} else if (!strcmp(f.m_strParam, "InternalSampleRate")) {
+			m_cfgInternalSampleRate = atoi(f.m_strValue);
+		} else if (!strcmp(f.m_strParam, "HardwareSampleRate")) {
+			m_cfgHardwareSampleRate = atoi(f.m_strValue);
 		} else {
 			printf("Error on line %d of %s\n", line, configfile);
 		}
@@ -437,8 +441,7 @@ int LoopDub::Run()
 
 	/* Initialize player */
 
-    // TODO: make hardware samplerate a command-line option
-	if (!m_Player.Initialize(FillBuffers, this, 48000))
+	if (!m_Player.Initialize(FillBuffers, this, m_cfgInternalSampleRate, m_cfgHardwareSampleRate))
 	{
 		printf("Couldn't initialize audio player.\n");
 		return 1;
@@ -552,7 +555,7 @@ int LoopDub::Run()
 					   pBeats->SetText(str);
 					   if (m_pLoopOb[0]->GetSample()) {
 							int length = m_pLoopOb[0]->GetSample()->m_nSamples;
-							int bpm = SAMPLE_RATE*m_nBeats*60/length;
+							int bpm = Player::m_nSampleRate*m_nBeats*60/length;
 							//	(samples/sec) / (samples/beats) = (samples/sec) * (beats/sample) = (beats/sec) * (sec/min) = (beats/min)
 							sprintf(str, "%d bpm", bpm);
 							pTempo->SetText(str);

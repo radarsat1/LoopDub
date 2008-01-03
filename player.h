@@ -7,7 +7,8 @@
 #include <RtAudio.h>
 #include <samplerate.h>
 
-#define SAMPLE_RATE      44100
+#define DEFAULT_SAMPLE_RATE      44100
+#define DEFAULT_HW_SAMPLE_RATE   44100
 #define BUFFER_SAMPLES   800	           // in samples
 #define BYTES_PER_SAMPLE (sizeof(short)*2) // stereo
 
@@ -17,7 +18,7 @@ public:
 	Player();
 	~Player();
 
-	bool Initialize(void (FillBuffers)(void*, int), void* param, int hw_samplerate=44100);
+	bool Initialize(void (FillBuffers)(void*, int), void* param, int samplerate=DEFAULT_SAMPLE_RATE, int hw_samplerate=DEFAULT_HW_SAMPLE_RATE);
 
 	float* StereoBuffer() { return m_pStereoBuffer; }
 	int BufferSizeBytes() { return m_nBufferLengthBytes; }
@@ -28,6 +29,8 @@ public:
 	void Stop();
 	int GetPlayPositionSamples();
 	bool IsPlaying() { return m_bPlaying; }
+
+	static int m_nSampleRate;
 
 protected:
 	RtAudio *m_pRtAudio;

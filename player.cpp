@@ -4,6 +4,8 @@
 #include <sndfile.h>
 #include "player.h"
 
+int Player::m_nSampleRate;
+
 Player::Player()
 {
 	m_pStereoBuffer = NULL;
@@ -44,8 +46,9 @@ int callback( char* buffer, int bufferSize, void* userData)
 	 return false;
 }
 
-bool Player::Initialize(void (FillBuffers)(void*, int), void* param, int hw_samplerate)
+bool Player::Initialize(void (FillBuffers)(void*, int), void* param, int samplerate, int hw_samplerate)
 {
+    m_nSampleRate = samplerate;
     m_nHwSampleRate = hw_samplerate;
 	m_pFillBuffers = FillBuffers;
 	m_Param = param;
@@ -84,13 +87,13 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param, int hw_samp
 	m_nSide = 1;
 
     /* Set up sample rate converter, if necessary. */
-    if (m_nHwSampleRate != SAMPLE_RATE) {
+    if (m_nHwSampleRate != m_nSampleRate) {
         int error;
         m_pSRC = src_new(SRC_SINC_FASTEST, 2, &error);
         if (!m_pSRC)
             printf("Error initializing libsamplerate.\n");
 
-        m_SRC_data.src_ratio = (double)m_nHwSampleRate / (double)SAMPLE_RATE;
+        m_SRC_data.src_ratio = (double)m_nHwSampleRate / (double)m_nSampleRate;
         m_SRC_data.input_frames = 0;
         m_SRC_data.end_of_input = 0;
     }

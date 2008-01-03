@@ -58,7 +58,7 @@ short Lowpass::Work(short sample)
 	 if (m_bParamsChanged)
 	 {
 	// Calculate filter coefficients (with interpolation)
-	omega = 2.0f * (float)PI * C / SAMPLE_RATE;
+	omega = 2.0f * (float)PI * C / Player::m_nSampleRate;
 	sn = (float)sin (omega);
 	cs = (float)cos (omega);
 	alpha = sn / R;

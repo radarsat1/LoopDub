@@ -373,7 +373,7 @@ void MidiControl::CheckMsg()
 							  for (i=0; i<MAX_KEYS && app.m_Keys[i].on; i++);
 							  if (i < MAX_KEYS) {
 								   double freq = 440.0 * pow(2.0, (code-69)/12.0);
-								   double ratio = 337.12301487 * freq / SAMPLE_RATE;
+								   double ratio = 337.12301487 * freq / Player::m_nSampleRate;
 								   app.m_Keys[i].velocity = (int)(ratio*1024.0);
 								   app.m_Keys[i].position = 0;
 								   app.m_Keys[i].note = code;

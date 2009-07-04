@@ -20,7 +20,7 @@ Sample::Sample()
 Sample::~Sample()
 {
 	if (m_pData)
-		delete m_pData;
+       delete[] m_pData;
 }
 
 bool Sample::GenerateSine(int size)

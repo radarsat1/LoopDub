@@ -257,7 +257,7 @@ Label::Label(Scrob *pParent, const Rect& r, const char *strText, int color, int 
 Label::~Label()
 {
 	if (m_strText)
-		delete m_strText;
+		delete[] m_strText;
 }
 
 bool Label::Create(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor)
@@ -265,7 +265,7 @@ bool Label::Create(Scrob *pParent, const Rect& r, const char *strText, int color
 	Scrob::Create(pParent, r);
 
 	if (m_strText)
-		delete m_strText;
+		delete[] m_strText;
 
 	m_nColor = color;
 	m_nBkColor = bkcolor;
@@ -299,7 +299,7 @@ void Label::SetText(const char *strText)
 	int len = strlen(strText);
 	if (len > m_nAllocated)
 	{
-		if (m_strText) delete m_strText;
+		if (m_strText) delete[] m_strText;
 		m_strText = new char[len+1];
 		if (!m_strText)
 			return;
@@ -328,7 +328,7 @@ void Label::SetInteger(int value)
 	if (m_nAllocated < 10)
 	{
 		if (m_strText)
-			delete m_strText;
+			delete[] m_strText;
 		m_strText = new char[11];
 		m_nAllocated = 10;
 	}
@@ -526,7 +526,7 @@ Field::Field(Scrob *pParent, const Rect& r, const char *strText, int nMaxChars, 
 Field::~Field()
 {
 	if (m_strText)
-		delete m_strText;
+		delete[] m_strText;
 }
 
 bool Field::Create(Scrob *pParent, const Rect& r, const char *strText, int nMaxChars, int color, int bkcolor)
@@ -680,6 +680,7 @@ FileBrowser::FileBrowser() : Scrob()
 	m_bBase = false;
 	m_nNames = 0;
 	m_nDrawFileOffset = 0;
+    m_bLoading = false; // lock?
 }
 
 FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, const char *strDir, int filecommand, int dircommand, bool showDir)

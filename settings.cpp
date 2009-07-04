@@ -63,7 +63,7 @@ SettingsFile::SettingsFile()
     m_strValue[0] = 0;
 }
 
-SettingsFile::SettingsFile(char *filename)
+SettingsFile::SettingsFile(const char *filename)
 {
     m_file = 0;
 	m_bWrite = false;
@@ -79,7 +79,7 @@ SettingsFile::~SettingsFile()
 	Close();
 }
 
-bool SettingsFile::OpenForRead(char *filename)
+bool SettingsFile::OpenForRead(const char *filename)
 {
 	if (IsOpen()) return false;
 
@@ -93,7 +93,7 @@ bool SettingsFile::OpenForRead(char *filename)
     return true;
 }
 
-bool SettingsFile::OpenForWrite(char *filename)
+bool SettingsFile::OpenForWrite(const char *filename)
 {
 	if (IsOpen()) return false;
 

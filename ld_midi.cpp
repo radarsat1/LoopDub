@@ -6,10 +6,10 @@
 #include "ld_midi.h"
 #include "settings.h"
 
-static char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3",
+static const char *Types[N_CT] = { "Level", "Effect1", "Effect2", "Effect3",
 							 "Effect4", "Button", "Select" };
-static char *ButtonModes[N_BT] = { "<Cue>", "<Split>", "<Hold>", "<Keys>", "<Norm>", "<Switch>" };
-static char *configfile = ".loopdub.midi.conf";
+static const char *ButtonModes[N_BT] = { "<Cue>", "<Split>", "<Hold>", "<Keys>", "<Norm>", "<Switch>" };
+static const char *configfile = ".loopdub.midi.conf";
 
 void MidiControl::callbackRtMidi( double timeStamp, std::vector<unsigned char> *message, void *userData)
 {
@@ -175,11 +175,11 @@ void MidiControl::SelectDevice(int n)
 	 if (!(m_bInitialized && m_pMidiIn))
 		  return;
 
-	 char *stype=NULL;
+	 //char *stype=NULL;
 
 	 switch (GetMidiType(n)) {
 	 case MidiInput:
-		  stype = "input";
+		  //stype = "input";
 		  try {
               m_pMidiIn->openPort(n);
 		  } catch (RtError &e) {
@@ -187,7 +187,7 @@ void MidiControl::SelectDevice(int n)
 		  }
 		  break;
 	 case MidiOutput:
-		  stype = "output";
+		  //stype = "output";
 		  /*
 		  if (m_pmOutput)
 			   Pm_Close(m_pmOutput);

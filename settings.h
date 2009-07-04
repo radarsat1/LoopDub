@@ -6,11 +6,11 @@ class SettingsFile
 {
   public:
 	SettingsFile();
-	SettingsFile(char *filename);
+	SettingsFile(const char *filename);
 	~SettingsFile();
 
-	bool OpenForRead(char *filename);
-	bool OpenForWrite(char *filename);
+	bool OpenForRead(const char *filename);
+	bool OpenForWrite(const char *filename);
 	void Close();
 
 	bool IsOpen() { return m_file!=NULL; }

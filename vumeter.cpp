@@ -18,7 +18,7 @@ bool VUMeter::Create(Scrob *pParent, const Rect& r)
 		return false;
 
 	m_nPercentage = 60;
-	memset(m_History, 0, sizeof(char)*15);
+	memset(m_History, 0, sizeof(char)*history_size);
 	m_nHistoryPos = 0;
 
 	return true;
@@ -33,7 +33,7 @@ void VUMeter::Draw()
 	 dt.FillRect(Rect(x+1, 1, m_Rect.Width()-1, m_Rect.Height()-1), 1);
 
 	 int percent_max=0;
-	 for (int i=0; i<30; i++)
+	 for (int i=0; i<history_size; i++)
 		  if (m_History[i] > percent_max)
 			   percent_max = m_History[i];
 
@@ -47,7 +47,7 @@ void VUMeter::SetPercentage(int percent)
 	 if (percent < 0) percent = 0;
 	 m_nPercentage=percent;
 	 m_History[m_nHistoryPos] = percent;
-	 m_nHistoryPos = (m_nHistoryPos+1)%30;
+	 m_nHistoryPos = (m_nHistoryPos+1)%history_size;
 	 SetDirty();
 }
 

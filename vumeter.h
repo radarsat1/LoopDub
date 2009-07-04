@@ -21,8 +21,11 @@ public:
 	void SetPercentage(int percent);
 
 protected:
+
+    static const unsigned int history_size = 30;
+
 	char m_nPercentage;
-	char m_History[30];
+	char m_History[history_size];
 	int m_nHistoryPos;
 };
 

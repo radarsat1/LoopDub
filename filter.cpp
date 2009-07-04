@@ -26,6 +26,8 @@ void Lowpass::Initialize()
 	 for (i=0; i<5; i++)
 		  coef[i] = 0;
 
+    memset(history,0,sizeof(history[0])*4);
+
 	 m_bParamsChanged = false;
 
 	 cutoffPow = log10(maxCutoff-minCutoff);

@@ -66,7 +66,7 @@ class MidiControl
 	 int GetMidiNum();
 	 
 	 // Return name of MIDI device n
-	 const char *GetMidiName(int n);
+	 char *GetMidiName(int n);
 
 	 // Return type of MIDI device
 	 MidiType GetMidiType(int n);

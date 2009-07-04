@@ -387,10 +387,12 @@ int LoopDub::Run()
 		 if (n>0)
 		 for (int i=0; i<n; i++)
 		 {
-			  pMainScrob->AddChild(new Button(pMainScrob, Rect(350 + 50*i, 5, 400 + 50*i, 20),
-											  m_Midi.GetMidiName(i),
+            char *midi_name = m_Midi.GetMidiName(i);
+			pMainScrob->AddChild(new Button(pMainScrob, Rect(350 + 50*i, 5, 400 + 50*i, 20),
+											  midi_name,
 											  (m_Midi.GetMidiType(i) == MidiInput) ? 0 : 7,
 											  2, CMD_SELECT, (void*)i, true));
+            free(midi_name);
 		 }
 		 else
 			  printf("No MIDI ports found.\n");

@@ -136,14 +136,16 @@ int MidiControl::GetMidiNum()
 
 	 return n;
 }
-	 
-const char* MidiControl::GetMidiName(int n)
+
+// internal string memory could be moved around/deleted?
+// any better way to do this other than asking the user to free()?
+char* MidiControl::GetMidiName(int n)
 {
 	 if (!(m_bInitialized && m_pMidiIn))
-		  return "";
+		  return strdup("");
 
-	 const char *s = m_pMidiIn->getPortName(n).c_str();
-	 if (!s) s = "";
+	 char *s = strdup(m_pMidiIn->getPortName(n).c_str());
+	 if (!s) s = strdup("");
 	 return s;
 }
 

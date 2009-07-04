@@ -189,6 +189,7 @@ LoopOb::LoopOb() : Scrob()
 	m_pBackgroundSample = 0;
 	m_bSwitching = false;
 	m_bHolding = false;
+    m_bSelected = false;
 }
 
 LoopOb::LoopOb(Scrob* pParent, const Rect& r, int number, Sample* pSample) : Scrob(pParent, r)
@@ -198,6 +199,8 @@ LoopOb::LoopOb(Scrob* pParent, const Rect& r, int number, Sample* pSample) : Scr
 	m_pBackgroundSample = 0;
 	m_bSwitching = false;
 	m_bHolding = false;
+    m_bSelected = false;
+
 	Create(pParent, r, number, pSample);
 }
 

@@ -49,13 +49,8 @@ void MidiControl::LoadConfiguration()
 {
 	 int ch, t, linenumber=0, error=0;
 	 char configfilename[MAX_PATH];
-//#ifndef WIN32
-#if 1
+
 	 sprintf(configfilename, "%s/%s", getenv("HOME"), configfile);
-#else
-	 // TODO fix this to User folder
-	 strcpy(configfilename, configfile);
-#endif
 
 	 // Read MIDI configuration
 	 SettingsFile f(configfilename);
@@ -109,18 +104,21 @@ bool MidiControl::Initialize()
 {
 	 if (!m_bInitialized) {
 		  try {
-			   m_pMidiIn = new RtMidiIn();
-			   if (m_pMidiIn) {
-                   m_pMidiIn->setCallback(callbackRtMidi, this);
-					m_bInitialized = true;
-               }
-			   else
+			m_pMidiIn = new RtMidiIn();
+			m_pMidiOut = new RtMidiOut();
+			if (m_pMidiIn && m_pMidiOut) {
+				m_pMidiIn->setCallback(callbackRtMidi, this);
+				m_bInitialized = true;
+			}
+			else
 					printf("Couldn't initialize RtMidi.\n");
 		  }
 		  catch (RtError &e) {
 			   e.printMessage();
 			   if (m_pMidiIn) delete m_pMidiIn;
 			   m_pMidiIn = NULL;
+			   if (m_pMidiOut) delete m_pMidiOut;
+			   m_pMidiOut = NULL;
 		  }
 	 }
 
@@ -129,10 +127,10 @@ bool MidiControl::Initialize()
 
 int MidiControl::GetMidiNum()
 {
-	 if (!(m_bInitialized && m_pMidiIn))
+	 if (!(m_bInitialized && m_pMidiIn && m_pMidiOut))
 		  return 0;
 
-	 int n = m_pMidiIn->getPortCount();
+	 int n = m_pMidiIn->getPortCount() + m_pMidiOut->getPortCount();
 
 	 return n;
 }
@@ -141,12 +139,19 @@ int MidiControl::GetMidiNum()
 // any better way to do this other than asking the user to free()?
 char* MidiControl::GetMidiName(int n)
 {
-	 if (!(m_bInitialized && m_pMidiIn))
-		  return strdup("");
+    if (!(m_bInitialized && m_pMidiIn && m_pMidiOut))
+        return strdup("");
 
-	 char *s = strdup(m_pMidiIn->getPortName(n).c_str());
-	 if (!s) s = strdup("");
-	 return s;
+	const char *s;
+
+	if (n < m_pMidiIn->getPortCount()) {
+		s = strdup(m_pMidiIn->getPortName(n).c_str());
+	} else {
+		s = strdup(m_pMidiOut->getPortName(n - m_pMidiIn->getPortCount()).c_str());
+	}
+
+    if (!s) s = strdup("");
+    return s;
 }
 
 MidiType MidiControl::GetMidiType(int n)
@@ -154,23 +159,8 @@ MidiType MidiControl::GetMidiType(int n)
 	 if (!m_bInitialized)
 		  return MidiUnknown;
 
-	 /*
-	 const PmDeviceInfo *pdi = Pm_GetDeviceInfo(n);
-	 if (!pdi) return MidiUnknown;
-
-	 if (pdi->input)
-		  return MidiInput;
-	 else
-	 */
-	 return MidiInput;
+	 return n < m_pMidiIn->getPortCount() ? MidiInput : MidiOutput;
 }
-
-/*
-PmTimestamp MidiControl::timeProc(void* time_info)
-{
-	 return app.m_Player.GetPlayPositionSamples()*1000/44100;
-}
-*/
 
 void MidiControl::SelectDevice(int n)
 {
@@ -189,16 +179,12 @@ void MidiControl::SelectDevice(int n)
 		  }
 		  break;
 	 case MidiOutput:
-		  //stype = "output";
-		  /*
-		  if (m_pmOutput)
-			   Pm_Close(m_pmOutput);
-
-		  // Note: 1ms latency tells PortMidi to wait 1 ms + timestamp before sending MIDI message
-		  err = Pm_OpenOutput( &m_pmOutput, n, NULL, 10, timeProc, NULL, 1);
-		  if (err != pmNoError)
-			   m_pmOutput = NULL;
-		  */
+		  stype = "output";
+		  try {
+			m_pMidiOut->openPort(n - m_pMidiIn->getPortCount());
+		  } catch (RtError &e) {
+			e.printMessage();
+		  }
 		  break;
 	 default:
 		  return;
@@ -326,27 +312,20 @@ void MidiControl::CheckMsg()
 						 if (m_ctrlcode[ch][CT_LEVEL]==code)
 							  app.m_pLoopOb[ch]->SetVolume(val*100/0x7F);
 						 else if (m_ctrlcode[ch][CT_EFFECT1]==code) {
-							  /*
-							  for (int i=0; i<N_LOOPS; i++) {
-								   Slider *slider = app.m_pLoopOb[i]->GetEffectSlider(ch);
-								   if (slider && app.m_pLoopOb[i]->IsSelected())
-										slider->SetValue(val*slider->GetMaxValue()/0x7F);
-							  }
-							  */
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(0);
-							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+							  slider->SetValue(val*slider->GetValueMax()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_EFFECT2]==code) {
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(1);
-							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+							  slider->SetValue(val*slider->GetValueMax()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_EFFECT3]==code) {
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(2);
-							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+							  slider->SetValue(val*slider->GetValueMax()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_EFFECT4]==code) {
 							  Slider *slider = app.m_pLoopOb[ch]->GetEffectSlider(3);
-							  slider->SetValue(val*slider->GetMaxValue()/0x7F);
+							  slider->SetValue(val*slider->GetValueMax()/0x7F);
 						 }
 						 else if (m_ctrlcode[ch][CT_BUTTON]==code) {
 							  switch (m_nButtonMode) {
@@ -370,9 +349,7 @@ void MidiControl::CheckMsg()
 							  }
 						 }
 						 else if (m_ctrlcode[ch][CT_SELECT]==code) {
-							  m_nButtonMode = ch;
-                              app.m_pButtonModeLabel->SetText(ButtonModes[m_nButtonMode]);
-							  if (ch >= N_BT) ch = 0;
+						     SetButtonMode(ch);
 						 }
 					}
 			   }
@@ -398,7 +375,7 @@ void MidiControl::CheckMsg()
 							  for (i=0; i<MAX_KEYS && app.m_Keys[i].on; i++);
 							  if (i < MAX_KEYS) {
 								   double freq = 440.0 * pow(2.0, (code-69)/12.0);
-								   double ratio = 337.12301487 * freq / SAMPLE_RATE;
+								   double ratio = 337.12301487 * freq / Player::m_nSampleRate;
 								   app.m_Keys[i].velocity = (int)(ratio*1024.0);
 								   app.m_Keys[i].position = 0;
 								   app.m_Keys[i].note = code;
@@ -425,6 +402,12 @@ void MidiControl::CheckMsg()
 	 }
 	 
 	 return;
+}
+
+void MidiControl::SetButtonMode(int mode)
+{
+	m_nButtonMode = (mode < N_BT ? mode : 0);
+	app.m_pButtonModeLabel->SetText(ButtonModes[m_nButtonMode]);
 }
 
 void MidiControl::SendClockTick(long ms, bool startnow)
@@ -477,4 +460,13 @@ void MidiControl::UpdateClockTicks()
 	
 	SendClockTick(beat_sample_interval);
 */
+}
+
+void MidiControl::SendControlMsg(int ctrlStrip, int ctrlType, int value)
+{
+	std::vector<unsigned char> msg(3);
+	msg[0] = 0xB0;
+	msg[1] = m_ctrlcode[ctrlStrip][ctrlType];
+	msg[2] = value;
+	m_pMidiOut->sendMessage(&msg);
 }

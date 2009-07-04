@@ -1,0 +1,22 @@
+
+; LoopDub configuration file
+
+; Volume sliders are at zero by default.
+DefaultVolume = 0
+
+; The default button mode is "Hold"
+
+; 0 = "Cue"
+; 1 = "Split"
+; 2 = "Hold"
+; 3 = "Keys"
+; 4 = "Norm"
+; 5 = "Switch"
+
+DefaultButton = 2
+
+; Sample rate for the audio output required by the hardware
+HardwareSampleRate = 48000
+
+; Sample rate of the audio files used for each loop.
+InternalSampleRate = 44100

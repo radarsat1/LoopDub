@@ -7,7 +7,9 @@
 #include "loopdub.h"
 #include "ld_logo.h"
 #include "platform.h"
+#include "settings.h"
 
+static char *configfile = ".loopdub.conf";
 
 class Timer
 {
@@ -70,13 +72,15 @@ LoopDub app;
 ** LoopDub
 */
 
-#define APP_VERSION "0.3"
+#define APP_VERSION _BUILDVER
 #define LOOPTOP    50
 #define LOOPHEIGHT 60
 
 int count=0;
 
 LoopDub::LoopDub()
+	 : m_cfgInternalSampleRate(DEFAULT_SAMPLE_RATE),
+	   m_cfgHardwareSampleRate(DEFAULT_HW_SAMPLE_RATE)
 {
 	 m_strChangeToFolder = NULL;
 	 m_nBeats = 4;
@@ -92,14 +96,6 @@ timer[0].init();
 timer[1].init();
 
 	 CREATEMUTEX(mutex);
-
-	 /* this was a hack for windows/cygwin - should be safely removed
-	 if (count==0) {
-	   count++;
-	   Run();
-	 }
-	 else exit(0);
-	 */
 }
 
 LoopDub::~LoopDub()
@@ -127,18 +123,17 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 	int i, n=app.m_Player.BufferSizeSamples();
 
 	for (i=first; i<n; i += ticksize) {
-		 int ms = (outTimeSample + i) * 1000 / SAMPLE_RATE;
+		 int ms = (outTimeSample + i) * 1000 / Player::m_nSampleRate;
 		 app.m_Midi.SendClockTick(ms, startnow);
 	}
 
 	// Audio
-	short* pBufferL = app.m_Player.LeftBuffer();
-	short* pBufferR = app.m_Player.RightBuffer();
+	float* pStereoBuffer = app.m_Player.StereoBuffer();
 	int maxval=0;
 	int volume, volmax;
 	
 	volume = app.m_pVolumeSlider->GetValue();
-	volmax = app.m_pVolumeSlider->GetMaxValue();
+	volmax = app.m_pVolumeSlider->GetValueMax();
 
 	while (n-- > 0)
 	{
@@ -146,7 +141,6 @@ timer[0].reinit();
 		 int value[2];
 		 int side=0;
 		 value[0] = value[1] = 0;
-		*pBufferR = *pBufferL = 0;
 		for (i=0; i<N_LOOPS; i++)
 		{
 timer[1].reinit();
@@ -169,18 +163,13 @@ timer[1].elapsed();
 
 		for (int i=0; i<2; i++) {
 			 value[i] = value[i] * volume / volmax;
-
-			 if (value[i] > 32767)  value[i] = 32767;
-			 if (value[i] < -32767) value[i] = -32767;
 			 if (value[i] > maxval) maxval = value[i];
 		}
 
-//		*(pBufferR++) = value[0];
-//		*(pBufferL++) = value[1];
-
-		*(pBufferR++) = *(pBufferL++) = value[0];
-
-		//fwrite(&value[0], sizeof(value[0]), 1, stderr);
+        // Mix to mono
+        float vf = value[0] / 32768.0f;
+		*(pStereoBuffer++) = vf;
+        *(pStereoBuffer++) = vf;
 
 		if (++app.m_nPos > app.m_nLength)
 			 app.m_nPos = 0;
@@ -198,6 +187,53 @@ timer[0].elapsed();
 	}
 
 	//UNLOCKMUTEX(app.mutex);
+
+}
+
+void LoopDub::SyncMidi()
+{
+	for (int i = 0; i < CONTROLS; i++) {
+		LoopOb *loop = m_pLoopOb[i];
+
+		for (int j = 0; j < 5; j++) {
+			Slider *slider;
+
+			if (j == 0) {
+				slider = loop->GetVolumeSlider();
+			} else {
+				slider = loop->GetEffectSlider(j - 1);
+			}
+
+			m_Midi.SendControlMsg(i, j, slider->GetValue() * 127 / slider->GetValueMax());
+		}
+	}
+}
+
+void LoopDub::LoadConfiguration()
+{
+	m_cfgDefaultVolume = CFG_DEFAULT_DEFAULT_VOLUME;
+	m_cfgDefaultButton = CFG_DEFAULT_DEFAULT_BUTTON;
+
+	bool error = false;
+	int line = 1;
+	char configfilename[MAX_PATH];
+	sprintf(configfilename, "%s/%s", getenv("HOME"), configfile);
+
+	SettingsFile f(configfilename);
+	while (f.ReadSetting()) {
+		if (!strcmp(f.m_strParam, "DefaultVolume")) {
+			m_cfgDefaultVolume = atoi(f.m_strValue);
+		} else if (!strcmp(f.m_strParam, "DefaultButton")) {
+			m_cfgDefaultButton = atoi(f.m_strValue);
+		} else if (!strcmp(f.m_strParam, "InternalSampleRate")) {
+			m_cfgInternalSampleRate = atoi(f.m_strValue);
+		} else if (!strcmp(f.m_strParam, "HardwareSampleRate")) {
+			m_cfgHardwareSampleRate = atoi(f.m_strValue);
+		} else {
+			printf("Error on line %d of %s\n", line, configfile);
+		}
+		line++;
+	}
 }
 
 THREADFUNC loadSampleThread(void* pApp)
@@ -237,6 +273,9 @@ int LoopDub::Run()
 	 int inputprog=0;
 	printf("LoopDub started...\n");
 
+	/* Load configuration file */
+	LoadConfiguration();
+
 	if (m_Midi.Initialize())
 		 printf("MIDI initialized.\n");
 	else
@@ -275,6 +314,7 @@ int LoopDub::Run()
 										pMainScrob->GetRect().Width() - 5,
 										LOOPHEIGHT+(LOOPHEIGHT+5)*i),
 								   i);
+		m_pLoopOb[i]->SetVolume(m_cfgDefaultVolume);
 		m_pLoopArea->AddChild(m_pLoopOb[i]);
 	}
 
@@ -297,7 +337,7 @@ int LoopDub::Run()
 		 m_pProgramArea->AddChild(new Label(m_pProgramArea,
 											Rect(x, y, x+w, y+dt.GetFontHeight()),
 											str, 3, -1));
-		 if (y > (HEIGHT-50))
+		 if (y > (m_pProgramArea->GetRect().Height()-20))
 		 {
 			  y = 20;
 			  x += mx+20;
@@ -322,7 +362,7 @@ int LoopDub::Run()
 
 	m_pVolumeSlider = new Slider(pMainScrob, Rect(130,27,230,40), false);
 	pMainScrob->AddChild(m_pVolumeSlider);
-	m_pVolumeSlider->SetValue(m_pVolumeSlider->GetMaxValue() / 2);
+	m_pVolumeSlider->SetValue(m_pVolumeSlider->GetValueMax() / 2);
 
 	pMainScrob->AddChild(
 		 new Image(pMainScrob, Rect(780-logo_width, 10, 780, 10+logo_height),
@@ -359,7 +399,7 @@ int LoopDub::Run()
 /* TODO: change tempo?
 	m_pTempoSlider = new Slider(pMainScrob, Rect(5, 5, 205, 20), false);
 	pMainScrob->AddChild(m_pTempoSlider);
-	m_pTempoSlider->SetValue((m_nTempo-MIN_TEMPO)*m_pTempoSlider->GetMaxValue()/(MAX_TEMPO-MIN_TEMPO));
+	m_pTempoSlider->SetValue((m_nTempo-MIN_TEMPO)*m_pTempoSlider->GetValueMax()/(MAX_TEMPO-MIN_TEMPO));
 
 	Label *pLabel = new Label(pMainScrob, Rect(210, 5, 250, 20), "Tempo", 3, 0);
 	pMainScrob->AddChild(pLabel);
@@ -398,9 +438,14 @@ int LoopDub::Run()
 			  printf("No MIDI ports found.\n");
 	}
 
+	/* Set MIDI button mode */
+	if (m_Midi.IsInitialized()) {
+		m_Midi.SetButtonMode(m_cfgDefaultButton);
+	}
+
 	/* Initialize player */
 
-	if (!m_Player.Initialize(FillBuffers, this))
+	if (!m_Player.Initialize(FillBuffers, this, m_cfgInternalSampleRate, m_cfgHardwareSampleRate))
 	{
 		printf("Couldn't initialize audio player.\n");
 		return 1;
@@ -447,6 +492,12 @@ int LoopDub::Run()
 			 }
 		}
 
+		/* Press S to synchronize the MIDI output. */
+		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
+				&& pEvent->key.keysym.sym == 's') {
+			SyncMidi();
+		}
+
 		/* Press P to show program listing */
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
 				 && pEvent->key.keysym.sym == 'p') {
@@ -454,6 +505,7 @@ int LoopDub::Run()
 			 m_pProgramArea->SetVisible(!m_pProgramArea->IsVisible());
 			 m_pBlankArea->SetDirty();
 		}
+
 
 		/* Type two digits to load a specified program */
 		else if ((pEvent=gui.GetEvent())->type == SDL_KEYDOWN
@@ -507,7 +559,7 @@ int LoopDub::Run()
 					   pBeats->SetText(str);
 					   if (m_pLoopOb[0]->GetSample()) {
 							int length = m_pLoopOb[0]->GetSample()->m_nSamples;
-							int bpm = SAMPLE_RATE*m_nBeats*60/length;
+							int bpm = Player::m_nSampleRate*m_nBeats*60/length;
 							//	(samples/sec) / (samples/beats) = (samples/sec) * (beats/sample) = (beats/sec) * (sec/min) = (beats/min)
 							sprintf(str, "%d bpm", bpm);
 							pTempo->SetText(str);

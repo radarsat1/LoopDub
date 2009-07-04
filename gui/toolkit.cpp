@@ -55,6 +55,42 @@ void Box::Draw()
 	if (m_nColor != -1)    dt.DrawRect(r, m_nColor);
 }
 
+/******** TextInput ********/
+
+void TextInput::SetText(const char *strText)
+{
+	int len = strlen(strText);
+	if (len > m_nAllocated)
+	{
+		if (m_strText) delete m_strText;
+		m_strText = new char[len+1];
+		if (!m_strText)
+			return;
+
+		m_nAllocated = len;
+	}
+
+	strcpy(m_strText, strText);
+	m_Scrob.SetDirty();
+}
+
+void TextInput::SetInteger(int value)
+{
+	if (m_nAllocated < 10)
+	{
+		if (m_strText)
+			delete m_strText;
+		m_strText = new char[11];
+		m_nAllocated = 10;
+	}
+
+	if (!m_strText)
+		return;
+
+	sprintf(m_strText, "%d", value);
+	m_Scrob.SetDirty();
+}
+
 /******* Handle ********/
 
 Handle::Handle() : Scrob()
@@ -148,11 +184,12 @@ void Handle::SetLimits(bool bVertical, bool bHorizontal,
 
 /******* Slider ********/
 
-Slider::Slider() : Scrob()
+Slider::Slider() : IntegerInputRange(*(static_cast<Scrob*>(this)))
 {
 }
 
-Slider::Slider(Scrob *pParent, const Rect& r, bool bVertical) : Scrob()
+Slider::Slider(Scrob *pParent, const Rect& r, bool bVertical)
+	 : IntegerInputRange(*(static_cast<Scrob*>(this)))
 {
 	Create(pParent, r, bVertical);
 }
@@ -172,6 +209,11 @@ bool Slider::Create(Scrob *pParent, const Rect& r, bool bVertical)
 
 	m_bVertical = bVertical;
 	m_nColor = 1;
+
+	if (m_bVertical)
+		 SetValueRange(0, m_Rect.Height()-m_pHandle->GetRect().Height());
+	else
+		 SetValueRange(0, m_Rect.Width()-m_pHandle->GetRect().Width());
 
 	return true;
 }
@@ -196,14 +238,6 @@ int Slider::GetValue()
 		return m_Rect.Height()-m_pHandle->GetRect().Height()-m_pHandle->GetRect().y1;
 	else
 		return m_pHandle->GetRect().x1;
-}
-
-int Slider::GetMaxValue()
-{
-	if (m_bVertical)
-		return m_Rect.Height()-m_pHandle->GetRect().Height();
-	else
-		return m_Rect.Width()-m_pHandle->GetRect().Width();
 }
 
 void Slider::SetValue(int nValue)
@@ -236,19 +270,15 @@ void Slider::SetColor(int color)
 
 /********* Label ********/
 
-Label::Label() : Scrob()
+Label::Label() : Scrob(), TextInput(*static_cast<Scrob*>(this))
 {
-	m_strText = NULL;
-	m_nAllocated = 0;
 	m_nColor = 0;
 	m_nBkColor = 0;
 }
 
 Label::Label(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor)
-	: Scrob(pParent, r)
+	: Scrob(pParent, r), TextInput(*static_cast<Scrob*>(this))
 {
-	m_strText = NULL;
-	m_nAllocated = 0;
 	m_nColor = 0;
 	m_nBkColor = 0;
 	Create(pParent, r, strText, color, bkcolor);
@@ -256,8 +286,6 @@ Label::Label(Scrob *pParent, const Rect& r, const char *strText, int color, int 
 
 Label::~Label()
 {
-	if (m_strText)
-		delete[] m_strText;
 }
 
 bool Label::Create(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor)
@@ -294,23 +322,6 @@ void Label::Draw()
 		 dt.TextOut(Point(0,(m_Rect.Height()-dt.GetFontHeight())/2), m_strText, m_nColor);
 }
 
-void Label::SetText(const char *strText)
-{
-	int len = strlen(strText);
-	if (len > m_nAllocated)
-	{
-		if (m_strText) delete[] m_strText;
-		m_strText = new char[len+1];
-		if (!m_strText)
-			return;
-
-		m_nAllocated = len;
-	}
-
-	strcpy(m_strText, strText);
-	SetDirty();
-}
-
 void Label::SetColor(int color)
 {
 	m_nColor = color;
@@ -320,23 +331,6 @@ void Label::SetColor(int color)
 void Label::SetBkColor(int bkcolor)
 {
 	m_nBkColor = bkcolor;
-	SetDirty();
-}
-
-void Label::SetInteger(int value)
-{
-	if (m_nAllocated < 10)
-	{
-		if (m_strText)
-			delete[] m_strText;
-		m_strText = new char[11];
-		m_nAllocated = 10;
-	}
-
-	if (!m_strText)
-		return;
-
-	sprintf(m_strText, "%d", value);
 	SetDirty();
 }
 
@@ -392,10 +386,9 @@ void Image::Draw()
 /******** Button *********/
 
 Button::Button()
-  : Label()
+	: Label(), IntegerInput(*static_cast<Scrob*>(this))
 {
   m_bToggle = false;
-  m_bPressed = false;
   m_bGotMouse = false;
   m_nCommand = 0;
   m_nCommandValue = NULL;
@@ -403,10 +396,10 @@ Button::Button()
 
 Button::Button(Scrob *pParent, const Rect& r, const char *strText, int color, int bkcolor,
 			   int command, void* command_value, bool bToggle)
-  : Label(pParent, r, strText, color, bkcolor)
+	: Label(pParent, r, strText, color, bkcolor),
+	  IntegerInput(*static_cast<Scrob*>(this))
 {
   m_bToggle = bToggle;
-  m_bPressed = false;
   m_bGotMouse = false;
   m_nCommand = command;
   m_nCommandValue = command_value;
@@ -429,20 +422,20 @@ bool Button::Create(Scrob *pParent, const Rect& r, const char *strText, int colo
 
 void Button::SetPressed(bool bPressed)
 {
-	 m_bPressed = bPressed;
+	 m_nValue = bPressed ? 1 : 0;
 	 SetDirty();
 }
 
 void Button::Draw()
 {
   dt.SetCurrentObject(this);
-  dt.FillRect(Rect(1,1,m_Rect.Width()-1, m_Rect.Height()-1), m_nBkColor + (m_bPressed ? 1 : 0));
-  dt.DrawEdge(Rect(0,0,m_Rect.Width(), m_Rect.Height()), !m_bPressed);
+  dt.FillRect(Rect(1,1,m_Rect.Width()-1, m_Rect.Height()-1), m_nBkColor + (IsPressed() ? 1 : 0));
+  dt.DrawEdge(Rect(0,0,m_Rect.Width(), m_Rect.Height()), !IsPressed());
 
   Point p((m_Rect.Width()-dt.GetTextWidth(m_strText,strlen(m_strText)))/2,
 		  (m_Rect.Height()-dt.GetFontHeight())/2);
   p.x = max(p.x, 2);
-  if (m_bPressed) {
+  if (IsPressed()) {
 	p.x++;
 	p.y++;
   }
@@ -452,7 +445,7 @@ void Button::Draw()
 
   // If SetPresed() was called previously for a non-Toggle button,
   // send OnMouseUp() to handle unpressing the button.
-  if (m_bPressed && !m_bToggle)
+  if (IsPressed() && !m_bToggle)
 	   OnMouseUp(Point(0,0));
 }
 
@@ -461,13 +454,13 @@ void Button::OnMouseUp(Point mouse)
   gui.ReleaseMouse();
   m_bGotMouse = false;
 
-  if (m_bToggle || m_bPressed)
+  if (m_bToggle || IsPressed())
 	gui.SetCommand(m_nCommand, m_nCommandValue);
 
   if (m_bToggle)
-	m_bPressed = !m_bPressed;
+	  SetPressed(!IsPressed());
   else
-	m_bPressed = false;
+	  SetPressed(false);
 
   SetDirty();
 }
@@ -478,14 +471,14 @@ void Button::OnMouseDown(Point mouse)
   m_bGotMouse = true;
 
   if (!m_bToggle)
-	m_bPressed = true;
+	  SetPressed(true);
 
   SetDirty();
 }
 
 void Button::OnMouseMove(Point mouse)
 {
-  bool b=m_bPressed;
+  bool b=IsPressed();
   
   if (m_bGotMouse && !m_bToggle) {
 	Rect r(m_Rect);
@@ -493,15 +486,13 @@ void Button::OnMouseMove(Point mouse)
 	b = r.PointInRect(mouse);
   }
 
-  if (b!=m_bPressed) {
-	m_bPressed = b;
-	SetDirty();
-  }
+  if (b!=IsPressed())
+	SetPressed(b);
 }
 
 /******** Field ********/
 
-Field::Field() : Scrob()
+Field::Field() : Scrob(), TextInput(*static_cast<Scrob*>(this))
 {
 	m_nMaxChars = 0;
 	m_strText = NULL;
@@ -511,8 +502,9 @@ Field::Field() : Scrob()
 	m_nViewPos = 0;
 }
 
-Field::Field(Scrob *pParent, const Rect& r, const char *strText, int nMaxChars, int color, int bkcolor)
-	: Scrob(pParent, r)
+Field::Field(Scrob *pParent, const Rect& r, const char *strText,
+			 int nMaxChars, int color, int bkcolor)
+	 : Scrob(pParent, r), TextInput(*static_cast<Scrob*>(this))
 {
 	m_nMaxChars = 0;
 	m_strText = NULL;
@@ -584,24 +576,6 @@ void Field::SetColor(int color)
 void Field::SetBkColor(int bkcolor)
 {
 	m_nBkColor = bkcolor;
-	SetDirty();
-}
-
-void Field::SetText(const char *strText)
-{
-	if (!m_strText)
-		return;
-
-	if (!strText)
-		m_strText[0] = 0;
-	else
-		strncpy(m_strText, strText, m_nMaxChars);
-	SetDirty();
-}
-
-void Field::SetInteger(int value)
-{
-	snprintf(m_strText, m_nMaxChars, "%d", value);
 	SetDirty();
 }
 
@@ -897,6 +871,26 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
 		 closedir(dir);
 	}
 
+    // Sort names using insertion sort
+    for (int i = 1; i < fb->m_nNames; i++)
+    {
+        char s[256];
+        int s_isdir;
+        strcpy(s, fb->m_names[i]);
+        s_isdir = fb->m_isdir[i];
+
+        int j = i - 1;
+        
+        while (j >= 0 && strcmp(fb->m_names[j], s) > 0)
+        {
+            fb->m_isdir[j+1] = fb->m_isdir[j];
+            strcpy(fb->m_names[j+1], fb->m_names[j]);
+            j--;
+        }
+
+        fb->m_isdir[j+1] = s_isdir;
+        strcpy(fb->m_names[j+1], s);
+    }
 #endif
 
 	fb->m_nDrawFileOffset = 0;

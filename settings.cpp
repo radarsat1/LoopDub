@@ -3,56 +3,6 @@
 #include <string.h>
 #include "settings.h"
 
-/*
-int main(int argc, char *argv[])
-{
-	if (argc >= 2) {
-		printf("Reading %s...\n", argv[1]);
-
-		SettingsFile f(argv[1]);
-		if (!f.IsOpen()) {
-			printf("Error opening file.\n");
-			return 1;
-		}
-		printf("File opened.\n");
-	
-    	while (f.ReadSetting())
-		{
-			printf("%s%s%s%s%s = %s\n",
-				f.m_strSection[0]?f.m_strSection:"",
-				f.m_strSection[0]?".":"",
-				f.m_strParam,
-				f.m_strSubParam[0]?".":"",
-				f.m_strSubParam[0]?f.m_strSubParam:"",
-				f.m_strValue);
-		}
-	}
-	else
-	{
-		printf("Writing to test.conf...\n");
-
-		SettingsFile f;
-		if (!f.OpenForWrite("test.conf"))
-		{
-			printf("Error opening file.\n");
-			return 1;
-		}
-		printf("File opened.\n");
-
-		f.WriteSetting("Section1", "OneParam", 0, "Nothing!");	
-		f.WriteSetting("Section1", "TwoParam", "3", "Nothing!");
-		f.WriteSetting("Section1", "ThreeParam", 0, "Nothing!");
-		f.WriteSetting("Section2", "OneParam", 0, "Mep?");
-		f.WriteSetting("Section2", "TwoParam", "seventy", "Seven!");
-		f.WriteComment("Die, suckah.");
-		f.WriteSetting("Section3", "Blah", "9", "Wicked.");
-	}
-	
-	return 0;
-}
-*/
-
-
 SettingsFile::SettingsFile()
 {
 	m_file = 0;
@@ -161,7 +111,7 @@ bool SettingsFile::ReadSetting()
                 m_bSectionChanged = true;
 				break;
 			default:
-				s = strtok(line, "=");
+				s = strtok(line, " =");
 				strncpy(m_strParam, s, m_nParamSize);
 				s = strtok(NULL, " =\r\n");
 				strncpy(m_strValue, s, m_nValueSize);

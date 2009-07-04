@@ -19,26 +19,28 @@ if os.environ.has_key('LDFLAGS'):
 OS=commands.getoutput('uname')
 if ('CYGWIN' in OS): OS='Cygwin'
 
-CCFLAGS = ''
+CCFLAGS = []
 if 'debug' in ARGUMENTS:
-	CCFLAGS += '-g -ggdb '
+	CCFLAGS += ['-g','-ggdb']
+else:
+	CCFLAGS += ['-O3']
 
-LIBS=['scrobui','SDL','sndfile','rtaudio','rtmidi']
-LINKFLAGS=''
+LIBS=['scrobui','SDL','sndfile','rtaudio','rtmidi','samplerate']
+LINKFLAGS=[]
 LIBPATH=['gui']
 CPPPATH=['gui','.']
 
 if OS=='Cygwin':
 	print 'Cygwin detected.'
-	CCFLAGS += '-DWIN32 -DCYGWIN -mno-cygwin '
-	LINKFLAGS += '-mno-cygwin '
+	CCFLAGS += ['-DWIN32','-DCYGWIN','-mno-cygwin']
+	LINKFLAGS += ['-mno-cygwin']
 	LIBS += ['winmm','user32','gdi32','ntoskrnl','dsound','ole32']
 
 if OS=='Darwin':
 	print 'Darwin detected.'
-	LINKFLAGS += (	'-framework CoreAudio -framework CoreMIDI -framework Carbon ' +
-			'-framework AppKit -framework AudioUnit -framework QuickTime ' +
-			'-framework IOKit -framework OpenGL'  )
+	LINKFLAGS += ['-framework','CoreAudio', '-framework','CoreMIDI','-framework','Carbon',
+			'-framework','AppKit','-framework','AudioUnit','-framework','QuickTime',
+			'-framework','IOKit','-framework','OpenGL']
 	LIBS += ['SDLmain']
 
 if OS=='Cygwin' or OS=='Darwin':
@@ -46,10 +48,12 @@ if OS=='Cygwin' or OS=='Darwin':
 				'libdeps/rtmidi-1.0.6',
 				'libdeps/SDL-1.2.11/build/.libs',
 				'libdeps/SDL-1.2.11/build/',
-				'libdeps/libsndfile-1.0.17/src/.libs']
+				'libdeps/libsndfile-1.0.17/src/.libs',
+				'libdeps/libsamplerate-0.1.2/src/.libs']
 	CPPPATH += ['libdeps/SDL-1.2.11/include',
 				'libdeps/rtaudio-3.0.3/',
-				'libdeps/libsndfile-1.0.17/src']
+				'libdeps/libsndfile-1.0.17/src',
+				'libdeps/libsamplerate-0.1.2/src']
 
 if OS=='Linux':
 	print 'Linux detected.'
@@ -58,6 +62,10 @@ if OS=='Linux':
 				'libdeps/rtmidi-1.0.6']
 	CPPPATH += ['libdeps/rtaudio-3.0.3/',
 				'/usr/include/SDL']
+
+VERSION=commands.getoutput('util/version.sh')
+print 'Build version:',VERSION
+CCFLAGS += ['-D_BUILDVER=\\"'+VERSION+'\\"']
 
 SConscript(['gui/SConstruct'], 'CCFLAGS')
 

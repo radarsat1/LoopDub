@@ -7,7 +7,7 @@ all: loopdub
 loopdub: $(PACKAGES)
 	@echo
 	@echo
-	@echo "Dependancies are all compiled. LoopDub should now be able to compile and link. Type 'scons' to proceed."
+	@echo "Dependancies are all compiled. LoopDub should now be able to compile and link. Type 'libdeps/scons.py' to proceed."
 	@echo
 	@echo
 

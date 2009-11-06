@@ -44,23 +44,23 @@ if OS=='Darwin':
 	LIBS += ['SDLmain']
 
 if OS=='Cygwin' or OS=='Darwin':
-	LIBPATH += ['libdeps/rtaudio-3.0.3',
+	LIBPATH += ['libdeps/rtaudio-4.0.6',
 				'libdeps/rtmidi-1.0.6',
 				'libdeps/SDL-1.2.11/build/.libs',
 				'libdeps/SDL-1.2.11/build/',
 				'libdeps/libsndfile-1.0.17/src/.libs',
 				'libdeps/libsamplerate-0.1.2/src/.libs']
 	CPPPATH += ['libdeps/SDL-1.2.11/include',
-				'libdeps/rtaudio-3.0.3/',
+				'libdeps/rtaudio-4.0.6/',
 				'libdeps/libsndfile-1.0.17/src',
 				'libdeps/libsamplerate-0.1.2/src']
 
 if OS=='Linux':
 	print 'Linux detected.'
 	LIBS += ['asound','jack']
-	LIBPATH += ['libdeps/rtaudio-3.0.3',
+	LIBPATH += ['libdeps/rtaudio-4.0.6',
 				'libdeps/rtmidi-1.0.6']
-	CPPPATH += ['libdeps/rtaudio-3.0.3/',
+	CPPPATH += ['libdeps/rtaudio-4.0.6/',
 				'/usr/include/SDL']
 
 VERSION=commands.getoutput('util/version.sh')

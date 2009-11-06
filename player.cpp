@@ -38,9 +38,13 @@ Player::~Player()
          src_delete(m_pSRC);
 }
 
-int callback( char* buffer, int bufferSize, void* userData)
+int callback( void *outputBuffer, void *inputBuffer,
+              unsigned int nFrames,
+              double streamTime,
+              RtAudioStreamStatus status,
+              void *userData )
 {
-	 ((Player*)userData)->Mix((float*)buffer, bufferSize, 0);
+	 ((Player*)userData)->Mix((float*)outputBuffer, nFrames, 0);
 
 	 // true to stop the stream
 	 return false;
@@ -69,12 +73,12 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param, int sampler
 
 	// Open stream.
 	try {
-		int bufferSize = BUFFER_SAMPLES;
-		m_pRtAudio->openStream(0, 2, 0, 0,
+		unsigned int bufferSize = BUFFER_SAMPLES;
+        RtAudio::StreamParameters in_parms;
+        in_parms.nChannels = 2;
+		m_pRtAudio->openStream(&in_parms, 0,
                                RTAUDIO_FLOAT32, m_nHwSampleRate,
-							   &bufferSize, 3);
-		
-		m_pRtAudio->setStreamCallback(callback, this);
+							   &bufferSize, callback, this);
 	}
 	catch (RtError& e)
 	{

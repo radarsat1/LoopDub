@@ -1,5 +1,5 @@
 
-PACKAGES = rtaudio rtmidi
+PACKAGES = scons rtaudio rtmidi
 MD5 = md5sum
 
 all: loopdub
@@ -19,7 +19,7 @@ $(PKG_RTAUDIO_LIB): rtaudio.unpacked
 #	Replace the RtAudio build system with Scons.
 #	This script can be pointed to the dsound header.
 	echo "StaticLibrary('rtaudio', ['RtAudio.cpp'], CCFLAGS='-D__LINUX_ALSA__ -D__LINUX_JACK__')" >$(PKG_RTAUDIO_DIR)/SConstruct
-	cd $(PKG_RTAUDIO_DIR); scons
+	cd $(PKG_RTAUDIO_DIR); ../scons.py
 
 rtaudio.unpacked: rtaudio.verified
 	@echo "Unpacking RtAudio..."
@@ -39,7 +39,7 @@ rtmidi: $(PKG_RTMIDI_LIB)
 $(PKG_RTMIDI_LIB): rtmidi.unpacked
 #	Replace the RtMidi build system with Scons.
 	echo "StaticLibrary('rtmidi', ['RtMidi.cpp'], CCFLAGS='-D__LINUX_ALSASEQ__ -D__LINUX_JACK__')" >$(PKG_RTMIDI_DIR)/SConstruct
-	cd $(PKG_RTMIDI_DIR); scons
+	cd $(PKG_RTMIDI_DIR); ../scons.py
 
 rtmidi.unpacked: rtmidi.verified
 	@echo "Unpacking RtMidi..."
@@ -50,3 +50,18 @@ rtmidi.verified:
 	@echo "Getting RtMidi..."
 	wget $(PKG_RTMIDI_URL) -O $(PKG_RTMIDI_TAR)
 	if [ `$(MD5) $(PKG_RTMIDI_TAR) | cut -d" " -f1`x = $(PKG_RTMIDI_MD5)x ]; then touch rtmidi.verified; else echo "MD5 error on $(PKG_RTMIDI_TAR)"; false; fi
+
+# Scons - local version
+scons: scons.py
+	@if (./scons.py -v); then echo "Scons verified."; else echo "Error running Scons."; false; fi
+
+scons.py: scons.verified
+	@echo "Unpacking Scons..."
+	tar -xzf $(PKG_SCONS_TAR)
+	chmod +x scons.py
+	if ! [ -h ../scons ]; then ln -s "$(shell pwd)/scons.py" ../scons; fi
+
+scons.verified:
+	@echo "Getting Scons..."
+	curl -L $(PKG_SCONS_URL) -o $(PKG_SCONS_TAR)
+	if [ `$(MD5) $(PKG_SCONS_TAR) | cut -d" " -f1`x = $(PKG_SCONS_MD5)x ]; then touch scons.verified; else echo "MD5 error on $(PKG_SCONS_TAR)"; false; fi

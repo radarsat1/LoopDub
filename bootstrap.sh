@@ -1,15 +1,16 @@
 #!/bin/bash
 
 # Package locations
-PKG_SCONS_TAR="scons-local-0.96.1.tar.gz"
-PKG_SCONS_DIR="scons-local-0.96.1"
-PKG_SCONS_URL="http://superb-west.dl.sourceforge.net/sourceforge/scons/scons-local-0.96.1.tar.gz"
-PKG_SCONS_MD5="78754efc02b4a374d5082a61509879cd"
 
-PKG_RTAUDIO_TAR="rtaudio-3.0.3.tar.gz"
-PKG_RTAUDIO_MD5="dcc08fa6b81971eabacc872acd56319a"
-PKG_RTAUDIO_DIR="rtaudio-3.0.3"
-PKG_RTAUDIO_URL="http://www.music.mcgill.ca/~gary/rtaudio/release/rtaudio-3.0.3.tar.gz"
+PKG_SCONS_TAR="scons-local-1.2.0.tar.gz"
+PKG_SCONS_DIR="scons-local-1.2.0"
+PKG_SCONS_URL="http://prdownloads.sourceforge.net/scons/scons-local-1.2.0.tar.gz"
+PKG_SCONS_MD5="aa92aff8b285ad992c2bf436dae72536"
+
+PKG_RTAUDIO_TAR="rtaudio-4.0.6.tar.gz"
+PKG_RTAUDIO_MD5="258314ac96cb23b3f68cd4605b784f7e"
+PKG_RTAUDIO_DIR="rtaudio-4.0.6"
+PKG_RTAUDIO_URL="http://www.music.mcgill.ca/~gary/rtaudio/release/rtaudio-4.0.6.tar.gz"
 PKG_RTAUDIO_LIB="$PKG_RTAUDIO_DIR/librtaudio.a"
 
 PKG_RTMIDI_TAR="rtmidi-1.0.6.tar.gz"
@@ -116,6 +117,7 @@ fi
 
 # Build everything
 make -C libdeps -f ./bootstrap_linux.mk \
+ PKG_SCONS_TAR="$PKG_SCONS_TAR" PKG_SCONS_DIR="$PKG_SCONS_DIR" PKG_SCONS_URL="$PKG_SCONS_URL" PKG_SCONS_MD5="$PKG_SCONS_MD5" \
  PKG_RTAUDIO_TAR="$PKG_RTAUDIO_TAR" PKG_RTAUDIO_DIR="$PKG_RTAUDIO_DIR" PKG_RTAUDIO_URL="$PKG_RTAUDIO_URL" PKG_RTAUDIO_MD5="$PKG_RTAUDIO_MD5" PKG_RTAUDIO_LIB="$PKG_RTAUDIO_LIB" \
  PKG_RTMIDI_TAR="$PKG_RTMIDI_TAR" PKG_RTMIDI_DIR="$PKG_RTMIDI_DIR" PKG_RTMIDI_URL="$PKG_RTMIDI_URL" PKG_RTMIDI_MD5="$PKG_RTMIDI_MD5" PKG_RTMIDI_LIB="$PKG_RTMIDI_LIB"
     ;;

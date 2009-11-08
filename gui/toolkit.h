@@ -49,7 +49,7 @@ class TextInput
 class IntegerInput
 {
   public:
-	IntegerInput(Scrob& owner) : m_Scrob(owner) {};
+	IntegerInput(Scrob& owner) : m_Scrob(owner), m_nValue(0) {};
 	virtual void SetValue(int value) { m_nValue = value; }
 	virtual int GetValue() { return m_nValue; }
 
@@ -62,7 +62,7 @@ class IntegerInput
 class IntegerInputRange : public IntegerInput
 {
   public:
-	IntegerInputRange(Scrob& owner) : IntegerInput(owner) {};
+	IntegerInputRange(Scrob& owner) : IntegerInput(owner), m_nMin(0), m_nMax(0) {};
 	virtual void SetValueRange(int min, int max)
 		{ m_nMin = min; m_nMax = max; }
 	virtual int GetValueMin() { return m_nMin; }

@@ -649,6 +649,7 @@ FileBrowser::FileBrowser() : Scrob()
 	m_bBase = false;
 	m_nNames = 0;
 	m_nDrawFileOffset = 0;
+	m_bLoading = false;
 }
 
 FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, const char *strDir, int filecommand, int dircommand, bool showDir)
@@ -663,6 +664,7 @@ FileBrowser::FileBrowser(Scrob *pParent, const Rect& r, const char *strDir, int 
 	m_bBase = false;
 	m_nNames = 0;
 	m_nDrawFileOffset = 0;
+	m_bLoading = false;
 	Create(pParent, r, strDir, filecommand, dircommand, showDir);
 }
 

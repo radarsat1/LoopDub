@@ -943,7 +943,7 @@ void FileBrowser::SetBase(const char *strBase)
 		  m_bBase = false;
 	 }
 
-	 if (m_bBase) {
+	 if (m_bBase && !m_bLoading && m_nFileCommand > -1) {
 		  SetDirectoryFromBase(".");
 	 }
 }

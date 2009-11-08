@@ -442,11 +442,6 @@ void Button::Draw()
   dt.SetClipRect(Rect(3,2,m_Rect.Width()-2,m_Rect.Height()-3));
   dt.TextOut(p, m_strText, m_nColor);
   dt.SetClipRect();
-
-  // If SetPresed() was called previously for a non-Toggle button,
-  // send OnMouseUp() to handle unpressing the button.
-  if (IsPressed() && !m_bToggle)
-	   OnMouseUp(Point(0,0));
 }
 
 void Button::OnMouseUp(Point mouse)

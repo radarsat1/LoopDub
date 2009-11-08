@@ -18,7 +18,7 @@ rtaudio: $(PKG_RTAUDIO_LIB)
 $(PKG_RTAUDIO_LIB): rtaudio.unpacked
 #	Replace the RtAudio build system with Scons.
 #	This script can be pointed to the dsound header.
-	echo "StaticLibrary('rtaudio', ['RtAudio.cpp'], CCFLAGS='-D__LINUX_ALSA__ -D__LINUX_JACK__')" >$(PKG_RTAUDIO_DIR)/SConstruct
+	echo "StaticLibrary('rtaudio', ['RtAudio.cpp'], CCFLAGS='-D__LINUX_ALSA__ -D__UNIX_JACK__')" >$(PKG_RTAUDIO_DIR)/SConstruct
 	cd $(PKG_RTAUDIO_DIR); ../scons.py
 
 rtaudio.unpacked: rtaudio.verified
@@ -38,7 +38,7 @@ rtmidi: $(PKG_RTMIDI_LIB)
 
 $(PKG_RTMIDI_LIB): rtmidi.unpacked
 #	Replace the RtMidi build system with Scons.
-	echo "StaticLibrary('rtmidi', ['RtMidi.cpp'], CCFLAGS='-D__LINUX_ALSASEQ__ -D__LINUX_JACK__')" >$(PKG_RTMIDI_DIR)/SConstruct
+	echo "StaticLibrary('rtmidi', ['RtMidi.cpp'], CCFLAGS='-D__LINUX_ALSASEQ__')" >$(PKG_RTMIDI_DIR)/SConstruct
 	cd $(PKG_RTMIDI_DIR); ../scons.py
 
 rtmidi.unpacked: rtmidi.verified

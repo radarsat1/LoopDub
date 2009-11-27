@@ -145,7 +145,7 @@ timer[0].reinit();
 		{
 timer[1].reinit();
 			 side = 0;//app.m_pLoopOb[i]->IsCue() ? 1 : 0; (TODO: cueing disabled for now)
-			 if (i!=app.m_nKeysChannel) {
+			 if (i!=app.m_nKeysChannel || !app.m_Keys[0].on) {
 				  value[side] += app.m_pLoopOb[i]->GetSampleValue(app.m_nPos);
 			 }
 			 else {
@@ -482,12 +482,11 @@ int LoopDub::Run()
 		{
 			 // find unused key
 			 for (i=0; i<MAX_KEYS && m_Keys[i].on; i++);
-			 if (i<MAX_KEYS) {
-				  m_Keys[i].position = 0;
-				  m_Keys[i].velocity = 1024;
-				  m_Keys[i].note = 48; // default key C4
-				  m_Keys[i].on = true;
-			 }
+			 if (i>=MAX_KEYS) i=0;
+			 m_Keys[i].position = 0;
+			 m_Keys[i].velocity = 1024;
+			 m_Keys[i].note = 48; // default key C4
+			 m_Keys[i].on = true;
 		}
 
 		/* Press S to synchronize the MIDI output. */
@@ -597,7 +596,12 @@ int LoopDub::Run()
 				  else if (cmd==CMD_KEYS) {
 					   int ch = value;
 					   if (m_nKeysChannel > -1)
+					   {
 							m_pLoopOb[m_nKeysChannel]->LoseKeys();
+							int i;
+							for (i=0; i<MAX_KEYS; i++)
+								m_Keys[i].on = false;
+					   }
 
 					   if (m_pLoopOb[ch]->HasKeys() && !m_pLoopOb[ch]->GetSample())
 							m_pLoopOb[ch]->LoseKeys();

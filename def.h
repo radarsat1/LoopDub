@@ -6,7 +6,7 @@
 #define N_LOOPS   8
 #define MAX_TEMPO 260
 #define MIN_TEMPO 20
-#define MAX_KEYS  10
+#define MAX_KEYS  1
 #define MAX_PARTS 16
 
 // Screen size

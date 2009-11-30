@@ -83,6 +83,8 @@ LoopDub::LoopDub()
 	   m_cfgHardwareSampleRate(DEFAULT_HW_SAMPLE_RATE)
 {
 	 m_strChangeToFolder = NULL;
+     m_strRecordPath = NULL;
+     m_fRecordFile = 0;
 	 m_nBeats = 4;
 	 m_nPos = 0;
 	 m_nLength = 0;
@@ -100,6 +102,8 @@ timer[1].init();
 
 LoopDub::~LoopDub()
 {
+    if (m_fRecordFile)
+        fclose(m_fRecordFile);
 	DESTROYMUTEX(mutex);
 }
 
@@ -165,6 +169,12 @@ timer[1].elapsed();
 			 value[i] = value[i] * volume / volmax;
 			 if (value[i] > maxval) maxval = value[i];
 		}
+
+        // Record to file
+        if (app.m_fRecordFile) {
+            short svf = (short)value[0];
+            fwrite(&svf, sizeof(short), 1, app.m_fRecordFile);
+        }
 
         // Mix to mono
         float vf = value[0] / 32768.0f;
@@ -290,6 +300,16 @@ int LoopDub::Run()
 	/* Change to loop folder */
 	if (m_strChangeToFolder && chdir(m_strChangeToFolder))
 		 printf("Warning: Couldn't change to %s\n", m_strChangeToFolder);
+
+    /* Open output file */
+    if (m_strRecordPath) {
+        m_fRecordFile = fopen(m_strRecordPath, "wb");
+        if (m_fRecordFile)
+            printf("Writing to %s\n", m_strRecordPath);
+        else
+            printf("Warning: Could not open %s for writing.\n",
+                   m_strRecordPath);
+    }
 
 	/* Load program changer */
 	m_ProgramChanger.LoadPrograms();
@@ -690,11 +710,14 @@ int main(int argc, char* argv[])
 			   exit(0);
 		  }
 		  else if (strcmp(argv[1], "--help")==0) {
-			   printf("Usage: loopdub <folder>\n");
+			   printf("Usage: loopdub <folder> [outputfile]\n");
 			   exit(0);
 		  }
 		  app.m_strChangeToFolder = argv[1];
 	 }
+     if ((argc > 2) && argv[2]) {
+         app.m_strRecordPath = argv[2];
+     }
 
 	return app.Run();
 }

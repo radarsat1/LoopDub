@@ -84,6 +84,8 @@ public:
 	bool updated;
 
 	char* m_strChangeToFolder;
+	char* m_strRecordPath;
+    FILE* m_fRecordFile;
 
 	// configuration parameters
 	int m_cfgDefaultVolume;

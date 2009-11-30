@@ -167,6 +167,8 @@ timer[1].elapsed();
 
 		for (int i=0; i<2; i++) {
 			 value[i] = value[i] * volume / volmax;
+             if (value[i] > SHRT_MAX) value[i] = SHRT_MAX;
+             else if (value[i] < SHRT_MIN) value[i] = SHRT_MIN;
 			 if (value[i] > maxval) maxval = value[i];
 		}
 

@@ -1,18 +1,17 @@
 
 == Installing LoopDub ==
 
-In this version, I have switched to the SCons system for building
-LoopDub.  I have also switch to a different multiplatform audio/midi
-system, called RtAudio/RtMidi.  The bootstrap.sh script is made to
-conveniently download and compile these for you.  So, when connected
-to the internet, the first step is to execute it:
+The bootstrap.sh script is made to conveniently download and compile
+dependent libraries if they are not commonly available for your
+system.  So, when connected to the internet, the first step is to
+execute it:
 
   # ./bootstrap.sh
 
 Now, to compile LoopDub:
 
-  # scons
-
+  # ./configure
+  # make
 
 LoopDub is pretty-much self-contained and can run from the source
 directory after compiling.

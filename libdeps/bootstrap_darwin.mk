@@ -1,5 +1,5 @@
 
-PACKAGES = scons rtaudio rtmidi libsndfile libsamplerate sdl
+PACKAGES = libsndfile libsamplerate sdl
 MD5 = md5
 
 all: loopdub
@@ -7,25 +7,9 @@ all: loopdub
 loopdub: $(PACKAGES)
 	@echo
 	@echo
-	@echo "Dependancies are all compiled. LoopDub should now be able to compile and link. Type './scons' to proceed."
+	@echo "Dependancies are all compiled. LoopDub should now be able to compile and link. Type './configure' to proceed."
 	@echo
 	@echo
-
-
-# Scons - local version
-scons: scons.py
-	@if (./scons.py -v); then echo "Scons verified."; else echo "Error running Scons."; false; fi
-
-scons.py: scons.verified
-	@echo "Unpacking Scons..."
-	tar -xzf $(PKG_SCONS_TAR)
-	chmod +x scons.py
-	if ! [ -h ../scons ]; then ln -s "$(shell pwd)/scons.py" ../scons; fi
-
-scons.verified:
-	@echo "Getting Scons..."
-	curl $(PKG_SCONS_URL) -o $(PKG_SCONS_TAR)
-	if [ `$(MD5) $(PKG_SCONS_TAR) | cut -d" " -f4`x = $(PKG_SCONS_MD5)x ]; then touch scons.verified; else echo "MD5 error on $(PKG_SCONS_TAR)"; false; fi
 
 
 # libsndfile

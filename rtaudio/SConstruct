@@ -1,1 +1,0 @@
-StaticLibrary('rtaudio', ['RtAudio.cpp'], CCFLAGS='-D__LINUX_ALSA__ -D__UNIX_JACK__')

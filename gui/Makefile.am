@@ -1,3 +1,10 @@
-AM_CPPFLAGS = -I$(SDL_LOCATION) -DDATADIR=\"$(pkgdatadir)/\" -DFLAT_GUI
-noinst_LIBRARIES = libscrobui.a
-libscrobui_a_SOURCES = scrobui.cpp toolkit.cpp toolkit.h scrobui.h dotum10.cpp dotum10.h
+
+lib_LTLIBRARIES = libscrobui.la
+
+SOURCE_FILES = scrobui.cpp dotum10.cpp toolkit.cpp
+
+libscrobui_la_CXXFLAGS = -Wall -I$(top_srcdir)/gui
+libscrobui_la_SOURCES = $(SOURCE_FILES)
+libscrobui_la_LIBADD =
+libscrobui_la_LDFLAGS = -static
+

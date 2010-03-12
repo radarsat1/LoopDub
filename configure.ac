@@ -51,24 +51,6 @@ PKG_CHECK_MODULES([samplerate], [samplerate >= 0.1.7],
    AC_CHECK_HEADER(samplerate.h, [],
     [AC_MSG_ERROR([libsamplerate is required.])])])
 
-PKG_CHECK_MODULES([alsa], [alsa >= 1.0.20],
-  [CFLAGS="$CFLAGS $alsa_CFLAGS"
-   CPPFLAGS="$CPPFLAGS $alsa_CFLAGS"
-   LDFLAGS="$LDFLAGS $alsa_LIBS"],
-  [AC_CHECK_LIB(asound,snd_config_load, [],
-    [AC_MSG_ERROR([ALSA is required.])])
-   AC_CHECK_HEADER(asoundlib.h, [],
-    [AC_MSG_ERROR([ALSA is required.])])])
-
-PKG_CHECK_MODULES([jack], [jack >= 0.116.1],
-  [CFLAGS="$CFLAGS $jack_CFLAGS"
-   CPPFLAGS="$CPPFLAGS $jack_CFLAGS"
-   LDFLAGS="$LDFLAGS $jack_LIBS"],
-  [AC_CHECK_LIB(jack,jack_connect, [],
-    [AC_MSG_ERROR([Jack is required.])])
-   AC_CHECK_HEADER(jack.h, [],
-    [AC_MSG_ERROR([Jack is required.])])])
-
 PKG_CHECK_MODULES([sndfile], [sndfile >= 0.116.1],
   [CFLAGS="$CFLAGS $sndfile_CFLAGS"
    CPPFLAGS="$CPPFLAGS $sndfile_CFLAGS"
@@ -78,10 +60,54 @@ PKG_CHECK_MODULES([sndfile], [sndfile >= 0.116.1],
    AC_CHECK_HEADER(sndfile.h, [],
     [AC_MSG_ERROR([libsndfile is required.])])])
 
+# Optional libraries
+
+HAVE_ALSA=true
+AC_ARG_ENABLE(alsa,
+  [AC_HELP_STRING([--enable-alsa],[compile in ALSA support])],
+  [test x$enableval = xno && HAVE_ALSA=false])
+AS_IF($HAVE_ALSA,
+  [PKG_CHECK_MODULES([alsa], [alsa >= 1.0.20],
+   [CFLAGS="$CFLAGS $alsa_CFLAGS"
+    CPPFLAGS="$CPPFLAGS $alsa_CFLAGS"
+    LDFLAGS="$LDFLAGS $alsa_LIBS"],
+   [AC_CHECK_LIB(asound,snd_config_load, [], [HAVE_ALSA=false])
+    AC_CHECK_HEADER(asoundlib.h, [], [HAVE_ALSA=false])])])
+
+HAVE_JACK=true
+AC_ARG_ENABLE(jack,
+  [AC_HELP_STRING([--enable-jack],[compile in Jack support])],
+  [test x$enableval = xno && HAVE_JACK=false])
+AS_IF($HAVE_JACK,
+  [PKG_CHECK_MODULES([jack], [jack >= 0.116.1],
+    [CFLAGS="$CFLAGS $jack_CFLAGS"
+     CPPFLAGS="$CPPFLAGS $jack_CFLAGS"
+     LDFLAGS="$LDFLAGS $jack_LIBS"],
+    [AC_CHECK_LIB(jack,jack_connect, [], [HAVE_JACK=false])
+     AC_CHECK_HEADER(jack.h, [], [HAVE_JACK=false])])])
+
+# RtAudio / RtMidi
+AS_IF([$HAVE_ALSA],
+  [RTAUDIOFLAGS="-D__LINUX_ALSA__";
+   RTMIDIFLAGS="-D__LINUX_ALSASEQ__"])
+AS_IF([$HAVE_JACK],
+  [RTAUDIOFLAGS="$RTAUDIOFLAGS -D__UNIX_JACK__"])
+
+AC_SUBST(RTAUDIOFLAGS)
+AC_SUBST(RTMIDIFLAGS)
+
 # detect 64-bit system
 AC_CHECK_SIZEOF(long)
 if test $ac_cv_sizeof_long = 8; then
    BITSIZE=64
+fi
+
+# debug mode
+AC_ARG_ENABLE(debug,
+  [AC_HELP_STRING([--enable-debug],[compile in debug mode])]
+  [debug=yes])
+if test x$debug = xyes; then
+  CPPFLAGS="-g -O0 -Wall -DDEBUG $CPPFLAGS"
 fi
 
 # Generate Makefiles
@@ -101,5 +127,9 @@ AC_OUTPUT()
 echo
 echo ======================================
 echo Done configuring loopdub.
+AS_IF($HAVE_ALSA, [echo Compiling with ALSA support.])
+AS_IF($HAVE_JACK, [echo Compiling with Jack support.])
+AS_IF($HAVE_ALSA || $HAVE_JACK, [],
+  [echo Warning: No sound libraries are included, LoopDub will be silent!])
 echo ======================================
 echo

@@ -104,8 +104,8 @@ bool MidiControl::Initialize()
 {
 	 if (!m_bInitialized) {
 		  try {
-			m_pMidiIn = new RtMidiIn();
-			m_pMidiOut = new RtMidiOut();
+			m_pMidiIn = new RtMidiIn(std::string("LoopDubIn"));
+			m_pMidiOut = new RtMidiOut(std::string("LoopDubOut"));
 			if (m_pMidiIn && m_pMidiOut) {
 				m_pMidiIn->setCallback(callbackRtMidi, this);
 				m_bInitialized = true;

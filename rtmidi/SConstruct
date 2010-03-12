@@ -1,0 +1,1 @@
+StaticLibrary('rtmidi', ['RtMidi.cpp'], CCFLAGS='-D__LINUX_ALSASEQ__')

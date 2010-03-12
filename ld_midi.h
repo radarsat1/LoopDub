@@ -1,7 +1,7 @@
 #ifndef _LD_MIDI_H_
 #define _LD_MIDI_H_
 
-#include "libdeps/rtmidi-1.0.6/RtMidi.h"
+#include "rtmidi/RtMidi.h"
 
 // The PCR-30 has 8 sets of controls
 // Other controllers may have more or fewer,

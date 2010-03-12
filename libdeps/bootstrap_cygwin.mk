@@ -11,46 +11,6 @@ loopdub: $(PACKAGES)
 	@echo
 	@echo
 
-# RtAudio
-rtaudio: $(PKG_RTAUDIO_LIB)
-	@if [ -f $(PKG_RTAUDIO_LIB) ]; then echo "RtAudio verified."; else echo "Error processing RtAudio."; false; fi
-
-$(PKG_RTAUDIO_LIB): rtaudio.unpacked
-#	Replace the RtAudio build system with Scons.
-#	This script can be pointed to the dsound header.
-	echo "StaticLibrary('rtaudio', ['RtAudio.cpp'], LIBS=['dsound'], CPPPATH=[ARGUMENTS['DXDIR']+'/Include'], LIBPATH=[ARGUMENTS['DXDIR']+'/Lib'],CXXFLAGS='-D__WINDOWS_DS__ -mno-cygwin')" >$(PKG_RTAUDIO_DIR)/SConstruct
-	cd $(PKG_RTAUDIO_DIR); ../scons.py DXDIR="$(DXDIR)"
-
-rtaudio.unpacked: rtaudio.verified
-	@echo "Unpacking RtAudio..."
-	tar -xzf $(PKG_RTAUDIO_TAR)
-	touch rtaudio.unpacked
-
-rtaudio.verified:
-	@echo "Getting RtAudio..."
-	if [ `$(MD5) $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x != $(PKG_RTAUDIO_MD5)x ]; then wget $(PKG_RTAUDIO_URL) -O $(PKG_RTAUDIO_TAR); fi
-	if [ `$(MD5) $(PKG_RTAUDIO_TAR) | cut -d" " -f1`x == $(PKG_RTAUDIO_MD5)x ]; then touch rtaudio.verified; else echo "MD5 error on $(PKG_RTAUDIO_TAR)"; false; fi
-
-
-# RtMidi
-rtmidi: $(PKG_RTMIDI_LIB)
-	@if [ -f $(PKG_RTMIDI_LIB) ]; then echo "RtMidi verified."; else echo "Error processing RtMidi."; false; fi
-
-$(PKG_RTMIDI_LIB): rtmidi.unpacked
-#	Replace the RtMidi build system with Scons.
-	echo "StaticLibrary('rtmidi', ['RtMidi.cpp'],CXXFLAGS='-D__WINDOWS_MM__ -mno-cygwin')" >$(PKG_RTMIDI_DIR)/SConstruct
-	cd $(PKG_RTMIDI_DIR); ../scons.py DXDIR="$(DXDIR)"
-
-rtmidi.unpacked: rtmidi.verified
-	@echo "Unpacking RtMidi..."
-	tar -xzf $(PKG_RTMIDI_TAR)
-	touch rtmidi.unpacked
-
-rtmidi.verified:
-	@echo "Getting RtMidi..."
-	if [ `$(MD5) $(PKG_RTMIDI_TAR) | cut -d" " -f1`x != $(PKG_RTMIDI_MD5)x ]; then wget $(PKG_RTMIDI_URL) -O $(PKG_RTMIDI_TAR); fi
-	if [ `$(MD5) $(PKG_RTMIDI_TAR) | cut -d" " -f1`x == $(PKG_RTMIDI_MD5)x ]; then touch rtmidi.verified; else echo "MD5 error on $(PKG_RTMIDI_TAR)"; false; fi
-
 
 # Scons - local version
 scons: scons.py

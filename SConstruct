@@ -44,23 +44,24 @@ if OS=='Darwin':
 	LIBS += ['SDLmain']
 
 if OS=='Cygwin' or OS=='Darwin':
-	LIBPATH += ['libdeps/rtaudio-4.0.6',
-				'libdeps/rtmidi-1.0.6',
+	LIBPATH += ['rtaudio',
+				'rtmidi',
 				'libdeps/SDL-1.2.11/build/.libs',
 				'libdeps/SDL-1.2.11/build/',
 				'libdeps/libsndfile-1.0.17/src/.libs',
 				'libdeps/libsamplerate-0.1.2/src/.libs']
 	CPPPATH += ['libdeps/SDL-1.2.11/include',
-				'libdeps/rtaudio-4.0.6/',
+				'rtaudio',
+				'rtmidi',
 				'libdeps/libsndfile-1.0.17/src',
 				'libdeps/libsamplerate-0.1.2/src']
 
 if OS=='Linux':
 	print 'Linux detected.'
 	LIBS += ['asound','jack']
-	LIBPATH += ['libdeps/rtaudio-4.0.6',
-				'libdeps/rtmidi-1.0.6']
-	CPPPATH += ['libdeps/rtaudio-4.0.6/',
+	LIBPATH += ['rtaudio',
+				'rtmidi']
+	CPPPATH += ['rtaudio',
 				'/usr/include/SDL']
 
 VERSION=commands.getoutput('util/version.sh')
@@ -68,6 +69,8 @@ print 'Build version:',VERSION
 CCFLAGS += ['-D_BUILDVER=\\"'+VERSION+'\\"']
 
 SConscript(['gui/SConstruct'], 'CCFLAGS')
+SConscript(['rtmidi/SConstruct'], 'CCFLAGS')
+SConscript(['rtaudio/SConstruct'], 'CCFLAGS')
 
 Program('loopdub',
 	['loopdub.cpp', 'filter.cpp', 'ld_midi.cpp', 'loopob.cpp', 'player.cpp',

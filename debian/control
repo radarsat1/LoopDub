@@ -1,0 +1,14 @@
+Source: loopdub
+Section: unknown
+Priority: extra
+Maintainer: Stephen Sinclair <radarsat1@gmail.com>
+Build-Depends: debhelper (>= 7), autotools-dev
+Standards-Version: 3.8.3
+Homepage: http://loopdub.sf.net
+
+Package: loopdub
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libc6, libsamplerate0, libjack0, libsdl1.2debian-alsa, libsndfile1, libasound2
+Build-Depends: libc6, libsamplerate0-dev, libjack-dev, libsdl1.2-dev, libsndfile1-dev, libasound-dev
+Description: Software for live audio loop manipulation.
+ LoopDub is software intended for musical performance based on live loop manipulation.

@@ -27,6 +27,11 @@ if ! aclocal --version >/dev/null; then
     exit 1
 fi
 
+if ! git --version >/dev/null; then
+    echo No git found.
+    exit 1
+fi
+
 ############
 
 if ! libtoolize --force; then
@@ -42,6 +47,11 @@ fi
 if ! autoheader; then
     echo Error running autoheader.
     exit 1
+fi
+
+if ! git whatchanged >ChangeLog; then
+    echo Error generating ChangeLog using git.
+    exit
 fi
 
 if ! automake --add-missing; then

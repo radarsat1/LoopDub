@@ -1,6 +1,6 @@
 AC_PREREQ(2.57)
 
-AC_DEFUN([LOOPDUB_VER],[m4_esyscmd([util/version.sh | tr -d '\n'])])
+m4_define([LOOPDUB_VER],[m4_esyscmd([util/version.sh | tr -d '\n'])])
 AC_INIT([loopdub], [LOOPDUB_VER], [radarsat1@gmail.com])
 
 AM_CONFIG_HEADER([config.h])

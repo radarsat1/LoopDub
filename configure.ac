@@ -104,11 +104,25 @@ fi
 
 # debug mode
 AC_ARG_ENABLE(debug,
-  [AC_HELP_STRING([--enable-debug],[compile in debug mode])]
-  [debug=yes])
+  [AC_HELP_STRING([--enable-debug],[compile in debug mode])],,
+  [debug=no])
 if test x$debug = xyes; then
   CPPFLAGS="-g -O0 -Wall -DDEBUG $CPPFLAGS"
 fi
+
+# generate manpage using pandoc
+AC_ARG_ENABLE(docs,
+  [AC_HELP_STRING([--enable-docs],[generate documentation])],,
+  [enable_docs=yes])
+if test x$enable_docs = xyes; then
+   AC_CHECK_PROG([PANDOC],[pandoc],[pandoc])
+   if test -z $PANDOC; then
+      enable_docs=no
+   fi
+fi
+
+AC_SUBST(PANDOC)
+AM_CONDITIONAL([DOCS], [test x$enable_docs = xyes])
 
 # Generate Makefiles
 AC_CONFIG_FILES([
@@ -129,6 +143,8 @@ echo ======================================
 echo Done configuring loopdub.
 AS_IF($HAVE_ALSA, [echo Compiling with ALSA support.])
 AS_IF($HAVE_JACK, [echo Compiling with Jack support.])
+AS_IF(test x$enable_docs = xyes, [echo Generating documentation.],
+           [echo Not generating documentation.])
 AS_IF($HAVE_ALSA || $HAVE_JACK, [],
   [echo Warning: No sound libraries are included, LoopDub will be silent!])
 echo ======================================

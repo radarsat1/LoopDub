@@ -7,9 +7,16 @@ dist_doc_DATA = loopdub.conf.example loopdub.midi.conf.example	\
     docs/index.html docs/radarsat1_brussels_legazon6.jpg		\
     docs/screenshot.png
 
+if DOCS
+dist_man_MANS = docs/loopdub.1
+
+docs/loopdub.1: docs/manpage.markdown
+	@PANDOC@ -i $< -w man -s -o $@
+endif
+
 EXTRA_DIST = bootstrap.sh libdeps/bootstrap_cygwin.mk		\
     libdeps/bootstrap_darwin.mk libdeps/bootstrap_linux.mk	\
-    README_win32.txt
+    README_win32.txt docs/manpage.markdown
 
 loopdub_CXXFLAGS = -Wall -I$(top_srcdir)/gui \
 	-I$(top_srcdir)/rtaudio \

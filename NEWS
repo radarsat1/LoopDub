@@ -1,3 +1,21 @@
+* Jul. 3, 2010:
+Release 0.4. Mostly bugfix release, but also includes a few new
+features, general cleanup and robustness improvements.
+- Perform clipping on overflow.
+- Add very basic support for recording.
+- Resample audio output for use with hardware sample rate differing
+  from file samplerate.
+- Alphabetical file listing.
+- Move to RtMidi.
+- Include RtAudio and RtMidi in the source instead of requiring
+  separate download.
+- Configuration file for global config.
+- Fix program listing layout.
+- Support MIDI output for automated knobs and faders.
+- Using autotools again.
+- Packaged for Debian/Ubuntu.
+- New logo.
+
 * Dec. 21, 2007:
 Release 0.3. Various changes have occurred warranting a release (last
 year, see below), even though some planned features have not been

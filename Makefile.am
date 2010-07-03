@@ -3,6 +3,10 @@ SUBDIRS = gui rtaudio rtmidi
 
 bin_PROGRAMS = loopdub
 
+dist_doc_DATA = loopdub.conf.example loopdub.midi.conf.example	\
+    docs/index.html docs/radarsat1_brussels_legazon6.jpg		\
+    docs/screenshot.png
+
 loopdub_CXXFLAGS = -Wall -I$(top_srcdir)/gui \
 	-I$(top_srcdir)/rtaudio \
 	-I$(top_srcdir)/rtmidi

@@ -38,6 +38,7 @@ Player::~Player()
          src_delete(m_pSRC);
 }
 
+bool stop_stream = false;
 int callback( void *outputBuffer, void *inputBuffer,
               unsigned int nFrames,
               double streamTime,
@@ -47,7 +48,7 @@ int callback( void *outputBuffer, void *inputBuffer,
 	 ((Player*)userData)->Mix((float*)outputBuffer, nFrames, 0);
 
 	 // true to stop the stream
-	 return false;
+	 return stop_stream;
 }
 
 bool Player::Initialize(void (FillBuffers)(void*, int), void* param, int samplerate, int hw_samplerate)
@@ -188,6 +189,7 @@ void Player::Play()
 void Player::Stop()
 {
 	try {
+		 stop_stream = true;
 		 m_pRtAudio->stopStream();
 		 m_bPlaying=false;
 	}

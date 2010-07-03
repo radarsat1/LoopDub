@@ -8,7 +8,8 @@ dist_doc_DATA = loopdub.conf.example loopdub.midi.conf.example	\
     docs/screenshot.png
 
 EXTRA_DIST = bootstrap.sh libdeps/bootstrap_cygwin.mk		\
-    libdeps/bootstrap_darwin.mk libdeps/bootstrap_linux.mk
+    libdeps/bootstrap_darwin.mk libdeps/bootstrap_linux.mk	\
+    README_win32.txt
 
 loopdub_CXXFLAGS = -Wall -I$(top_srcdir)/gui \
 	-I$(top_srcdir)/rtaudio \

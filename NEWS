@@ -1,0 +1,40 @@
+* Dec. 21, 2007:
+Release 0.3. Various changes have occurred warranting a release (last
+year, see below), even though some planned features have not been
+added.  Therefore pushing some of these to version 0.4, and bumping
+successive versions in the roadmap.
+- Fixed bug with program loading code.
+- Program change be changed by typing number keys.
+- Switched to git repository, can be tracked at
+  http://loopdub.sourceforge.net/git/loopdub.git
+	
+* Dec. 29, 2006
+Some recent changes:
+- Switch back-end to RtAudio/RtMidi.
+- Sample loading via libsndfile.
+- bootstrap.sh for Linux, Cygwin, OS X.
+- Loop Dir button to select base directory for file browsers.
+	
+* Jul 1, 2006
+Release 0.2. Have not been keeping this file properly, sorry.
+This version includes many new features:
+- Program-change for MIDI (see programs.ini.example)
+- Load "background samples" that can be switched quickly
+  Currently only supported by program-change functionality.
+- "Switch" button to change to background sample
+- Compiles, with a little work, on Windows and OS X in addition to Linux
+- Remembers MIDI settings in ~/.loopdub.midi.conf
+  See "loopdub.midi.conf.example" for details.
+	
+* May 16, 2005
+Logarithmic sliders!  So much better. (Applies to Cutoff & Resonance)
+Clicking a folder now sets all filebrowsers to same folder.
+
+* May 15, 2005
+Windows version sort of works.  Still needs some thread priority bugs
+to be worked out.
+
+* Mar 12, 2005
+Initial import into CVS.  Marked as version 0.1
+
+	

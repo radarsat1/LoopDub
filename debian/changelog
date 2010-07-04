@@ -1,5 +1,5 @@
-loopdub (0.4) unstable; urgency=low
+loopdub (0.4-1) unstable; urgency=low
 
-  * Initial debian package.
+  * Initial release. (Closes: #588054)
 
- -- Stephen Sinclair <radarsat1@gmail.com>  Sat, 03 Jul 2010 02:31:40 -0400
+ -- Stephen Sinclair <radarsat1@gmail.com>  Sun, 04 Jul 2010 10:08:42 -0400

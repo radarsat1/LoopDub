@@ -8,7 +8,7 @@ Homepage: http://loopdub.sf.net
 
 Package: loopdub
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libc6, libsamplerate0, libjack0, libsdl1.2debian-alsa, libsndfile1, libasound2
+Depends: ${shlibs:Depends}, ${misc:Depends}, libsamplerate0, libjack0, libsdl1.2debian-alsa, libsndfile1, libasound2
 Description: Software for live audio loop manipulation.
  LoopDub is software intended for musical performance based on live
  loop manipulation.

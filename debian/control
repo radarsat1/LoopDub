@@ -3,7 +3,7 @@ Section: sound
 Priority: extra
 Maintainer: Stephen Sinclair <radarsat1@gmail.com>
 Build-Depends: debhelper (>= 7), autotools-dev, libsamplerate0-dev, libjack-dev, libsdl1.2-dev, libsndfile1-dev, libasound-dev
-Standards-Version: 3.8.3
+Standards-Version: 3.8.4
 Homepage: http://loopdub.sf.net
 
 Package: loopdub

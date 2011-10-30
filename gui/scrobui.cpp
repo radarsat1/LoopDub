@@ -75,7 +75,7 @@ bool Scrob::AddChild(Scrob* pScrob)
 	else
 	{
 		m_pChildList = pScrob;
-		m_pLastChild = pScrob;		
+		m_pLastChild = pScrob;
 	}
 	pScrob->m_pNextSibling = NULL;
 
@@ -410,7 +410,7 @@ DrawingTools::~DrawingTools()
 		SDL_FreeSurface(m_pCharacterSurface);
 }
 
-Scrob *DrawingTools::SetCurrentObject(Scrob *pScrob) 
+Scrob *DrawingTools::SetCurrentObject(Scrob *pScrob)
 {
 	Scrob *p = m_pCurrentObject;
 	m_pCurrentObject = pScrob;
@@ -450,7 +450,7 @@ void DrawingTools::DrawEdge(const Rect& r, bool bBevel, bool bFlat)
 #ifdef FLAT_GUI
 	if (!bFlat)  // 3d edges
 #endif
-	{ 
+	{
 		 SDL_Rect sdlr;
 		 Point p = Rect(r).TopLeft() + m_ptOffset;
 		 sdlr.x = p.x; sdlr.y = p.y; sdlr.w = r.Width(); sdlr.h = 1;
@@ -462,11 +462,11 @@ void DrawingTools::DrawEdge(const Rect& r, bool bBevel, bool bFlat)
 		 SDL_FillRect(m_pSurface, &sdlr, a);
 		 sdlr.x = p.x+r.Width()-1; sdlr.y+=1; sdlr.h-=1;
 		 SDL_FillRect(m_pSurface, &sdlr, b);
-		 
+
 		 Rect r2(r);
 		 r2.x1+=1; r2.y1+=1; r2.x2-=1; r2.y2-=1;
 		 a+=1; b+=1;
-		 
+
 		 p = r2.TopLeft() + m_ptOffset;
 		 sdlr.x = p.x; sdlr.y = p.y; sdlr.w = r2.Width(); sdlr.h = 1;
 		 SDL_FillRect(m_pSurface, &sdlr, a);
@@ -501,7 +501,7 @@ void DrawingTools::DrawEdge(const Rect& r, bool bBevel, bool bFlat)
 		 SDL_FillRect(m_pSurface, &sdlr, a);
 		 sdlr.x = p.x+2; sdlr.y = p.y+2; sdlr.w = 1, sdlr.h = h-4;
 		 SDL_FillRect(m_pSurface, &sdlr, a);
-		 
+
 		 ((Uint8 *)m_pSurface->pixels)[p.y*m_pSurface->pitch + p.x] = 1;
 		 ((Uint8 *)m_pSurface->pixels)[p.y*m_pSurface->pitch + p.x+w-1] = 1;
 		 ((Uint8 *)m_pSurface->pixels)[(p.y+h-1)*m_pSurface->pitch + p.x] = 1;

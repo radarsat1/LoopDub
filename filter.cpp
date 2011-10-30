@@ -87,13 +87,13 @@ short Lowpass::Work(short sample)
 	history[2] = temp_y;
 	history[1] = history[0];
 	history[0] = sample;
-	
+
 	cutoff = C;
 	resonance = R;
 
 	if (FLTEQUAL(cutoff,targetCutoff) && FLTEQUAL(resonance,targetResonance))
 		 m_bParamsChanged = false;
-	
+
 	if (temp_y > 32767) sample = 32767;
 	else if (temp_y < -32768) sample = -32768;
 	else sample = (short)temp_y;

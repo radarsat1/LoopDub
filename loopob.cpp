@@ -75,7 +75,7 @@ void WaveOb::Draw()
 		else
 			dt.FillRect(r, m_nColor-1);
 	}
-	
+
 	int partsize = (m_Rect.Width()<<8)/m_nParts;
 	if (partsize > 0 && partsize < (m_Rect.Width()<<8))
 		 for (int x=partsize; x<(m_Rect.Width()<<8); x+=partsize) {
@@ -92,7 +92,7 @@ void WaveOb::OnMouseDown(Point mouse)
 	gui.CaptureMouse(this);
 	m_bGotMouse = true;
 	m_ptMouse = mouse;
-	
+
 	if (m_pSample) {
 		int sample_x = mouse.x * m_pSample->m_nSamples / m_Rect.Width();
 		int partsize = m_pSample->m_nSamples / m_nParts;
@@ -165,7 +165,7 @@ void VisibleLabel::Draw()
 {
 	dt.SetCurrentObject(this);
 	Point p(0, (m_Rect.Height()-dt.GetFontHeight())/2);
-	
+
 	if (m_nBkColor < 0)
 		 m_nBkColor = 0;
 
@@ -383,7 +383,7 @@ Sample* LoopOb::SetSample(Sample *pSample)
 		  m_pIndicator[0]->SetVisible(false);
 		  m_pIndicator[1]->SetVisible(false);
 	 }
-	 
+
 	 SetDirty();
 	 return pOldSample;
 }
@@ -396,7 +396,7 @@ void LoopOb::Split()
 			m_nParts = 1;
 
 		m_pWaveOb->m_nParts = m_nParts;
-		SetDirty();	
+		SetDirty();
 	}
 }
 
@@ -433,7 +433,7 @@ short LoopOb::GetSampleValue(int pos)
 
 			   // unhold
 			   SetHolding(false);
-			   
+
 			   if (m_bSwitching && m_pBackgroundSample) {
 					// switch to background sample
 					Sample *pOldSample = SetSample(m_pBackgroundSample);
@@ -447,7 +447,7 @@ short LoopOb::GetSampleValue(int pos)
 		  IndicatorOb *pIndicator = m_pIndicator[0];
 		  if (pIndicator->m_bDrawn)
 			   pIndicator = m_pIndicator[1];
-		  
+
 		  Rect r = pIndicator->GetRect();
 		  r.x1 = m_nPos * (m_pWaveOb->GetRect().Width()) / m_pSample->m_nSamples + LOOP_X;
 		  r.x2 = r.x1 + 1;
@@ -467,14 +467,14 @@ short LoopOb::GetSampleValue(int pos)
 
 		  delay.SetParams(m_pDelayLengthSlider->GetValue() * 100 / m_pDelayLengthSlider->GetValueMax(),
 							m_pFeedbackSlider->GetValue() * 100 / m_pFeedbackSlider->GetValueMax());
-		  
-		  // pass it through the filter bank		
+
+		  // pass it through the filter bank
 		  for (int i=0; i<N_FILTERS; i++)
 			   sample = m_filterbank[i]->Work(sample);
 
 		  return sample;
 	 }
-	 
+
 	 return 0;
 }
 
@@ -486,7 +486,7 @@ short LoopOb::GetNextSample()
 		  IndicatorOb *pIndicator = m_pIndicator[0];
 		  if (pIndicator->m_bDrawn)
 			   pIndicator = m_pIndicator[1];
-		  
+
 		  Rect r = pIndicator->GetRect();
 		  r.x1 = m_nPos * (m_pWaveOb->GetRect().Width()-6) / m_pSample->m_nSamples + LOOP_X;
 		  r.x2 = r.x1 + 1;

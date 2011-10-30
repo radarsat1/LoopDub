@@ -86,9 +86,9 @@ bool Player::Initialize(void (FillBuffers)(void*, int), void* param, int sampler
 		printf("RtError in Player::Initialize(): %s\n", e.getMessage().c_str());
 		return false;
 	}
-		
+
 	printf("RtAudio stream opened.\n");
-	
+
 	m_nSide = 1;
 
     /* Set up sample rate converter, if necessary. */

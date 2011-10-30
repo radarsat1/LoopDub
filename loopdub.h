@@ -58,8 +58,8 @@ public:
 		int velocity;
 		int note;
 	} m_Keys[MAX_KEYS];
-	
-	
+
+
 	// objects
 	Player m_Player;
 	MidiControl m_Midi;

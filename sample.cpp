@@ -122,7 +122,7 @@ bool Sample::LoadFromFile(char *filename)
 
 	  nread = sf_read_short(file, buf, ntoread);
 	  k=0;
-	  for (t=0; t<nread;) {	
+	  for (t=0; t<nread;) {
 	    int sample=0;
 	    for (c=0; c<fileinfo.channels; c++)
 	      sample += buf[t++];

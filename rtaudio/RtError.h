@@ -36,7 +36,7 @@ class RtError : public std::exception
 
   //! The constructor.
   RtError( const std::string& message, Type type = RtError::UNSPECIFIED ) throw() : message_(message), type_(type) {}
- 
+
   //! The destructor.
   virtual ~RtError( void ) throw() {}
 

@@ -139,7 +139,7 @@ class Image : public Scrob
 	Image();
 	Image(Scrob *pParent, const Rect& r, int width, int height, const char* data);
 	bool Create(Scrob *pParent, const Rect& r, int width, int height, const char* data);
-	
+
 	void Draw();
 
   protected:

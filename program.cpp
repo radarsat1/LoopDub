@@ -52,14 +52,14 @@ void ProgramChanger::LoadPrograms()
          printf("No programs found.\n");
          return;
      }
-     
+
      m_nPrograms = 0;
      while (f.ReadSetting())
         if (f.m_bSectionChanged) m_nPrograms++;
      f.Close();
 
 	 printf("%d program%s found.\n", m_nPrograms, m_nPrograms==1 ? "" : "s");
-	 
+
 	 // allocate
 	 m_Program = new Program[m_nPrograms];
 
@@ -78,7 +78,7 @@ void ProgramChanger::LoadPrograms()
             strncpy(m_Program[n].m_strName, f.m_strSection, Program::m_nNameSize);
             loop = 1;
         }
-        
+
 		if (strcasecmp(f.m_strParam, "Dir")==0 && n>=0 && n<m_nPrograms) {
 		    strncpy(m_Program[n].m_strDir, f.m_strValue, Program::m_nDirSize);
 		}
@@ -88,7 +88,7 @@ void ProgramChanger::LoadPrograms()
 				 strncpy(m_Program[n].m_strFile[pos-1], f.m_strValue, Program::m_nFileNameSize);
 		}
     }
-     
+
 	 printf("%d program%s loaded.\n", m_nPrograms, m_nPrograms==1 ? "" : "s");
 }
 
@@ -116,7 +116,7 @@ THREADFUNC ProgramChanger::loadBackgroundSamplesThread(void* param)
 			   continue;
 		  if (pLoopOb->GetBackgroundSample() && strcmp(pLoopOb->GetBackgroundSample()->m_filename, strFilename)==0)
 			   continue;
-		  
+
 		  Sample *pSample = new Sample();
 		  if (pSample->LoadFromFile(strFilename)) {
 			   pLoopOb->SetBackgroundSample(pSample);

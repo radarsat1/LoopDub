@@ -45,7 +45,7 @@ Effect4.5 = 15
 Effect4.6 = 16
 Effect4.7 = 17
 
-; "Button" applies the currently selected 
+; "Button" applies the currently selected
 ; operation to a particular loop number
 Button.0 = 35
 Button.1 = 36

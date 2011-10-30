@@ -39,7 +39,7 @@ bool SettingsFile::OpenForRead(char *filename)
 	m_bWrite = false;
     m_strLastSection[0] = 0;
     m_bSectionChanged = false;
-	
+
     return true;
 }
 
@@ -52,7 +52,7 @@ bool SettingsFile::OpenForWrite(char *filename)
 
 	m_bWrite = true;
 	m_bLastLineComment = false;
-	
+
 	return true;
 }
 
@@ -84,7 +84,7 @@ bool SettingsFile::ReadSetting()
 {
 	if (!IsOpenForRead())
 		return false;
-	
+
 	char line[4096];
 	bool done=false;
 	char *s;
@@ -124,7 +124,7 @@ bool SettingsFile::ReadSetting()
 
 		strncpy(m_strSection, m_strLastSection, m_nSectionSize);
 	}
-	
+
 	return true;
 }
 
@@ -142,10 +142,10 @@ bool SettingsFile::WriteSetting(const char* section,
 		strncpy(m_strLastSection, section, m_nSectionSize);
 		fprintf(m_file, "\n[%s]\n", section);
 	}
-	
+
 	fprintf(m_file, "%s%s%s = %s\n",
 			param,
-			(subparam && subparam[0])?".":"",	
+			(subparam && subparam[0])?".":"",
 			(subparam && subparam[0])?subparam:"",
 			value);
 
@@ -160,11 +160,11 @@ bool SettingsFile::WriteComment(const char* comment)
 
 	if (!m_bLastLineComment)
 		fprintf(m_file, "\n");
-	
+
 	fprintf(m_file, "; %s\n", comment);
-	
+
 	m_bLastLineComment = true;
 	return true;
 }
 
-	
+

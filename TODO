@@ -10,7 +10,7 @@ Planned for v0.5:
 
 Planned for v0.6:
   Ability to render or mixdown to another sample
-  Retrigger loops on demand, keep it on beat (quantized)  
+  Retrigger loops on demand, keep it on beat (quantized)
   Output MIDI loops loaded from disk
   Clean up loopdub.cpp: Too large and complex!
 

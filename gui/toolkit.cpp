@@ -344,7 +344,7 @@ Image::Image()
 }
 
 Image::Image(Scrob *pParent, const Rect& r, int width, int height, const char *data)
-{	 
+{
 	 m_nWidth = 0;
 	 m_nHeight = 0;
 	 m_pData = NULL;
@@ -474,7 +474,7 @@ void Button::OnMouseDown(Point mouse)
 void Button::OnMouseMove(Point mouse)
 {
   bool b=IsPressed();
-  
+
   if (m_bGotMouse && !m_bToggle) {
 	Rect r(m_Rect);
 	r.Offset(-m_Rect.TopLeft());
@@ -728,7 +728,7 @@ void FileBrowser::Draw()
 
 	m_bMore = (i<m_nNames);
 	m_bLess = m_nDrawFileOffset > 0;
-	
+
 	// arrow more
 	if (m_bMore) {
 		 int x = m_Rect.Width()-2;
@@ -876,7 +876,7 @@ THREADFUNC FileBrowser::setDirectoryThread(void* fileBrowser)
         s_isdir = fb->m_isdir[i];
 
         int j = i - 1;
-        
+
         while (j >= 0 && strcmp(fb->m_names[j], s) > 0)
         {
             fb->m_isdir[j+1] = fb->m_isdir[j];

@@ -25,14 +25,14 @@ successive versions in the roadmap.
 - Program change be changed by typing number keys.
 - Switched to git repository, can be tracked at
   http://loopdub.sourceforge.net/git/loopdub.git
-	
+
 * Dec. 29, 2006
 Some recent changes:
 - Switch back-end to RtAudio/RtMidi.
 - Sample loading via libsndfile.
 - bootstrap.sh for Linux, Cygwin, OS X.
 - Loop Dir button to select base directory for file browsers.
-	
+
 * Jul 1, 2006
 Release 0.2. Have not been keeping this file properly, sorry.
 This version includes many new features:
@@ -43,7 +43,7 @@ This version includes many new features:
 - Compiles, with a little work, on Windows and OS X in addition to Linux
 - Remembers MIDI settings in ~/.loopdub.midi.conf
   See "loopdub.midi.conf.example" for details.
-	
+
 * May 16, 2005
 Logarithmic sliders!  So much better. (Applies to Cutoff & Resonance)
 Clicking a folder now sets all filebrowsers to same folder.
@@ -55,4 +55,4 @@ to be worked out.
 * Mar 12, 2005
 Initial import into CVS.  Marked as version 0.1
 
-	
+

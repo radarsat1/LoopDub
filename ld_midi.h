@@ -53,7 +53,7 @@ class MidiControl
  public:
 	 MidiControl();
 	 ~MidiControl();
-	 
+
 	 // Open MIDI ports, etc
 	 bool Initialize();
 	 bool IsInitialized() { return m_bInitialized; }
@@ -64,7 +64,7 @@ class MidiControl
 
 	 // Return number of MIDI devices
 	 int GetMidiNum();
-	 
+
 	 // Return name of MIDI device n
 	 const char *GetMidiName(int n);
 

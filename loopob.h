@@ -14,7 +14,7 @@
 // WaveOb -> display the wave on the screen
 //           contains a pointer to a sample.
 
-class WaveOb : public Scrob  
+class WaveOb : public Scrob
 {
 public:
 	WaveOb();
@@ -30,7 +30,7 @@ public:
 
 public:
 	virtual void Draw();
-	
+
 	int m_nParts;
 	int m_nLoopStart;
 	int m_nLoopEnd;
@@ -45,7 +45,7 @@ protected:
 ////////////////////////////////////////////////////////
 // IndicatorOb -> indicate current play position
 
-class IndicatorOb : public Scrob  
+class IndicatorOb : public Scrob
 {
 public:
 	IndicatorOb() : Scrob() {}
@@ -81,7 +81,7 @@ class VisibleLabel : public Label
 // LoopOb -> a loop controller widget, contains a
 //           sample and a WaveOb for displaying it.
 
-class LoopOb : public Scrob  
+class LoopOb : public Scrob
 {
 public:
 	LoopOb();
@@ -95,7 +95,7 @@ public:
 
 	bool IsMuted() { return m_bMuted; }
 	void SetMute(bool bMute) { m_bMuted = bMute; m_pWaveOb->SetColor(bMute ? 1 : 2); }
-	
+
 	void SetVolume(int vol_percent);
 	int GetVolume();
 
@@ -134,7 +134,7 @@ public:
 public:
 	virtual void Draw();
 	virtual bool Create(Scrob *pParent, const Rect& r, int number, Sample *pSample=NULL);
-	
+
 	// Hold volume (mute for now) until the next split, or beginning of loop.
 	bool m_bHolding;
 
@@ -180,7 +180,7 @@ protected:
 
 	int m_nLoopStart;         // loop subpart of loop
 	int m_nLoopEnd;
-	
+
 	int m_nParts;
 
 	bool m_bSelected;

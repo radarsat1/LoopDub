@@ -14,7 +14,7 @@ static char *configfile = ".loopdub.midi.conf";
 void MidiControl::callbackRtMidi( double timeStamp, std::vector<unsigned char> *message, void *userData)
 {
     MidiControl *pMidi = (MidiControl*)userData;
-    
+
     if (pMidi->m_nMidiBufferR == ((pMidi->m_nMidiBufferW+1)%LDMIDI_BUFFER_SIZE))
         return; // circular buffer is full
 
@@ -56,16 +56,16 @@ void MidiControl::LoadConfiguration()
 	 SettingsFile f(configfilename);
 	 while (f.ReadSetting()) {
 		  t = -1;
-          
+
           ch = atoi(f.m_strSubParam);
           if (ch < 0) ch = -1;
 		  if (ch >= N_LOOPS) ch = -1;
-			
+
           for (t=0; t<N_CT; t++)
             if (strcmp(f.m_strParam, Types[t])==0)
     			break;
 		  if (t >= N_CT) t = -1;
-		 		
+
           if ((ch!=-1) && (t!=-1)) {
 		    m_ctrlcode[ch][t] = atoi(f.m_strValue);
           } else {
@@ -134,7 +134,7 @@ int MidiControl::GetMidiNum()
 
 	 return n;
 }
-	 
+
 const char* MidiControl::GetMidiName(int n)
 {
 	if (!(m_bInitialized && m_pMidiIn && m_pMidiOut))
@@ -253,7 +253,7 @@ void MidiControl::CheckMsg()
 			   if (code!=m_ctrlcode[m_nLearnCh][m_nLearnType]) {
 					m_ctrlcode[m_nLearnCh][m_nLearnType] = code;
 					m_bMidiCodesHaveChanged = true;
-					
+
 					switch (m_nLearnType) {
 					case CT_LEVEL:
 						 app.m_pLoopOb[m_nLearnCh]->GetVolumeSlider()->SetColor(1);
@@ -398,7 +398,7 @@ void MidiControl::CheckMsg()
 			   }
 		  }
 	 }
-	 
+
 	 return;
 }
 
@@ -420,7 +420,7 @@ void MidiControl::SendClockTick(long ms, bool startnow)
 		  m_bMidiClockWaiting = false;
 		  m_bMidiClockActive = true;
 	 }
-	 
+
 	 if (m_bMidiClockActive)
 		  Pm_WriteShort(m_pmOutput, ms, 0xF8);
 */
@@ -455,7 +455,7 @@ void MidiControl::UpdateClockTicks()
 //		  int now_sample = app.m_Player.GetPlayPositionSamples();
 /*
 	int beat_sample_interval = (44100*60)/(135*24);
-	
+
 	SendClockTick(beat_sample_interval);
 */
 }

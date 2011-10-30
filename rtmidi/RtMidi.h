@@ -187,8 +187,8 @@ class RtMidiIn : public RtMidi
 
   // A MIDI structure used internally by the class to store incoming
   // messages.  Each message represents one and only one MIDI message.
-  struct MidiMessage { 
-    std::vector<unsigned char> bytes; 
+  struct MidiMessage {
+    std::vector<unsigned char> bytes;
     double timeStamp;
 
     // Default constructor.

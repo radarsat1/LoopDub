@@ -35,14 +35,14 @@ class SettingsFile
     static const int m_nParamSize=256;
     static const int m_nSubParamSize=256;
     static const int m_nValueSize=1024;
-    
+
     char m_strSection[m_nSectionSize];
     char m_strParam[m_nParamSize];
     char m_strSubParam[m_nSubParamSize];
     char m_strValue[m_nValueSize];
 
     bool m_bSectionChanged;
-    
+
   protected:
 	FILE *m_file;
 	bool m_bWrite;

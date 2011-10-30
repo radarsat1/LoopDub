@@ -49,7 +49,7 @@ public:
 
 			   avgtime = (avgtime*count + result) / (count+1);
 			   count++;
-			   return result;			   
+			   return result;
        		   #else
 			   return 0;
        		   #endif
@@ -135,7 +135,7 @@ void LoopDub::FillBuffers(void *param, int outTimeSample)
 	float* pStereoBuffer = app.m_Player.StereoBuffer();
 	int maxval=0;
 	int volume, volmax;
-	
+
 	volume = app.m_pVolumeSlider->GetValue();
 	volmax = app.m_pVolumeSlider->GetValueMax();
 
@@ -412,7 +412,7 @@ int LoopDub::Run()
 	pLoopDirBox->AddChild(
 		 new Button(pLoopDirBox, Rect(498-75,113-15,498,113), "Select",
 					0, 2, CMD_LOOPDIRSEL));
-	
+
 	Button *pLoopDirBtn = new Button(pMainScrob, Rect(WIDTH-90, HEIGHT-25,
 													  WIDTH-10, HEIGHT-10),
 									 "Loop Folder", 0, 2, CMD_LOOPDIR, NULL, true);
@@ -675,7 +675,7 @@ int LoopDub::Run()
 					   /* Change to loop folder */
 					   if (chdir(pLoopDirBrowser->GetDirectory()))
 							printf("Warning: Couldn't change to %s\n", m_strChangeToFolder);
-					   
+
 					   /* Load program changer */
 					   m_ProgramChanger.LoadPrograms();
 				  }
